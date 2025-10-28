@@ -134,19 +134,14 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
           if (ny >= 0 && ny < height && nx >= 0 && nx < width)
           {
             int16_t neighbor_value = *(int16_t *)(((char *)input_data) + ny * input_strides[0] + nx * input_strides[1]);
-
-            /* Only include values that differ from center by less than threshold */
-            if (1 && fabs((double)(neighbor_value - center_value)) < threshold)
-            {
-              neighbors[count++] = neighbor_value;
-            }
+            neighbors[count++] = neighbor_value;
           }
         }
       }
 
       /* Compute median and store in output */
       double median_value = compute_median(neighbors, count);
-      *(double *)(((char *)output_data) + y * output_strides[0] + x * output_strides[1]) = 0 * median_value;
+      *(double *)(((char *)output_data) + y * output_strides[0] + x * output_strides[1]) = median_value + center_value * 0;
     }
   }
 
