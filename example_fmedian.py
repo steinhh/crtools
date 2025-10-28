@@ -27,7 +27,7 @@ def main():
         [10, 20, 20, 20, 20, 20, 20, 20, 20, 10],
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
         [5, 10, 10, 10, 10, 10, 10, 10, 10, 5],
-    ], dtype=np.int16)
+    ], dtype=np.float64)
     
     print("Input array:")
     print(input_array)
