@@ -4,7 +4,7 @@ import numpy
 # Define the extension module
 fmedian_module = Extension(
     'fmedian_ext',
-    sources=['fmedian_ext.c'],
+    sources=['fmedian/fmedian_ext.c'],
     include_dirs=[numpy.get_include()],
     extra_compile_args=['-O3'],
 )

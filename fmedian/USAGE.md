@@ -15,8 +15,8 @@ This document describes the current, minimal API and how to build and run the ex
   
 ## Current status
 
-	- `exclude_center == 0` => include the center pixel in the median calculation (default behavior)
-	- `exclude_center != 0` => exclude the center pixel when computing the median
+- `exclude_center == 0` => include the center pixel in the median calculation (default behavior)
+- `exclude_center != 0` => exclude the center pixel when computing the median
 
 ## Building
 See README.md for build instructions.
@@ -57,7 +57,7 @@ print(output_array)
 Run the provided example:
 
 ```bash
-python example_fmedian.py
+python fmedian/example_fmedian.py
 ```
 
 ## Tests
@@ -65,38 +65,10 @@ python example_fmedian.py
 Run the test suite (a small script `test_fmedian.py` is included):
 
 ```bash
-python test_fmedian.py
+python fmedian/test_fmedian.py
 ```
 
-## How It Works
+## Notes
 
-For each pixel in the input array:
-1. Consider all pixels in a window of size `(2*xsize+1) × (2*ysize+1)` centered on the pixel
-2. Only include neighbor pixels where `|neighbor_value - center_value| < threshold`
-3. Compute the median of the included values
-4. Store the result in the output array
-
-This approach effectively filters out cosmic rays and other outliers while preserving the structure of the image.
-
-## Installation
-
-To install the package:
-
-```bash
-pip install .
-```
-
-Or for development:
-
-```bash
-pip install -e .
-```
-
-## Requirements
-
-- Python 3.8+
-- NumPy
-
-## License
-
-MIT License (or specify your license)
+Older versions used a `threshold` parameter and/or an `include_center` boolean with the
+opposite meaning. Update old calls by inverting the last boolean: `new_exclude = 0 if old_include else 1`.
