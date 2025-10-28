@@ -39,11 +39,12 @@ def main():
     xsize = 1      # Window half-width in x direction
     ysize = 1      # Window half-width in y direction
 
-    print(f"\n2. Applying filtered median with parameters:")
+    print("\n2. Applying filtered median with parameters:")
     print(f"   - Window size: ({2*xsize+1} x {2*ysize+1})")
 
-    # Call the fmedian function (threshold parameter removed)
-    fmedian_ext.fmedian(input_array, output_array, xsize, ysize)
+    # Call the fmedian function (include_center controls whether center is used)
+    include_center = 0
+    fmedian_ext.fmedian(input_array, output_array, xsize, ysize, include_center)
     
     print("\n3. Output array (filtered median):")
     print(output_array)
@@ -70,8 +71,10 @@ def main():
     # Example: re-run with same parameters (threshold removed)
     print("\n6. Re-running filter (no threshold parameter)...")
     output_array2 = np.zeros_like(input_array, dtype=np.float64)
-    fmedian_ext.fmedian(input_array, output_array2, xsize, ysize)
-    print("Output array (second run):")
+    # Example: include the center pixel this time
+    include_center = 1
+    fmedian_ext.fmedian(input_array, output_array2, xsize, ysize, include_center)
+    print("Output array (second run, include_center=1):")
     print(output_array2)
     
     print("\n" + "=" * 60)

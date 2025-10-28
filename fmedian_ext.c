@@ -83,14 +83,14 @@ static int check_inputs(PyArrayObject *input_array, PyArrayObject *output_array,
 static PyObject *fmedian(PyObject *self, PyObject *args)
 {
   PyArrayObject *input_array, *output_array;
-  int xsize, ysize;
+  int xsize, ysize, include_center;
   int height, width;
 
-  /* Parse arguments: input_array, output_array, xsize, ysize */
-  if (!PyArg_ParseTuple(args, "O!O!ii",
+  /* Parse arguments: input_array, output_array, xsize, ysize, include_center */
+  if (!PyArg_ParseTuple(args, "O!O!iii",
                         &PyArray_Type, &input_array,
                         &PyArray_Type, &output_array,
-                        &xsize, &ysize))
+                        &xsize, &ysize, &include_center))
   {
     return NULL;
   }
@@ -128,7 +128,7 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
       /* Get current pixel value */
       double center_value = *(double *)(((char *)input_data) + y * input_strides[0] + x * input_strides[1]);
 
-      /* Collect neighborhood values (exclude center pixel) */
+      /* Collect neighborhood values (conditionally include center) */
       for (int dy = -ysize; dy <= ysize; dy++)
       {
         for (int dx = -xsize; dx <= xsize; dx++)
@@ -139,21 +139,20 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
           /* Check bounds */
           if (ny >= 0 && ny < height && nx >= 0 && nx < width)
           {
-            /* Skip the center pixel itself */
-            if (dy == 0 && dx == 0)
+            /* Skip center when include_center == 0 */
+            if (dy == 0 && dx == 0 && include_center == 0)
             {
               continue;
             }
 
             double neighbor_value = *(double *)(((char *)input_data) + ny * input_strides[0] + nx * input_strides[1]);
-            /* Include all neighbors (no threshold filtering) */
             neighbors[count++] = neighbor_value;
           }
         }
       }
 
       /* Compute median and store in output.
-         If no neighbors (e.g., xsize=ysize=0 or all neighbors out of bounds),
+         If no neighbors (e.g., xsize=ysize=0 and include_center==0),
          fall back to the center pixel value so a 1x1 window returns the original. */
       double median_value;
       if (count == 0)
@@ -187,7 +186,8 @@ static PyMethodDef FmedianMethods[] = {
      "        Half-width of window in x direction\n"
      "    ysize : int\n"
      "        Half-width of window in y direction\n"
-     "    (threshold removed)\n"},
+     "    include_center : int\n"
+     "        If non-zero, include the center pixel in the median calculation\n"},
     {NULL, NULL, 0, NULL}};
 
 /* Module definition */
