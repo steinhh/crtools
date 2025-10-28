@@ -146,6 +146,11 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
             }
 
             double neighbor_value = *(double *)(((char *)input_data) + ny * input_strides[0] + nx * input_strides[1]);
+            /* Skip NaN values so they are not considered in the median */
+            if (isnan(neighbor_value))
+            {
+              continue;
+            }
             neighbors[count++] = neighbor_value;
           }
         }
@@ -157,7 +162,16 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
       double median_value;
       if (count == 0)
       {
-        median_value = center_value;
+        /* No valid neighbors (all were NaN or window empty). If the center
+           pixel is finite and was not excluded, use it; otherwise write NaN. */
+        if (!isnan(center_value))
+        {
+          median_value = center_value;
+        }
+        else
+        {
+          median_value = NAN;
+        }
       }
       else
       {
