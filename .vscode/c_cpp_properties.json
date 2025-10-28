@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "name": "Mac",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/opt/homebrew/Caskroom/miniconda/base/envs/py313/include/python3.13",
+        "/opt/homebrew/Caskroom/miniconda/base/envs/py313/lib/python3.13/site-packages/numpy/_core/include"
+      ],
+      "compilerPath": "/usr/bin/clang",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/**",
+          "/opt/homebrew/Caskroom/miniconda/base/envs/py313/include/python3.13",
+          "/opt/homebrew/Caskroom/miniconda/base/envs/py313/lib/python3.13/site-packages/numpy/_core/include"
+        ],
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "defines": [],
+      "cStandard": "c17",
+      "cppStandard": "c++14",
+      "intelliSenseMode": "macos-clang-arm64"
+    }
+  ],
+  "version": 4
+}
