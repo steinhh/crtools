@@ -83,14 +83,14 @@ static int check_inputs(PyArrayObject *input_array, PyArrayObject *output_array,
 static PyObject *fmedian(PyObject *self, PyObject *args)
 {
   PyArrayObject *input_array, *output_array;
-  int xsize, ysize, include_center;
+  int xsize, ysize, exclude_center;
   int height, width;
 
-  /* Parse arguments: input_array, output_array, xsize, ysize, include_center */
+  /* Parse arguments: input_array, output_array, xsize, ysize, exclude_center */
   if (!PyArg_ParseTuple(args, "O!O!iii",
                         &PyArray_Type, &input_array,
                         &PyArray_Type, &output_array,
-                        &xsize, &ysize, &include_center))
+                        &xsize, &ysize, &exclude_center))
   {
     return NULL;
   }
@@ -139,8 +139,8 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
           /* Check bounds */
           if (ny >= 0 && ny < height && nx >= 0 && nx < width)
           {
-            /* Skip center when include_center == 0 */
-            if (dy == 0 && dx == 0 && include_center == 0)
+            /* Skip center when exclude_center != 0 */
+            if (dy == 0 && dx == 0 && exclude_center != 0)
             {
               continue;
             }
@@ -186,8 +186,8 @@ static PyMethodDef FmedianMethods[] = {
      "        Half-width of window in x direction\n"
      "    ysize : int\n"
      "        Half-width of window in y direction\n"
-     "    include_center : int\n"
-     "        If non-zero, include the center pixel in the median calculation\n"},
+     "    exclude_center : int\n"
+     "        If non-zero, exclude the center pixel from the median calculation\n"},
     {NULL, NULL, 0, NULL}};
 
 /* Module definition */

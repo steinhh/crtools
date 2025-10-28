@@ -1,73 +1,68 @@
-# fmedian_ext - Filtered Median Python Extension
+# fmedian_ext - Filtered Median Python extension
 
-A Python C extension for computing filtered median values on 2D arrays. This extension is optimized for cosmic ray removal in astronomical imaging (MUSE).
+Lightweight C extension that computes a median-filter-like operation on 2D NumPy arrays. The
+implementation is intended for image-processing tasks such as cosmic-ray removal where a median of
+neighboring pixels is used to replace outliers.
+
+This document describes the current, minimal API and how to build and run the example/tests.
 
 ## Features
 
 - Fast C implementation for median filtering
-- Threshold-based filtering to exclude outliers
 - Configurable window size
 - NumPy integration with int16 input and float64 output
+- Center pixel exclusion from median calculation
+  
+## Current status
+
+	- `exclude_center == 0` => include the center pixel in the median calculation (default behavior)
+	- `exclude_center != 0` => exclude the center pixel when computing the median
 
 ## Building
+See README.md for build instructions.
 
-To build the extension:
+## Function signature
 
-```bash
-pip install numpy
-python setup.py build_ext --inplace
+```python
+fmedian(input_array, output_array, xsize, ysize, exclude_center)
 ```
 
-This will create `fmedian_ext.cpython-*.so` in the current directory.
+Parameters
 
-## Usage
+- `input_array` (numpy.ndarray): 2-D array, dtype `np.float64`.
+- `output_array` (numpy.ndarray): 2-D array, dtype `np.float64`, same shape as `input_array`.
+- `xsize` (int): half-width of the window along X (window width = 2*xsize+1).
+- `ysize` (int): half-width of the window along Y (window height = 2*ysize+1).
+- `exclude_center` (int): if non-zero, the center pixel is excluded from the median computation.
+
+Return value: None (the result is written into `output_array`).
+
+## Minimal usage example
 
 ```python
 import numpy as np
 import fmedian_ext
 
-# Create input array (must be int16)
-input_array = np.array([...], dtype=np.int16)
-
-# Create output array (must be float64, same shape as input)
+input_array = np.array([[1.0, 2.0, 3.0], [4.0, 999.0, 6.0], [7.0, 8.0, 9.0]], dtype=np.float64)
 output_array = np.zeros_like(input_array, dtype=np.float64)
 
-# Define parameters
-xsize = np.int16(1)      # Window half-width in x direction
-ysize = np.int16(1)      # Window half-width in y direction  
-threshold = 50.0         # Threshold for including neighbors
+# 3x3 neighborhood, exclude center from median
+fmedian_ext.fmedian(input_array, output_array, 1, 1, 1)
 
-# Apply filtered median
-fmedian_ext.fmedian(input_array, output_array, xsize, ysize, threshold)
+print(output_array)
 ```
 
-## Function Signature
+## Example program
 
-```python
-fmedian(input_array, output_array, xsize, ysize, threshold)
-```
-
-### Parameters
-
-- `input_array` (numpy.ndarray): Input 2D array with dtype=np.int16
-- `output_array` (numpy.ndarray): Output 2D array with dtype=np.float64 (same size as input)
-- `xsize` (int16): Half-width of the filter window in x direction
-- `ysize` (int16): Half-width of the filter window in y direction
-- `threshold` (float64): Threshold for including values in median calculation. Only values where `|value - center_value| < threshold` are included.
-
-### Returns
-
-None (modifies `output_array` in place)
-
-## Examples
-
-Run the example program:
+Run the provided example:
 
 ```bash
 python example_fmedian.py
 ```
 
-Run the test suite:
+## Tests
+
+Run the test suite (a small script `test_fmedian.py` is included):
 
 ```bash
 python test_fmedian.py
