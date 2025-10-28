@@ -7,9 +7,9 @@ used for general 2D array median operations.
 
 This repository contains:
 
-- `fmedian_ext.c` ? CPython extension source implementing the filter.
-- `example_fmedian.py` ? a small example demonstrating usage.
-- `test_fmedian.py` ? a lightweight test script that exercises the API.
+- `fsigma_ext.c` ? CPython extension source (copied from fmedian and adapted).
+- `example_fsigma.py` ? a small example demonstrating usage.
+- `test_fsigma.py` ? a lightweight test script that exercises the API.
 - `USAGE.md` ? detailed usage notes and current API documentation.
 
 Quick start
@@ -33,8 +33,8 @@ python setup.py build_ext --inplace
 3. Run the example or tests:
 
 ```bash
-python example_fmedian.py
-python test_fmedian.py
+python example_fsigma.py
+python test_fsigma.py
 ```
 
 If you want me to add CI (GitHub Actions) to build and run tests automatically, I can add

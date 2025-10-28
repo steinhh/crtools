@@ -1,8 +1,7 @@
-# fmedian_ext - Filtered Median Python extension
+# fsigma_ext - Filtered Sigma-style Python extension
 
-Lightweight C extension that computes a median-filter-like operation on 2D NumPy arrays. The
-implementation is intended for image-processing tasks such as cosmic-ray removal where a median of
-neighboring pixels is used to replace outliers.
+Lightweight C extension (copied/adapted from fmedian) that computes a neighborhood-based operation on 2D NumPy arrays.
+The implementation in this directory has the public API renamed to `fsigma` and the module is `fsigma_ext`.
 
 This document describes the current, minimal API and how to build and run the example/tests.
 
@@ -24,7 +23,7 @@ See README.md for build instructions.
 ## Function signature
 
 ```python
-fmedian(input_array, output_array, xsize, ysize, exclude_center)
+fsigma(input_array, output_array, xsize, ysize, exclude_center)
 ```
 
 Parameters
@@ -41,13 +40,13 @@ Return value: None (the result is written into `output_array`).
 
 ```python
 import numpy as np
-import fmedian_ext
+import fsigma_ext
 
 input_array = np.array([[1.0, 2.0, 3.0], [4.0, 999.0, 6.0], [7.0, 8.0, 9.0]], dtype=np.float64)
 output_array = np.zeros_like(input_array, dtype=np.float64)
 
-# 3x3 neighborhood, exclude center from median
-fmedian_ext.fmedian(input_array, output_array, 1, 1, 1)
+# 3x3 neighborhood, exclude center from computation
+fsigma_ext.fsigma(input_array, output_array, 1, 1, 1)
 
 print(output_array)
 ```
@@ -57,15 +56,15 @@ print(output_array)
 Run the provided example:
 
 ```bash
-python fmedian/example_fmedian.py
+python fsigma/example_fsigma.py
 ```
 
 ## Tests
 
-Run the test suite (a small script `test_fmedian.py` is included):
+Run the test suite (a small script `test_fsigma.py` is included):
 
 ```bash
-python fmedian/test_fmedian.py
+python fsigma/test_fsigma.py
 ```
 
 ## Notes

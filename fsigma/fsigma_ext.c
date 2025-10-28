@@ -79,8 +79,8 @@ static int check_inputs(PyArrayObject *input_array, PyArrayObject *output_array,
   return 0; /* Success */
 }
 
-/* Main fmedian function */
-static PyObject *fmedian(PyObject *self, PyObject *args)
+/* Main fsigma function */
+static PyObject *fsigma(PyObject *self, PyObject *args)
 {
   PyArrayObject *input_array, *output_array;
   int xsize, ysize, exclude_center;
@@ -174,9 +174,9 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
 }
 
 /* Method definitions */
-static PyMethodDef FmedianMethods[] = {
-    {"fmedian", fmedian, METH_VARARGS,
-     "Compute filtered median of 2D array.\n\n"
+static PyMethodDef FsigmaMethods[] = {
+    {"fsigma", fsigma, METH_VARARGS,
+     "Compute filtered sigma-like operation on a 2D array.\n\n"
      "Parameters:\n"
      "    input_array : numpy.ndarray (float64, 2D)\n"
      "        Input array\n"
@@ -187,20 +187,20 @@ static PyMethodDef FmedianMethods[] = {
      "    ysize : int\n"
      "        Half-width of window in y direction\n"
      "    exclude_center : int\n"
-     "        If non-zero, exclude the center pixel from the median calculation\n"},
+     "        If non-zero, exclude the center pixel from the computation\n"},
     {NULL, NULL, 0, NULL}};
 
 /* Module definition */
-static struct PyModuleDef fmedian_module = {
+static struct PyModuleDef fsigma_module = {
     PyModuleDef_HEAD_INIT,
-    "fmedian_ext",
-    "Python extension for filtered median computation",
+    "fsigma_ext",
+    "Python extension for filtered sigma-style computation",
     -1,
-    FmedianMethods};
+    FsigmaMethods};
 
 /* Module initialization */
-PyMODINIT_FUNC PyInit_fmedian_ext(void)
+PyMODINIT_FUNC PyInit_fsigma_ext(void)
 {
   import_array();
-  return PyModule_Create(&fmedian_module);
+  return PyModule_Create(&fsigma_module);
 }

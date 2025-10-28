@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Example program demonstrating the use of fmedian_ext module.
+Example program demonstrating the use of fsigma_ext module.
 
 This program creates a sample 2D array with some noise and applies
-the filtered median function to smooth it.
+the filtered operation to smooth it.
 """
 
 import numpy as np
-import fmedian_ext
+import fsigma_ext
 
 def main():
     print("=" * 60)
-    print("Filtered Median Example")
+    print("Filtered Sigma Example")
     print("=" * 60)
     
     # Create a sample input array (10x10) with int16 type
@@ -42,9 +42,9 @@ def main():
     print("\n2. Applying filtered median with parameters:")
     print(f"   - Window size: ({2*xsize+1} x {2*ysize+1})")
 
-    # Call the fmedian function (exclude_center controls whether center is skipped)
+    # Call the fsigma function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    fmedian_ext.fmedian(input_array, output_array, xsize, ysize, exclude_center)
+    fsigma_ext.fsigma(input_array, output_array, xsize, ysize, exclude_center)
     
     print("\n3. Output array (filtered median):")
     print(output_array)
@@ -73,7 +73,7 @@ def main():
     output_array2 = np.zeros_like(input_array, dtype=np.float64)
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0
-    fmedian_ext.fmedian(input_array, output_array2, xsize, ysize, exclude_center)
+    fsigma_ext.fsigma(input_array, output_array2, xsize, ysize, exclude_center)
     print("Output array (second run, exclude_center=0 -> center included):")
     print(output_array2)
     
