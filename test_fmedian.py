@@ -28,8 +28,8 @@ def test_basic_functionality():
     
     output_arr = np.zeros_like(input_arr, dtype=np.float64)
     
-    # Apply filter with large threshold (includes all neighbors)
-    fmedian_ext.fmedian(input_arr, output_arr, 1, 1, 100.0)
+    # Apply filter with large window (includes all neighbors)
+    fmedian_ext.fmedian(input_arr, output_arr, 1, 1)
     
     print("  Input array:")
     print(input_arr)
@@ -45,13 +45,13 @@ def test_data_types():
     # Test with correct types
     input_arr = np.array([[1, 2], [3, 4]], dtype=np.float64)
     output_arr = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian_ext.fmedian(input_arr, output_arr, 1, 1, 10.0)
+    fmedian_ext.fmedian(input_arr, output_arr, 1, 1)
     print("  ✓ Correct data types accepted")
     
     # Test with wrong input type (should fail)
     try:
         wrong_input = np.array([[1, 2], [3, 4]], dtype=np.float32)
-        fmedian_ext.fmedian(wrong_input, output_arr, 1, 1, 10.0)
+        fmedian_ext.fmedian(wrong_input, output_arr, 1, 1)
         print("  ✗ FAILED: Wrong input type should raise error")
         return False
     except TypeError:
@@ -60,7 +60,7 @@ def test_data_types():
     # Test with wrong output type (should fail)
     try:
         wrong_output = np.array([[1, 2], [3, 4]], dtype=np.float32)
-        fmedian_ext.fmedian(input_arr, wrong_output, 1, 1, 10.0)
+        fmedian_ext.fmedian(input_arr, wrong_output, 1, 1)
         print("  ✗ FAILED: Wrong output type should raise error")
         return False
     except TypeError:
@@ -75,13 +75,13 @@ def test_array_dimensions():
     # Test with matching dimensions
     input_arr = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float64)
     output_arr = np.zeros((2, 3), dtype=np.float64)
-    fmedian_ext.fmedian(input_arr, output_arr, 1, 1, 10.0)
+    fmedian_ext.fmedian(input_arr, output_arr, 1, 1)
     print("  ✓ Matching dimensions accepted")
     
     # Test with mismatched dimensions (should fail)
     try:
         wrong_output = np.zeros((3, 3), dtype=np.float64)
-        fmedian_ext.fmedian(input_arr, wrong_output, np.int16(1), np.int16(1), 10.0)
+        fmedian_ext.fmedian(input_arr, wrong_output, 1, 1)
         print("  ✗ FAILED: Mismatched dimensions should raise error")
         return False
     except ValueError:
@@ -91,7 +91,7 @@ def test_array_dimensions():
     try:
         input_1d = np.array([1, 2, 3], dtype=np.float64)
         output_1d = np.zeros(3, dtype=np.float64)
-        fmedian_ext.fmedian(input_1d, output_1d, 1, 1, 10.0)
+        fmedian_ext.fmedian(input_1d, output_1d, 1, 1)
         print("  ✗ FAILED: 1D arrays should raise error")
         return False
     except ValueError:
@@ -112,11 +112,11 @@ def test_threshold_filtering():
     
     # Test with high threshold (includes outlier)
     output_high = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian_ext.fmedian(input_arr, output_high, 1, 1, 100.0)
+    fmedian_ext.fmedian(input_arr, output_high, 1, 1)
     
     # Test with low threshold (excludes outlier from neighbors)
     output_low = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian_ext.fmedian(input_arr, output_low, 1, 1, 20.0)
+    fmedian_ext.fmedian(input_arr, output_low, 1, 1)
     
     print("  Input array:")
     print(input_arr)
@@ -148,7 +148,7 @@ def test_window_sizes():
     
     # Test with xsize=0, ysize=0 (only the pixel itself)
     output_0 = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian_ext.fmedian(input_arr, output_0, 0, 0, 10.0)
+    fmedian_ext.fmedian(input_arr, output_0, 0, 0)
     
     # Should be identical to input when window is 1x1
     if np.allclose(output_0, input_arr.astype(np.float64)):
@@ -159,7 +159,7 @@ def test_window_sizes():
     
     # Test with xsize=2, ysize=2 (5x5 window)
     output_2 = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian_ext.fmedian(input_arr, output_2, 2, 2, 100.0)
+    fmedian_ext.fmedian(input_arr, output_2, 2, 2)
     print("  ✓ Window size (5x5) works correctly")
     
     return True
@@ -178,7 +178,7 @@ def test_center_exclusion():
     output_arr = np.zeros_like(input_arr, dtype=np.float64)
 
     # Apply fmedian with a 3x3 window (xsize=1, ysize=1)
-    fmedian_ext.fmedian(input_arr, output_arr, 1, 1, 100.0)
+    fmedian_ext.fmedian(input_arr, output_arr, 1, 1)
 
     print("  Input array:")
     print(input_arr)
@@ -201,7 +201,7 @@ def test_edge_cases():
     # Test with 1x1 array
     input_1x1 = np.array([[42]], dtype=np.float64)
     output_1x1 = np.zeros_like(input_1x1, dtype=np.float64)
-    fmedian_ext.fmedian(input_1x1, output_1x1, 1, 1, 10.0)
+    fmedian_ext.fmedian(input_1x1, output_1x1, 1, 1)
     
     if np.isclose(output_1x1[0, 0], 42.0):
         print("  ✓ 1x1 array handled correctly")
@@ -212,7 +212,7 @@ def test_edge_cases():
     # Test with 2x2 array
     input_2x2 = np.array([[1, 2], [3, 4]], dtype=np.float64)
     output_2x2 = np.zeros_like(input_2x2, dtype=np.float64)
-    fmedian_ext.fmedian(input_2x2, output_2x2, 1, 1, 10.0)
+    fmedian_ext.fmedian(input_2x2, output_2x2, 1, 1)
     print("  ✓ 2x2 array handled correctly")
     
     return True
@@ -228,6 +228,7 @@ def main():
         test_data_types,
         test_array_dimensions,
         test_threshold_filtering,
+        test_center_exclusion,
         test_window_sizes,
         test_edge_cases,
     ]

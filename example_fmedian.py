@@ -36,16 +36,14 @@ def main():
     output_array = np.zeros_like(input_array, dtype=np.float64)
     
     # Define filter parameters
-    xsize = np.int16(1)      # Window half-width in x direction
-    ysize = np.int16(1)      # Window half-width in y direction
-    threshold = 50.0         # Threshold for including neighbors
-    
+    xsize = 1      # Window half-width in x direction
+    ysize = 1      # Window half-width in y direction
+
     print(f"\n2. Applying filtered median with parameters:")
     print(f"   - Window size: ({2*xsize+1} x {2*ysize+1})")
-    print(f"   - Threshold: {threshold}")
-    
-    # Call the fmedian function
-    fmedian_ext.fmedian(input_array, output_array, xsize, ysize, threshold)
+
+    # Call the fmedian function (threshold parameter removed)
+    fmedian_ext.fmedian(input_array, output_array, xsize, ysize)
     
     print("\n3. Output array (filtered median):")
     print(output_array)
@@ -69,13 +67,11 @@ def main():
     else:
         print("   No significant changes detected.")
     
-    # Test with stricter threshold
-    print("\n6. Testing with stricter threshold (10.0)...")
+    # Example: re-run with same parameters (threshold removed)
+    print("\n6. Re-running filter (no threshold parameter)...")
     output_array2 = np.zeros_like(input_array, dtype=np.float64)
-    threshold2 = 10.0
-    fmedian_ext.fmedian(input_array, output_array2, xsize, ysize, threshold2)
-    
-    print("Output array with threshold=10.0:")
+    fmedian_ext.fmedian(input_array, output_array2, xsize, ysize)
+    print("Output array (second run):")
     print(output_array2)
     
     print("\n" + "=" * 60)

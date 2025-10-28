@@ -84,14 +84,13 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
 {
   PyArrayObject *input_array, *output_array;
   int xsize, ysize;
-  double threshold;
   int height, width;
 
-  /* Parse arguments */
-  if (!PyArg_ParseTuple(args, "O!O!iid",
+  /* Parse arguments: input_array, output_array, xsize, ysize */
+  if (!PyArg_ParseTuple(args, "O!O!ii",
                         &PyArray_Type, &input_array,
                         &PyArray_Type, &output_array,
-                        &xsize, &ysize, &threshold))
+                        &xsize, &ysize))
   {
     return NULL;
   }
@@ -101,9 +100,6 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
   {
     return NULL;
   }
-
-  /* threshold is part of the API but currently unused (no filtering) */
-  (void)threshold;
 
   /* Get data pointers */
   double *input_data = (double *)PyArray_DATA(input_array);
@@ -191,8 +187,7 @@ static PyMethodDef FmedianMethods[] = {
      "        Half-width of window in x direction\n"
      "    ysize : int\n"
      "        Half-width of window in y direction\n"
-     "    threshold : float64\n"
-     "        Threshold for including values in median calculation\n"},
+     "    (threshold removed)\n"},
     {NULL, NULL, 0, NULL}};
 
 /* Module definition */
