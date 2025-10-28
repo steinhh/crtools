@@ -5,36 +5,31 @@
 #include <math.h>
 #include <stdint.h>
 
-/* Comparison function for qsort (double) */
-static int compare_double(const void *a, const void *b)
+/* Function to compute population standard deviation (sigma) of values */
+static double compute_sigma(double *values, int count)
 {
-  double da = *(const double *)a;
-  double db = *(const double *)b;
-  if (da < db)
-    return -1;
-  if (da > db)
-    return 1;
-  return 0;
-}
-
-/* Function to compute median from a sorted array */
-static double compute_median(double *values, int count)
-{
-  if (count == 0)
+  if (count <= 0)
   {
     return 0.0;
   }
 
-  qsort(values, count, sizeof(double), compare_double);
+  /* Compute mean */
+  double sum = 0.0;
+  for (int i = 0; i < count; i++)
+  {
+    sum += values[i];
+  }
+  double mean = sum / (double)count;
 
-  if (count % 2 == 0)
+  /* Compute variance (population) */
+  double ssum = 0.0;
+  for (int i = 0; i < count; i++)
   {
-    return (values[count / 2 - 1] + values[count / 2]) / 2.0;
+    double d = values[i] - mean;
+    ssum += d * d;
   }
-  else
-  {
-    return values[count / 2];
-  }
+  double var = ssum / (double)count;
+  return sqrt(var);
 }
 
 /* Function to check input arguments */
@@ -154,17 +149,9 @@ static PyObject *fsigma(PyObject *self, PyObject *args)
       /* Compute median and store in output.
          If no neighbors (e.g., xsize=ysize=0 and include_center==0),
          fall back to the center pixel value so a 1x1 window returns the original. */
-      double median_value;
-      if (count == 0)
-      {
-        median_value = center_value;
-      }
-      else
-      {
-        median_value = compute_median(neighbors, count);
-      }
-
-      *(double *)(((char *)output_data) + y * output_strides[0] + x * output_strides[1]) = median_value;
+      /* Compute sigma of neighborhood values. If count==0, return 0.0 */
+      double sigma_value = compute_sigma(neighbors, count);
+      *(double *)(((char *)output_data) + y * output_strides[0] + x * output_strides[1]) = sigma_value;
     }
   }
 

@@ -7,15 +7,15 @@ This document describes the current, minimal API and how to build and run the ex
 
 ## Features
 
-- Fast C implementation for median filtering
-- Configurable window size
-- NumPy integration with int16 input and float64 output
-- Center pixel exclusion from median calculation
+-- Fast C implementation for local standard-deviation (sigma) computation
+-- Configurable window size
+-- NumPy integration with float64 input/output
+-- Center pixel exclusion from sigma calculation
   
 ## Current status
 
-- `exclude_center == 0` => include the center pixel in the median calculation (default behavior)
-- `exclude_center != 0` => exclude the center pixel when computing the median
+-- `exclude_center == 0` => include the center pixel in the sigma calculation (default behavior)
+-- `exclude_center != 0` => exclude the center pixel when computing sigma
 
 ## Building
 See README.md for build instructions.
@@ -32,7 +32,7 @@ Parameters
 - `output_array` (numpy.ndarray): 2-D array, dtype `np.float64`, same shape as `input_array`.
 - `xsize` (int): half-width of the window along X (window width = 2*xsize+1).
 - `ysize` (int): half-width of the window along Y (window height = 2*ysize+1).
-- `exclude_center` (int): if non-zero, the center pixel is excluded from the median computation.
+-- `exclude_center` (int): if non-zero, the center pixel is excluded from the sigma computation.
 
 Return value: None (the result is written into `output_array`).
 
