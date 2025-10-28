@@ -132,7 +132,7 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
       /* Get current pixel value */
       double center_value = *(double *)(((char *)input_data) + y * input_strides[0] + x * input_strides[1]);
 
-      /* Collect neighborhood values */
+      /* Collect neighborhood values (exclude center pixel) */
       for (int dy = -ysize; dy <= ysize; dy++)
       {
         for (int dx = -xsize; dx <= xsize; dx++)
@@ -143,6 +143,12 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
           /* Check bounds */
           if (ny >= 0 && ny < height && nx >= 0 && nx < width)
           {
+            /* Skip the center pixel itself */
+            if (dy == 0 && dx == 0)
+            {
+              continue;
+            }
+
             double neighbor_value = *(double *)(((char *)input_data) + ny * input_strides[0] + nx * input_strides[1]);
             /* Include all neighbors (no threshold filtering) */
             neighbors[count++] = neighbor_value;
@@ -150,8 +156,19 @@ static PyObject *fmedian(PyObject *self, PyObject *args)
         }
       }
 
-      /* Compute median and store in output */
-      double median_value = compute_median(neighbors, count);
+      /* Compute median and store in output.
+         If no neighbors (e.g., xsize=ysize=0 or all neighbors out of bounds),
+         fall back to the center pixel value so a 1x1 window returns the original. */
+      double median_value;
+      if (count == 0)
+      {
+        median_value = center_value;
+      }
+      else
+      {
+        median_value = compute_median(neighbors, count);
+      }
+
       *(double *)(((char *)output_data) + y * output_strides[0] + x * output_strides[1]) = median_value;
     }
   }

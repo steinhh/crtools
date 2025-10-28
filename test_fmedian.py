@@ -164,6 +164,36 @@ def test_window_sizes():
     
     return True
 
+def test_center_exclusion():
+    """Test that the center pixel is excluded from the median calculation."""
+    print("\nTest 7: Center exclusion from median...")
+
+    # Construct a 3x3 array where the center is an outlier
+    input_arr = np.array([
+        [1.0, 2.0, 3.0],
+        [4.0, 999.0, 6.0],
+        [7.0, 8.0, 9.0]
+    ], dtype=np.float64)
+
+    output_arr = np.zeros_like(input_arr, dtype=np.float64)
+
+    # Apply fmedian with a 3x3 window (xsize=1, ysize=1)
+    fmedian_ext.fmedian(input_arr, output_arr, 1, 1, 100.0)
+
+    print("  Input array:")
+    print(input_arr)
+    print("\n  Output array:")
+    print(output_arr)
+
+    # Neighbors excluding the center are [1,2,3,4,6,7,8,9]; median = (4+6)/2 = 5.0
+    expected = 5.0
+    if np.isclose(output_arr[1, 1], expected):
+        print("  ? Center exclusion works (median of neighbors used)")
+        return True
+    else:
+        print(f"  ? FAILED: Expected center median {expected}, got {output_arr[1,1]}")
+        return False
+
 def test_edge_cases():
     """Test edge cases like small arrays and boundary conditions."""
     print("\nTest 6: Edge cases...")
