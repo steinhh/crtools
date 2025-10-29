@@ -1,6 +1,6 @@
 import numpy as np
 
-from cosmic_tools import fmedian
+from crtools import fmedian
 
 
 def test_median_excludes_nan_neighbors():

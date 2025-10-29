@@ -39,7 +39,7 @@ Parameters
 
 ```python
 import numpy as np
-from cosmic_tools import fsigma
+from crtools import fsigma
 
 input_array = np.array([[1.0, 2.0, 3.0], [4.0, 999.0, 6.0], [7.0, 8.0, 9.0]], dtype=np.float64)
 output_array = np.zeros_like(input_array, dtype=np.float64)

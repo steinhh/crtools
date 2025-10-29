@@ -45,7 +45,7 @@ Here is a tiny runnable example using the supported top-level import. Run
 this after building the extensions in-place.
 
 ```python
-from cosmic_tools import fmedian
+from crtools import fmedian
 import numpy as np
 
 # sample 5x5 input
@@ -64,12 +64,12 @@ print(out)
   using `--inplace` (so imports like `from fmedian.fmedian_ext import fmedian` work).
 
 This repository exposes the public API through the top-level convenience
-shim `cosmic_tools.py`. Import the filters like this:
+shim `crtools.py`. Import the filters like this:
 
-- `from cosmic_tools import fmedian, fsigma`
+- `from crtools import fmedian, fsigma`
 
 The package-qualified extension modules (e.g. `fmedian.fmedian_ext`) are an
-implementation detail and callers should import only via `cosmic_tools`.
+implementation detail and callers should import only via `crtools`.
 
 - API summary:
   - `fmedian(input_array, output_array, xsize, ysize, exclude_center)`
