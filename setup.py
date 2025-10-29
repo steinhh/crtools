@@ -19,9 +19,9 @@ fsigma_module = Extension(
 
 # Setup configuration
 setup(
-    name='muse_cosmic',
+    name='crtools',
     version='1.0.0',
-    description='muse_cosmic: C-accelerated local median and sigma filters',
+    description='crtools: C-accelerated local median and sigma filters for cosmic ray removal',
     packages=find_packages(),
     # Include the top-level convenience shim so `from crtools import ...`
     # works when the package is installed from sdist/wheel.
