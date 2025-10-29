@@ -1,9 +1,9 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 import numpy
 
 # Define the extension module
 fmedian_module = Extension(
-    'fmedian_ext',
+    'fmedian.fmedian_ext',  # build as a submodule inside the fmedian package
     sources=['fmedian/fmedian_ext.c'],
     include_dirs=[numpy.get_include()],
     extra_compile_args=['-O3'],
@@ -11,7 +11,7 @@ fmedian_module = Extension(
 
 # Also build the fsigma extension (copied from fmedian into fsigma/)
 fsigma_module = Extension(
-    'fsigma_ext',
+    'fsigma.fsigma_ext',  # build as a submodule inside the fsigma package
     sources=['fsigma/fsigma_ext.c'],
     include_dirs=[numpy.get_include()],
     extra_compile_args=['-O3'],
@@ -19,9 +19,10 @@ fsigma_module = Extension(
 
 # Setup configuration
 setup(
-    name='fmedian_ext',
+    name='muse_cosmic',
     version='1.0.0',
-    description='Python extension for filtered median computation',
+    description='muse_cosmic: C-accelerated local median and sigma filters',
+    packages=find_packages(),
     ext_modules=[fmedian_module, fsigma_module],
     install_requires=['numpy'],
 )
