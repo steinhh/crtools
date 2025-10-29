@@ -7,10 +7,10 @@ used for general 2D array median operations.
 
 This repository contains:
 
-- `fsigma_ext.c` ? CPython extension source (copied from fmedian and adapted).
-- `example_fsigma.py` ? a small example demonstrating usage.
-- `test_fsigma.py` ? a lightweight test script that exercises the API.
-- `USAGE.md` ? detailed usage notes and current API documentation.
+- `fsigma_ext.c` - CPython extension source (copied from fmedian and adapted).
+- `example_fsigma.py` - a small example demonstrating usage.
+- `test_fsigma.py` - a lightweight test script that exercises the API.
+- `USAGE.md` - detailed usage notes and current API documentation.
 
 ## Quick start
 

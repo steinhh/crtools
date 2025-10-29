@@ -11,14 +11,12 @@ It tries two imports:
 and runs a tiny call to `fmedian` to ensure the extension is callable.
 """
 
-import sys
 import numpy as np
 
-print("Running quickstart smoke test (using cosmic_tools imports)...")
+from cosmic_tools import fmedian as fmedian_shim
 
-# Import only via the supported convenience shim
-from cosmic_tools import fmedian as fmedian_shim, fsigma as fsigma_shim
-print("Imported fmedian/fsigma from cosmic_tools")
+print("Running quickstart smoke test (using cosmic_tools imports)...")
+print("Imported fmedian from cosmic_tools")
 
 # create a small test array
 a = np.arange(25.0, dtype=np.float64).reshape(5, 5)

@@ -7,10 +7,10 @@ used for general 2D array median operations.
 
 This repository contains:
 
-- `fmedian_ext.c` ? CPython extension source implementing the filter.
-- `example_fmedian.py` ? a small example demonstrating usage.
-- `test_fmedian.py` ? a lightweight test script that exercises the API.
-- `USAGE.md` ? detailed usage notes and current API documentation.
+- `fmedian_ext.c` - CPython extension source implementing the filter.
+- `example_fmedian.py` - a small example demonstrating usage.
+- `test_fmedian.py` - a lightweight test script that exercises the API.
+- `USAGE.md` - detailed usage notes and current API documentation.
 
 ## Quick start
 

@@ -8,7 +8,6 @@ without needing to modify `sys.path` in every script.
 import importlib.machinery
 import importlib.util
 import os
-import sys
 
 # Project root is the parent directory of this file
 _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

@@ -9,15 +9,15 @@ This repository contains two small C-backed Python extensions and example/test s
 
 ## Layout
 
-- `fmedian/` ? original filtered-median implementation
-  - `fmedian/fmedian_ext.c` ? C extension source (package module: `fmedian.fmedian_ext`, function: `fmedian`)
-  - `fmedian/example_fmedian.py` ? runnable example
-  - `fmedian/test_fmedian.py` ? small test script
+- `fmedian/` - original filtered-median implementation
+  - `fmedian/fmedian_ext.c` - C extension source (package module: `fmedian.fmedian_ext`, function: `fmedian`)
+  - `fmedian/example_fmedian.py` - runnable example
+  - `fmedian/test_fmedian.py` - small test script
 
-- `fsigma/` ? a copy/adaptation with public names changed to *fsigma*
-  - `fsigma/fsigma_ext.c` ? C extension source (package module: `fsigma.fsigma_ext`, function: `fsigma`)
-  - `fsigma/example_fsigma.py` ? runnable example
-  - `fsigma/test_fsigma.py` ? small test script
+- `fsigma/` - a copy/adaptation with public names changed to *fsigma*
+  - `fsigma/fsigma_ext.c` - C extension source (package module: `fsigma.fsigma_ext`, function: `fsigma`)
+  - `fsigma/example_fsigma.py` - runnable example
+  - `fsigma/test_fsigma.py` - small test script
 
 ## Build & run
 
