@@ -21,7 +21,10 @@ try:
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     _HAS_MPL = True
-except Exception:
+except ImportError:
+    # matplotlib is optional for this example; skip visualization when it's
+    # not available. Catch ImportError specifically to avoid silencing other
+    # potential problems.
     _HAS_MPL = False
 
 
@@ -73,7 +76,6 @@ def main():
         dtype=np.float64,
     )
 
-    H, W = im.shape
     xsize = 1
     ysize = 1
 

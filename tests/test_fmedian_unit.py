@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 from fmedian import fmedian_ext
 
@@ -18,7 +17,8 @@ def test_median_excludes_nan_neighbors():
 
     # For the center pixel, neighbors excluding center are [1,2,3,4,6,7,8,9]
     # median = (4 + 6) / 2 = 5.0
-    assert out[1, 1] == 5.0
+    # Use allclose to avoid fragile exact-equality on floating point results.
+    np.testing.assert_allclose(out[1, 1], 5.0, rtol=0, atol=1e-12)
 
 
 def test_median_with_all_nan_window_writes_nan():
@@ -28,4 +28,4 @@ def test_median_with_all_nan_window_writes_nan():
 
     # Window 1x1, exclude center -> no neighbors; center is NaN -> output should be NaN
     fmedian_ext.fmedian(arr, out, 0, 0, 1)
-    assert math.isnan(out[0, 0])
+    assert np.isnan(out[0, 0])
