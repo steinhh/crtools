@@ -94,8 +94,8 @@ def test_array_dimensions():
     print("  \u2713 1D arrays correctly rejected")
 
 def test_threshold_filtering():
-    """Test that threshold filtering works correctly."""
-    print("\nTest 4: Threshold filtering...")
+    """Ensure sigma calculation remains stable in presence of outliers."""
+    print("\nTest 4: Outlier handling...")
     
     # Create array with an outlier
     input_arr = np.array([
@@ -141,8 +141,8 @@ def test_window_sizes():
     print("  \u2713 Window size (5x5) produced sigma values")
 
 def test_center_exclusion():
-    """Test that the center pixel is excluded from the median calculation."""
-    print("\nTest 7: Center exclusion from median...")
+    """Verify that excluding the center pixel lowers the local sigma."""
+    print("\nTest 7: Center exclusion from sigma computation...")
 
     # Construct a 3x3 array where the center is an outlier
     input_arr = np.array([
@@ -167,8 +167,8 @@ def test_center_exclusion():
     print("\n  Output array:")
     print(output_arr)
 
-    # Neighbors excluding the center are [1,2,3,4,6,7,8,9]; with the extreme center value
-    # present, including it should increase local sigma
+    # Neighbors excluding the center are [1,2,3,4,6,7,8,9]; including the outlier should
+    # increase the measured sigma relative to the excluded case
     sigma_with = output_included[1, 1]
     sigma_without = output_excluded[1, 1]
 

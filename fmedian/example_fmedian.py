@@ -74,8 +74,8 @@ def main():
     else:
         print("   No significant changes detected.")
     
-    # Example: re-run with same parameters (threshold removed)
-    print("\n6. Re-running filter (no threshold parameter)...")
+    # Re-run with the center pixel included in the neighborhood
+    print("\n6. Re-running filter (center pixel included)...")
     output_array2 = np.zeros_like(input_array, dtype=np.float64)
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0

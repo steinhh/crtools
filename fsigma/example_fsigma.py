@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Example program demonstrating the use of fsigma_ext module.
+Example program demonstrating the use of the ``fsigma`` extension module.
 
-This program creates a sample 2D array with some noise and applies
-the filtered operation to smooth it.
+The script creates a sample 2D array with an injected outlier and computes
+the local standard deviation (sigma) around each pixel.
 """
 
 import sys
@@ -74,8 +74,8 @@ def main():
     else:
         print("   No significant changes detected.")
     
-    # Example: re-run with same parameters (threshold removed)
-    print("\n6. Re-running filter (no threshold parameter)...")
+    # Re-run with the center pixel included in the sigma calculation
+    print("\n6. Re-running filter (center pixel included)...")
     output_array2 = np.zeros_like(input_array, dtype=np.float64)
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0

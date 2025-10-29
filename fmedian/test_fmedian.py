@@ -88,8 +88,8 @@ def test_array_dimensions():
     print("  \u2713 1D arrays correctly rejected")
 
 def test_threshold_filtering():
-    """Test that threshold filtering works correctly."""
-    print("\nTest 4: Threshold filtering...")
+    """Regression test for legacy threshold parameter."""
+    print("\nTest 4: Threshold parameter regression...")
     
     # Create array with an outlier
     input_arr = np.array([
@@ -98,25 +98,25 @@ def test_threshold_filtering():
         [10, 10, 10]
     ], dtype=np.float64)
     
-    # Test with high threshold (includes outlier)
-    output_high = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian(input_arr, output_high, 1, 1, 1)
-    
-    # Test with low threshold (excludes outlier from neighbors)
-    output_low = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian(input_arr, output_low, 1, 1, 1)
+    # Run the filter twice to ensure the output is deterministic without a threshold parameter
+    output_run1 = np.zeros_like(input_arr, dtype=np.float64)
+    fmedian(input_arr, output_run1, 1, 1, 1)
+
+    output_run2 = np.zeros_like(input_arr, dtype=np.float64)
+    fmedian(input_arr, output_run2, 1, 1, 1)
     
     print("  Input array:")
     print(input_arr)
-    print("\n  Output with high threshold (100.0):")
-    print(output_high)
-    print("\n  Output with low threshold (20.0):")
-    print(output_low)
+    print("\n  Output (run 1):")
+    print(output_run1)
+    print("\n  Output (run 2):")
+    print(output_run2)
     
     # Note: threshold filtering was removed in the extension; center median is the median of
     # the full 3x3 neighborhood which is 10.0 in this test.
-    assert np.isclose(output_low[1, 1], 10.0), f"Expected center pixel = 10.0, got {output_low[1,1]}"
-    print("  \u2713 Threshold filtering not applied (expected with current implementation)")
+    assert np.allclose(output_run1, output_run2), "Outputs differed despite identical parameters"
+    assert np.isclose(output_run1[1, 1], 10.0), f"Expected center pixel = 10.0, got {output_run1[1,1]}"
+    print("  \u2713 Legacy threshold parameter has no effect (outputs match as expected)")
 
 def test_window_sizes():
     """Test different window sizes."""
