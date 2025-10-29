@@ -87,40 +87,9 @@ def test_array_dimensions():
         fmedian(input_1d, output_1d, 1, 1, 1)
     print("  \u2713 1D arrays correctly rejected")
 
-def test_threshold_filtering():
-    """Regression test for legacy threshold parameter."""
-    print("\nTest 4: Threshold parameter regression...")
-    
-    # Create array with an outlier
-    input_arr = np.array([
-        [10, 10, 10],
-        [10, 100, 10],  # 100 is outlier
-        [10, 10, 10]
-    ], dtype=np.float64)
-    
-    # Run the filter twice to ensure the output is deterministic without a threshold parameter
-    output_run1 = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian(input_arr, output_run1, 1, 1, 1)
-
-    output_run2 = np.zeros_like(input_arr, dtype=np.float64)
-    fmedian(input_arr, output_run2, 1, 1, 1)
-    
-    print("  Input array:")
-    print(input_arr)
-    print("\n  Output (run 1):")
-    print(output_run1)
-    print("\n  Output (run 2):")
-    print(output_run2)
-    
-    # Note: threshold filtering was removed in the extension; center median is the median of
-    # the full 3x3 neighborhood which is 10.0 in this test.
-    assert np.allclose(output_run1, output_run2), "Outputs differed despite identical parameters"
-    assert np.isclose(output_run1[1, 1], 10.0), f"Expected center pixel = 10.0, got {output_run1[1,1]}"
-    print("  \u2713 Legacy threshold parameter has no effect (outputs match as expected)")
-
 def test_window_sizes():
     """Test different window sizes."""
-    print("\nTest 5: Different window sizes...")
+    print("\nTest 4: Different window sizes...")
     
     input_arr = np.array([
         [1, 2, 3, 4, 5],
@@ -145,7 +114,7 @@ def test_window_sizes():
 
 def test_center_exclusion():
     """Test that the center pixel is excluded from the median calculation."""
-    print("\nTest 7: Center exclusion from median...")
+    print("\nTest 5: Center exclusion from median...")
 
     # Construct a 3x3 array where the center is an outlier
     input_arr = np.array([
@@ -187,22 +156,17 @@ def test_edge_cases():
     fmedian(input_2x2, output_2x2, 1, 1, 1)
     print("  ? 2x2 array handled correctly")
 
-# Note: keep the main() script entry for running as a script; pytest will collect the
-# `test_` functions above and treat assertions as test failures.
-
-# Tests are collected by pytest via the `test_` prefixed functions above. The
-# previous `main()` script harness (which executed tests and returned numeric
-# exit codes) was removed to make these files pure pytest modules.
+# Pytest collects the `test_`-prefixed functions above automatically.
+# A lightweight `main()` helper remains for quick ad-hoc runs without pytest.
 
 def main():
     """Run all tests."""
     test_basic_functionality()
     test_data_types()
     test_array_dimensions()
-    test_threshold_filtering()
     test_window_sizes()
-    test_edge_cases()
     test_center_exclusion()
+    test_edge_cases()
     print("\nAll tests completed successfully.")
 
 

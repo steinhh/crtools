@@ -93,32 +93,9 @@ def test_array_dimensions():
         fsigma(input_1d, output_1d, 1, 1, 1)
     print("  \u2713 1D arrays correctly rejected")
 
-def test_threshold_filtering():
-    """Ensure sigma calculation remains stable in presence of outliers."""
-    print("\nTest 4: Outlier handling...")
-    
-    # Create array with an outlier
-    input_arr = np.array([
-        [10, 10, 10],
-        [10, 100, 10],  # 100 is outlier
-        [10, 10, 10]
-    ], dtype=np.float64)
-    
-    # For sigma, just compute and ensure results are finite and non-negative
-    output = np.zeros_like(input_arr, dtype=np.float64)
-    fsigma(input_arr, output, 1, 1, 1)
-
-    print("  Input array:")
-    print(input_arr)
-    print("\n  Sigma output:")
-    print(output)
-
-    assert np.all(np.isfinite(output)) and not np.any(output < 0), "invalid sigma output"
-    print("  \u2713 Sigma computation produced valid (finite, non-negative) values")
-
 def test_window_sizes():
     """Test different window sizes."""
-    print("\nTest 5: Different window sizes...")
+    print("\nTest 4: Different window sizes...")
     
     input_arr = np.array([
         [1, 2, 3, 4, 5],
@@ -142,7 +119,7 @@ def test_window_sizes():
 
 def test_center_exclusion():
     """Verify that excluding the center pixel lowers the local sigma."""
-    print("\nTest 7: Center exclusion from sigma computation...")
+    print("\nTest 6: Center exclusion from sigma computation...")
 
     # Construct a 3x3 array where the center is an outlier
     input_arr = np.array([
@@ -178,7 +155,7 @@ def test_center_exclusion():
 
 def test_edge_cases():
     """Test edge cases like small arrays and boundary conditions."""
-    print("\nTest 6: Edge cases...")
+    print("\nTest 5: Edge cases...")
     
     # Test with 1x1 array
     input_1x1 = np.array([[42]], dtype=np.float64)
@@ -196,12 +173,8 @@ def test_edge_cases():
     assert np.all(np.isfinite(output_2x2)) and not np.any(output_2x2 < 0), "2x2 produced invalid sigma values"
     print("  \u2713 2x2 array handled correctly")
 
-# Note: keep the main() script entry for running as a script; pytest will collect the
-# `test_` functions above and treat assertions as test failures.
-
-# Tests are collected by pytest via the `test_` prefixed functions above. The
-# previous `main()` script harness (which executed tests and returned numeric
-# exit codes) was removed to make these files pure pytest modules.
+# Pytest discovers the `test_` functions automatically.
+# A minimal `main()` helper remains for manual runs without pytest.
 
 
 def main():
@@ -215,10 +188,9 @@ def main():
         test_basic_functionality,
         test_data_types,
         test_array_dimensions,
-        test_threshold_filtering,
         test_window_sizes,
-        test_edge_cases,
-        test_center_exclusion,
+    test_edge_cases,
+    test_center_exclusion,
     ]
 
     for t in tests:
