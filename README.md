@@ -174,14 +174,11 @@ This includes:
 
 ```
 crtools/
-??? fmedian/              # Filtered median implementation
 ?   ??? fmedian_ext.c     # C implementation
-?   ??? fmedian_ext.py    # Python wrapper
 ?   ??? example_fmedian.py
 ?   ??? test_fmedian.py
-??? fsigma/               # Local sigma implementation  
+??? fsigma/                  # Fsigma module for local standard deviation
 ?   ??? fsigma_ext.c      # C implementation
-?   ??? fsigma_ext.py     # Python wrapper
 ?   ??? example_fsigma.py
 ?   ??? test_fsigma.py
 ??? scripts/              # Utility scripts
@@ -196,7 +193,7 @@ crtools/
 The C implementations provide significant performance improvements over pure Python/NumPy implementations:
 
 - **fmedian**: Optimized median calculation with boundary handling
-- **fsigma**: Efficient standard deviation computation 
+- **fsigma**: Efficient standard deviation computation
 - **Memory efficient**: In-place operations where possible
 - **Boundary handling**: Proper edge/corner pixel treatment
 
