@@ -189,8 +189,8 @@ def main():
         test_data_types,
         test_array_dimensions,
         test_window_sizes,
-    test_edge_cases,
-    test_center_exclusion,
+        test_edge_cases,
+        test_center_exclusion,
     ]
 
     for t in tests:
