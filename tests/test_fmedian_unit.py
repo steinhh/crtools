@@ -1,6 +1,6 @@
 import numpy as np
 
-from fmedian import fmedian_ext
+from cosmic_tools import fmedian
 
 
 def test_median_excludes_nan_neighbors():
@@ -13,7 +13,7 @@ def test_median_excludes_nan_neighbors():
 
     out = np.zeros_like(arr)
     # 3x3 window excluding the center from neighbors
-    fmedian_ext.fmedian(arr, out, 1, 1, 1)
+    fmedian(arr, out, 1, 1, 1)
 
     # For the center pixel, neighbors excluding center are [1,2,3,4,6,7,8,9]
     # median = (4 + 6) / 2 = 5.0
@@ -27,5 +27,5 @@ def test_median_with_all_nan_window_writes_nan():
     out = np.zeros_like(arr)
 
     # Window 1x1, exclude center -> no neighbors; center is NaN -> output should be NaN
-    fmedian_ext.fmedian(arr, out, 0, 0, 1)
+    fmedian(arr, out, 0, 0, 1)
     assert np.isnan(out[0, 0])

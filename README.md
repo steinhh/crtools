@@ -41,28 +41,20 @@ python3 fsigma/example_fsigma.py
 
 ## Quickstart
 
-Here is a tiny runnable example showing the preferred package import and the
-convenience shim. Run this after building the extensions in-place.
+Here is a tiny runnable example using the supported top-level import. Run
+this after building the extensions in-place.
 
 ```python
-# preferred: import the compiled extension from the package
-from fmedian.fmedian_ext import fmedian
+from cosmic_tools import fmedian
 import numpy as np
 
 # sample 5x5 input
 a = np.arange(25, dtype=np.float64).reshape(5, 5)
 out = np.empty_like(a)
 
-# apply the filter: xsize, ysize are window radii, exclude_center is a bool
-fmedian(a, out, 3, 3, False)
+# apply the filter: xsize, ysize are window radii, exclude_center is an int
+fmedian(a, out, 3, 3, 0)
 print(out)
-```
-
-Or use the top-level convenience shim that re-exports both filters:
-
-```python
-from cosmic_tools import fmedian, fsigma
-# fmedian(...) and fsigma(...) have the same call signature as above
 ```
 
 ## Notes
@@ -71,13 +63,13 @@ from cosmic_tools import fmedian, fsigma
   By default the build places the compiled modules inside their package directories when
   using `--inplace` (so imports like `from fmedian.fmedian_ext import fmedian` work).
 
-- For backwards compatibility this repository also provides small top-level shims
-  (`fmedian_ext.py`, `fsigma_ext.py`) and a convenience shim `cosmic_tools.py` so
-  external code can still do either:
+This repository exposes the public API through the top-level convenience
+shim `cosmic_tools.py`. Import the filters like this:
 
-  - `from fmedian.fmedian_ext import fmedian` (preferred)
-  - `import fmedian_ext  # legacy shim`
-  - `from cosmic_tools import fmedian, fsigma` (convenience)
+- `from cosmic_tools import fmedian, fsigma`
+
+The package-qualified extension modules (e.g. `fmedian.fmedian_ext`) are an
+implementation detail and callers should import only via `cosmic_tools`.
 
 - API summary:
   - `fmedian(input_array, output_array, xsize, ysize, exclude_center)`

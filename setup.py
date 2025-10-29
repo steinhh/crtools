@@ -23,6 +23,9 @@ setup(
     version='1.0.0',
     description='muse_cosmic: C-accelerated local median and sigma filters',
     packages=find_packages(),
+    # Include the top-level convenience shim so `from cosmic_tools import ...`
+    # works when the package is installed from sdist/wheel.
+    py_modules=['cosmic_tools'],
     ext_modules=[fmedian_module, fsigma_module],
     install_requires=['numpy'],
 )

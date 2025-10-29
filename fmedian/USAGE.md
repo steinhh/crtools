@@ -42,7 +42,7 @@ Return value: None (the result is written into `output_array`).
 
 ```python
 import numpy as np
-from fmedian.fmedian_ext import fmedian
+from cosmic_tools import fmedian
 
 input_array = np.array([[1.0, 2.0, 3.0], [4.0, 999.0, 6.0], [7.0, 8.0, 9.0]], dtype=np.float64)
 output_array = np.zeros_like(input_array, dtype=np.float64)

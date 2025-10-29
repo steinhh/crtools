@@ -14,42 +14,17 @@ and runs a tiny call to `fmedian` to ensure the extension is callable.
 import sys
 import numpy as np
 
-print("Running quickstart smoke test...")
+print("Running quickstart smoke test (using cosmic_tools imports)...")
 
-# Preferred package import
-try:
-    from fmedian.fmedian_ext import fmedian as fmedian_pkg
-    print("Imported fmedian from fmedian.fmedian_ext")
-except Exception as e:
-    print("Failed to import fmedian.fmedian_ext:", e)
-    raise
-
-# Convenience shim import
-try:
-    from cosmic_tools import fmedian as fmedian_shim, fsigma as fsigma_shim
-    print("Imported fmedian/fsigma from cosmic_tools")
-except Exception as e:
-    print("Failed to import from cosmic_tools:", e)
-    raise
+# Import only via the supported convenience shim
+from cosmic_tools import fmedian as fmedian_shim, fsigma as fsigma_shim
+print("Imported fmedian/fsigma from cosmic_tools")
 
 # create a small test array
 a = np.arange(25.0, dtype=np.float64).reshape(5, 5)
 out = np.empty_like(a)
 
-# Call the package-imported function
-try:
-    fmedian_pkg(a, out, 1, 1, 0)
-    print("fmedian_pkg call succeeded. sample output[2,2] =", out[2,2])
-except Exception:
-    print("fmedian_pkg call raised an exception")
-    raise
-
-# Call the shim-imported function (sanity; same signature)
-try:
-    fmedian_shim(a, out, 1, 1, 0)
-    print("fmedian_shim call succeeded. sample output[2,2] =", out[2,2])
-except Exception:
-    print("fmedian_shim call raised an exception")
-    raise
+fmedian_shim(a, out, 1, 1, 0)
+print("fmedian (via cosmic_tools) call succeeded. sample output[2,2] =", out[2,2])
 
 print("quickstart smoke test completed successfully")
