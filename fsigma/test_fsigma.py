@@ -42,7 +42,7 @@ def test_basic_functionality():
     assert np.all(np.isfinite(output_arr)), "output contains non-finite values"
     assert not np.any(output_arr < 0), "sigma must be non-negative"
 
-    print("  ? Basic functionality test passed")
+    print("  \u2713 Basic functionality test passed")
 
 def test_data_types():
     """Test that data type checking works correctly."""
@@ -52,19 +52,19 @@ def test_data_types():
     input_arr = np.array([[1, 2], [3, 4]], dtype=np.float64)
     output_arr = np.zeros_like(input_arr, dtype=np.float64)
     fsigma_ext.fsigma(input_arr, output_arr, 1, 1, 1)
-    print("  ? Correct data types accepted")
+    print("  \u2713 Correct data types accepted")
 
     # Test with wrong input type (should fail)
     with pytest.raises(TypeError):
         wrong_input = np.array([[1, 2], [3, 4]], dtype=np.float32)
         fsigma_ext.fsigma(wrong_input, output_arr, 1, 1, 1)
-    print("  ? Wrong input type correctly rejected")
+    print("  \u2713 Wrong input type correctly rejected")
 
     # Test with wrong output type (should fail)
     with pytest.raises(TypeError):
         wrong_output = np.array([[1, 2], [3, 4]], dtype=np.float32)
         fsigma_ext.fsigma(input_arr, wrong_output, 1, 1, 1)
-    print("  ? Wrong output type correctly rejected")
+    print("  \u2713 Wrong output type correctly rejected")
 
 def test_array_dimensions():
     """Test array dimension validation."""
@@ -74,20 +74,20 @@ def test_array_dimensions():
     input_arr = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float64)
     output_arr = np.zeros((2, 3), dtype=np.float64)
     fsigma_ext.fsigma(input_arr, output_arr, 1, 1, 1)
-    print("  ? Matching dimensions accepted")
+    print("  \u2713 Matching dimensions accepted")
 
     # Test with mismatched dimensions (should fail)
     with pytest.raises(ValueError):
         wrong_output = np.zeros((3, 3), dtype=np.float64)
         fsigma_ext.fsigma(input_arr, wrong_output, 1, 1, 1)
-    print("  ? Mismatched dimensions correctly rejected")
+    print("  \u2713 Mismatched dimensions correctly rejected")
 
     # Test with 1D array (should fail)
     with pytest.raises(ValueError):
         input_1d = np.array([1, 2, 3], dtype=np.float64)
         output_1d = np.zeros(3, dtype=np.float64)
         fsigma_ext.fsigma(input_1d, output_1d, 1, 1, 1)
-    print("  ? 1D arrays correctly rejected")
+    print("  \u2713 1D arrays correctly rejected")
 
 def test_threshold_filtering():
     """Test that threshold filtering works correctly."""
@@ -110,7 +110,7 @@ def test_threshold_filtering():
     print(output)
 
     assert np.all(np.isfinite(output)) and not np.any(output < 0), "invalid sigma output"
-    print("  ? Sigma computation produced valid (finite, non-negative) values")
+    print("  \u2713 Sigma computation produced valid (finite, non-negative) values")
 
 def test_window_sizes():
     """Test different window sizes."""
@@ -129,12 +129,12 @@ def test_window_sizes():
     fsigma_ext.fsigma(input_arr, output_0, 0, 0, 1)
 
     assert np.allclose(output_0, 0.0), "Window size (1x1) produced non-zero sigma"
-    print("  ? Window size (1x1) produces zero sigma")
+    print("  \u2713 Window size (1x1) produces zero sigma")
 
     # Test with xsize=2, ysize=2 (5x5 window)
     output_2 = np.zeros_like(input_arr, dtype=np.float64)
     fsigma_ext.fsigma(input_arr, output_2, 2, 2, 1)
-    print("  ? Window size (5x5) produced sigma values")
+    print("  \u2713 Window size (5x5) produced sigma values")
 
 def test_center_exclusion():
     """Test that the center pixel is excluded from the median calculation."""
@@ -170,7 +170,7 @@ def test_center_exclusion():
 
     print(f"  sigma with center: {sigma_with:.3f}, without center: {sigma_without:.3f}")
     assert sigma_with > sigma_without, "Center exclusion did not reduce sigma"
-    print("  ? Center exclusion reduces sigma as expected")
+    print("  \u2713 Center exclusion reduces sigma as expected")
 
 def test_edge_cases():
     """Test edge cases like small arrays and boundary conditions."""
@@ -183,14 +183,14 @@ def test_edge_cases():
     
     # With only one pixel and excluding the center, sigma should be 0.0
     assert np.isclose(output_1x1[0, 0], 0.0), f"Expected sigma 0.0, got {output_1x1[0,0]}"
-    print("  ? 1x1 array produced zero sigma")
+    print("  \u2713 1x1 array produced zero sigma")
 
     # Test with 2x2 array
     input_2x2 = np.array([[1, 2], [3, 4]], dtype=np.float64)
     output_2x2 = np.zeros_like(input_2x2, dtype=np.float64)
     fsigma_ext.fsigma(input_2x2, output_2x2, 1, 1, 1)
     assert np.all(np.isfinite(output_2x2)) and not np.any(output_2x2 < 0), "2x2 produced invalid sigma values"
-    print("  ? 2x2 array handled correctly")
+    print("  \u2713 2x2 array handled correctly")
 
 # Note: keep the main() script entry for running as a script; pytest will collect the
 # `test_` functions above and treat assertions as test failures.
@@ -198,3 +198,34 @@ def test_edge_cases():
 # Tests are collected by pytest via the `test_` prefixed functions above. The
 # previous `main()` script harness (which executed tests and returned numeric
 # exit codes) was removed to make these files pure pytest modules.
+
+
+def main():
+    """Run all tests in this module when executed as a script.
+
+    This calls the local `test_...` functions sequentially so their
+    informational prints (OK / NOT OK!) are visible on the console.
+    If any test raises, print a NOT OK! message and exit with a non-zero code.
+    """
+    tests = [
+        test_basic_functionality,
+        test_data_types,
+        test_array_dimensions,
+        test_threshold_filtering,
+        test_window_sizes,
+        test_edge_cases,
+        test_center_exclusion,
+    ]
+
+    for t in tests:
+        try:
+            t()
+        except Exception as e:  # noqa: BLE001 - broad catch for test harness
+            print(f"\nNOT OK! Test '{t.__name__}' failed: {e}")
+            raise SystemExit(1)
+
+    print("\nAll tests completed successfully.")
+
+
+if __name__ == "__main__":
+    main()
