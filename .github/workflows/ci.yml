@@ -29,7 +29,7 @@ jobs:
 
       - name: Install build/test dependencies
         run: |
-          python -m pip install numpy pytest
+          python -m pip install numpy pytest setuptools wheel
 
       - name: Install Python linter (ruff)
         run: python -m pip install ruff
