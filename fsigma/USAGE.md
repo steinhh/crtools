@@ -14,10 +14,11 @@ This document describes the current, minimal API and how to build and run the ex
   
 ## Current status
 
--- `exclude_center == 0` => include the center pixel in the sigma calculation (default behavior)
--- `exclude_center != 0` => exclude the center pixel when computing sigma
+- `exclude_center == 0` => include the center pixel in the sigma calculation (default behavior)
+- `exclude_center != 0` => exclude the center pixel when computing sigma
 
 ## Building
+
 See README.md for build instructions.
 
 ## Function signature
@@ -32,9 +33,7 @@ Parameters
 - `output_array` (numpy.ndarray): 2-D array, dtype `np.float64`, same shape as `input_array`.
 - `xsize` (int): half-width of the window along X (window width = 2*xsize+1).
 - `ysize` (int): half-width of the window along Y (window height = 2*ysize+1).
--- `exclude_center` (int): if non-zero, the center pixel is excluded from the sigma computation.
-
-Return value: None (the result is written into `output_array`).
+- `exclude_center` (int): if non-zero, the center pixel is excluded from the sigma computation.
 
 ## Minimal usage example
 

@@ -10,7 +10,7 @@ This document describes the current, minimal API and how to build and run the ex
 
 - Fast C implementation for median filtering
 - Configurable window size
--- NumPy integration with float64 input/output
+- NumPy integration with float64 input/output
 - Center pixel exclusion from median calculation
   
 ## Current status
@@ -19,6 +19,7 @@ This document describes the current, minimal API and how to build and run the ex
 - `exclude_center != 0` => exclude the center pixel when computing the median
 
 ## Building
+
 See README.md for build instructions.
 
 ## Function signature

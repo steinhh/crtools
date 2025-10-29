@@ -67,7 +67,6 @@ from cosmic_tools import fmedian, fsigma
 
 ## Notes
 
-
 - The top-level `setup.py` builds both `fmedian.fmedian_ext` and `fsigma.fsigma_ext`.
   By default the build places the compiled modules inside their package directories when
   using `--inplace` (so imports like `from fmedian.fmedian_ext import fmedian` work).
@@ -84,12 +83,17 @@ from cosmic_tools import fmedian, fsigma
   - `fmedian(input_array, output_array, xsize, ysize, exclude_center)`
   - `fsigma(input_array, output_array, xsize, ysize, exclude_center)`
 
-  Both functions accept 2-D `np.float64` input/output arrays and write results into `output_array`.
+  Both functions accept 2-D `np.float64` input/output arrays and write results into
+  `output_array`.
 
-- If you prefer the compiled modules arranged differently for packaging (wheels, site-packages, etc.), I can update `setup.py` or provide packaging instructions.
+- If you prefer the compiled modules arranged differently for packaging (wheels,
+  site-packages, etc.), I can update `setup.py` or provide packaging
+  instructions.
 
 ## Contributing / CI
 
-If you want CI (GitHub Actions) to build and run tests automatically on push/PR I can add a workflow that runs the in-place build and executes both test scripts.
+If you want CI (GitHub Actions) to build and run tests automatically on
+push/PR, I can add a workflow that runs the in-place build and executes both
+test scripts.
 
 If you spot any mismatches between the examples/tests and the C code, tell me and I'll fix them.

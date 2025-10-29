@@ -12,8 +12,7 @@ This repository contains:
 - `test_fsigma.py` ? a lightweight test script that exercises the API.
 - `USAGE.md` ? detailed usage notes and current API documentation.
 
-Quick start
------------
+## Quick start
 
 1. Install these packages in your Python environment:
 
@@ -24,13 +23,13 @@ pip install pyflakes
 pip install pytest
 ```
 
-2. Build the extension in-place:
+1. Build the extension in-place:
 
 ```bash
 python setup.py build_ext --inplace
 ```
 
-3. Run the example or tests:
+1. Run the example or tests:
 
 ```bash
 python example_fsigma.py
