@@ -33,7 +33,7 @@ def test_basic_functionality():
     
     output_arr = np.zeros_like(input_arr, dtype=np.float64)
     
-    # Apply filter with large window (includes all neighbors)
+    # Apply filter with 3x3 window (includes immediate neighbors)
     fmedian(input_arr, output_arr, 1, 1, 1)
     
     print("  Input array:")
