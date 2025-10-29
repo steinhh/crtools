@@ -10,7 +10,7 @@ This document describes the current, minimal API and how to build and run the ex
 
 - Fast C implementation for median filtering
 - Configurable window size
-- NumPy integration with int16 input and float64 output
+-- NumPy integration with float64 input/output
 - Center pixel exclusion from median calculation
   
 ## Current status
@@ -41,13 +41,13 @@ Return value: None (the result is written into `output_array`).
 
 ```python
 import numpy as np
-import fmedian_ext
+from fmedian.fmedian_ext import fmedian
 
 input_array = np.array([[1.0, 2.0, 3.0], [4.0, 999.0, 6.0], [7.0, 8.0, 9.0]], dtype=np.float64)
 output_array = np.zeros_like(input_array, dtype=np.float64)
 
 # 3x3 neighborhood, exclude center from median
-fmedian_ext.fmedian(input_array, output_array, 1, 1, 1)
+fmedian(input_array, output_array, 1, 1, 1)
 
 print(output_array)
 ```
@@ -57,7 +57,7 @@ print(output_array)
 Run the provided example:
 
 ```bash
-python fmedian/example_fmedian.py
+python3 fmedian/example_fmedian.py
 ```
 
 ## Tests
@@ -65,7 +65,9 @@ python fmedian/example_fmedian.py
 Run the test suite (a small script `test_fmedian.py` is included):
 
 ```bash
-python fmedian/test_fmedian.py
+python3 fmedian/test_fmedian.py
+# or run the full pytest suite from the repository root:
+python3 -m pytest -q
 ```
 
 ## Notes

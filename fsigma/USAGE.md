@@ -7,10 +7,10 @@ This document describes the current, minimal API and how to build and run the ex
 
 ## Features
 
--- Fast C implementation for local standard-deviation (sigma) computation
--- Configurable window size
--- NumPy integration with float64 input/output
--- Center pixel exclusion from sigma calculation
+- Fast C implementation for local standard-deviation (sigma) computation
+- Configurable window size
+- NumPy integration with float64 input/output
+- Center pixel exclusion from sigma calculation
   
 ## Current status
 
@@ -40,13 +40,13 @@ Return value: None (the result is written into `output_array`).
 
 ```python
 import numpy as np
-import fsigma_ext
+from fsigma.fsigma_ext import fsigma
 
 input_array = np.array([[1.0, 2.0, 3.0], [4.0, 999.0, 6.0], [7.0, 8.0, 9.0]], dtype=np.float64)
 output_array = np.zeros_like(input_array, dtype=np.float64)
 
 # 3x3 neighborhood, exclude center from computation
-fsigma_ext.fsigma(input_array, output_array, 1, 1, 1)
+fsigma(input_array, output_array, 1, 1, 1)
 
 print(output_array)
 ```
@@ -56,7 +56,7 @@ print(output_array)
 Run the provided example:
 
 ```bash
-python fsigma/example_fsigma.py
+python3 fsigma/example_fsigma.py
 ```
 
 ## Tests
@@ -64,7 +64,9 @@ python fsigma/example_fsigma.py
 Run the test suite (a small script `test_fsigma.py` is included):
 
 ```bash
-python fsigma/test_fsigma.py
+python3 fsigma/test_fsigma.py
+# or run the full pytest suite from the repository root:
+python3 -m pytest -q
 ```
 
 ## Notes
