@@ -143,9 +143,6 @@ static PyObject *fsigma(PyObject *self, PyObject *args)
         }
       }
 
-      /* Compute median and store in output.
-         If no neighbors (e.g., xsize=ysize=0 and include_center==0),
-         fall back to the center pixel value so a 1x1 window returns the original. */
       /* Compute sigma of neighborhood values. If count==0, return 0.0 */
       double sigma_value = compute_sigma(neighbors, count);
       *(double *)(((char *)output_data) + y * output_strides[0] + x * output_strides[1]) = sigma_value;

@@ -6,15 +6,21 @@ This program creates a sample 2D array with some noise and applies
 the filtered operation to smooth it.
 """
 
+import sys
+import os
 import numpy as np
-from fsigma import fsigma_ext
+
+# Add parent directory to path so we can import from fsigma.fsigma_ext
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from fsigma.fsigma_ext import fsigma
 
 def main():
     print("=" * 60)
     print("Filtered Sigma Example")
     print("=" * 60)
     
-    # Create a sample input array (10x10) with int16 type
+    # Create a sample input array (10x10) with float64 type
     print("\n1. Creating sample input array (10x10)...")
     input_array = np.array([
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
@@ -39,14 +45,14 @@ def main():
     xsize = 1      # Window half-width in x direction
     ysize = 1      # Window half-width in y direction
 
-    print("\n2. Applying filtered median with parameters:")
+    print("\n2. Applying filtered sigma with parameters:")
     print(f"   - Window size: ({2*xsize+1} x {2*ysize+1})")
 
     # Call the fsigma function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    fsigma_ext.fsigma(input_array, output_array, xsize, ysize, exclude_center)
+    fsigma(input_array, output_array, xsize, ysize, exclude_center)
     
-    print("\n3. Output array (filtered median):")
+    print("\n3. Output array (local sigma values):")
     print(output_array)
     
     # Show the difference (particularly for the outlier)
@@ -73,7 +79,7 @@ def main():
     output_array2 = np.zeros_like(input_array, dtype=np.float64)
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0
-    fsigma_ext.fsigma(input_array, output_array2, xsize, ysize, exclude_center)
+    fsigma(input_array, output_array2, xsize, ysize, exclude_center)
     print("Output array (second run, exclude_center=0 -> center included):")
     print(output_array2)
     

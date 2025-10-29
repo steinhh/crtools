@@ -6,15 +6,21 @@ This program creates a sample 2D array with some noise and applies
 the filtered median function to smooth it.
 """
 
+import sys
+import os
 import numpy as np
-from fmedian import fmedian_ext
+
+# Add parent directory to path so we can import from fmedian.fmedian_ext
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from fmedian.fmedian_ext import fmedian
 
 def main():
     print("=" * 60)
     print("Filtered Median Example")
     print("=" * 60)
     
-    # Create a sample input array (10x10) with int16 type
+    # Create a sample input array (10x10) with float64 type
     print("\n1. Creating sample input array (10x10)...")
     input_array = np.array([
         [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
@@ -44,7 +50,7 @@ def main():
 
     # Call the fmedian function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    fmedian_ext.fmedian(input_array, output_array, xsize, ysize, exclude_center)
+    fmedian(input_array, output_array, xsize, ysize, exclude_center)
     
     print("\n3. Output array (filtered median):")
     print(output_array)
@@ -73,7 +79,7 @@ def main():
     output_array2 = np.zeros_like(input_array, dtype=np.float64)
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0
-    fmedian_ext.fmedian(input_array, output_array2, xsize, ysize, exclude_center)
+    fmedian(input_array, output_array2, xsize, ysize, exclude_center)
     print("Output array (second run, exclude_center=0 -> center included):")
     print(output_array2)
     

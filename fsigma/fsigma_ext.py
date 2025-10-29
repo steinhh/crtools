@@ -1,5 +1,5 @@
 """
-Wrapper that loads the compiled `fsigma_ext` extension from the project root and
+Wrapper that loads the compiled `fsigma_ext` extension from the local directory and
 re-exports its public symbols.
 
 This allows running scripts from inside `fsigma/` that do `import fsigma_ext`
@@ -12,11 +12,12 @@ import os
 # Project root is the parent directory of this file
 _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
-# Look for a compiled extension file in the project root matching fsigma_ext*.so
+# Look for a compiled extension file in the current directory matching fsigma_ext*.so
 _so_path = None
-for fname in os.listdir(_project_root):
+current_dir = os.path.dirname(__file__)
+for fname in os.listdir(current_dir):
     if fname.startswith('fsigma_ext') and fname.endswith('.so'):
-        _so_path = os.path.join(_project_root, fname)
+        _so_path = os.path.join(current_dir, fname)
         break
 
 if _so_path is None:
@@ -24,7 +25,7 @@ if _so_path is None:
     try:
         _real = __import__('fsigma_ext')
     except Exception as e:
-        raise ImportError('Could not find compiled fsigma_ext extension (.so) in project root and import failed') from e
+        raise ImportError('Could not find compiled fsigma_ext extension (.so) in local directory and import failed') from e
 else:
     # Load the extension using its real module name so the extension's
     # initialization function (PyInit_fsigma_ext) can be found.
