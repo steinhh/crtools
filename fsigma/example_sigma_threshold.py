@@ -12,7 +12,7 @@ Usage: run from repository root after building the extensions:
 
 """
 import numpy as np
-import fsigma_ext
+from fsigma import fsigma_ext
 
 # Optional plotting (matplotlib). We save the figure to a file so the example
 # works in both interactive and headless environments.

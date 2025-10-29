@@ -8,9 +8,9 @@ import sys
 import pytest
 
 try:
-    import fmedian_ext
+    from fmedian import fmedian_ext
 except ImportError:
-    print("ERROR: Could not import fmedian_ext module.")
+    print("ERROR: Could not import fmedian.fmedian_ext module.")
     print("Please build the extension first using: python setup.py build_ext --inplace")
     sys.exit(1)
 

@@ -8,9 +8,9 @@ import sys
 import pytest
 
 try:
-    import fsigma_ext
+    from fsigma import fsigma_ext
 except ImportError:
-    print("ERROR: Could not import fsigma_ext module.")
+    print("ERROR: Could not import fsigma.fsigma_ext module.")
     print("Please build the extension first using: python setup.py build_ext --inplace")
     sys.exit(1)
 

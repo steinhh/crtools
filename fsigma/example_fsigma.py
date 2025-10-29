@@ -7,7 +7,7 @@ the filtered operation to smooth it.
 """
 
 import numpy as np
-import fsigma_ext
+from fsigma import fsigma_ext
 
 def main():
     print("=" * 60)

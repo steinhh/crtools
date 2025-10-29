@@ -1,7 +1,7 @@
 import numpy as np
 import math
 
-import fmedian_ext
+from fmedian import fmedian_ext
 
 
 def test_median_excludes_nan_neighbors():
