@@ -120,9 +120,6 @@ static PyObject *fsigma(PyObject *self, PyObject *args)
     {
       int count = 0;
 
-      /* Get current pixel value */
-      double center_value = *(double *)(((char *)input_data) + y * input_strides[0] + x * input_strides[1]);
-
       /* Collect neighborhood values (conditionally include center) */
       for (int dy = -ysize; dy <= ysize; dy++)
       {
