@@ -1,6 +1,8 @@
 # CRTools: Cosmic Ray Removal Tools
 
-A high-performance Python library for cosmic ray detection and removal in astronomical images. This repository provides utility functions for removing cosmic ray hits in single exposures, implemented as C extensions for optimal speed.
+A high-performance Python library for cosmic ray detection and removal in astronomical images.
+This repository provides utility functions for removing cosmic ray hits in single exposures,
+implemented as C extensions for optimal speed.
 
 ## Overview
 
@@ -29,23 +31,27 @@ Both functions are implemented in C for maximum performance while maintaining a 
 
 ### Build from Source
 
-1. Clone the repository:
+Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd crtools
 ```
 
-2. Build the C extensions:
+Build the C extensions:
+
 ```bash
 python setup.py build_ext --inplace
 ```
 
-3. Install the package:
+Install the package:
+
 ```bash
 pip install .
 ```
 
 Or install in development mode:
+
 ```bash
 pip install -e .
 ```
@@ -92,6 +98,7 @@ fmedian(input_array, output_array, xsize, ysize, exclude_center)
 ```
 
 **Parameters:**
+
 - `input_array` (numpy.ndarray): Input image array (float64)
 - `output_array` (numpy.ndarray): Output array for results (float64, same shape as input)
 - `xsize` (int): Half-width of window in x-direction
@@ -109,6 +116,7 @@ fsigma(input_array, output_array, xsize, ysize, exclude_center)
 ```
 
 **Parameters:**
+
 - `input_array` (numpy.ndarray): Input image array (float64)
 - `output_array` (numpy.ndarray): Output array for standard deviation values (float64, same shape as input)
 - `xsize` (int): Half-width of window in x-direction
@@ -162,17 +170,19 @@ python scripts/quickstart_smoke.py
 ### Development Dependencies
 
 Install development dependencies:
+
 ```bash
 pip install -r requirements-dev.txt
 ```
 
 This includes:
+
 - pytest and pytest-cov for testing
 - matplotlib for examples and visualization
 
 ### Project Structure
 
-```
+```text
 crtools/
 ?   ??? fmedian_ext.c     # C implementation
 ?   ??? example_fmedian.py
@@ -213,4 +223,5 @@ If you use CRTools in your research, please cite:
 
 ## Acknowledgments
 
-This library was developed for astronomical image processing applications, particularly for removing cosmic ray artifacts from CCD/CMOS detector images.
+This library was developed for astronomical image processing applications,
+particularly for removing cosmic ray artifacts from CCD/CMOS detector images.
