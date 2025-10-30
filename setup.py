@@ -22,10 +22,7 @@ setup(
     name='crtools',
     version='1.0.0',
     description='crtools: C-accelerated local median and sigma filters for cosmic ray removal',
-    packages=find_packages(),
-    # Include the top-level convenience shim so `from crtools import ...`
-    # works when the package is installed from sdist/wheel.
-    py_modules=['crtools'],
+    packages=find_packages(),  # expects packages with __init__.py: crtools, fmedian, fsigma
     ext_modules=[fmedian_module, fsigma_module],
     install_requires=['numpy'],
 )
