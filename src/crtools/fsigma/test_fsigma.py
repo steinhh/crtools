@@ -29,20 +29,18 @@ def test_basic_functionality():
         [21, 22, 23, 24, 25]
     ], dtype=np.float64)
     
-    output_arr = np.zeros_like(input_arr, dtype=np.float64)
-    
     # Apply fsigma with 3x3 window (includes immediate neighbors)
-    fsigma(input_arr, output_arr, 1, 1, 1)
+    out = fsigma(input_arr, 1, 1, 1)
 
     print("  Input array:")
     print(input_arr)
     print("\n  Output array (local sigma):")
-    print(output_arr)
+    print(out)
 
     # Basic checks: output has same shape and non-negative finite values
-    assert output_arr.shape == input_arr.shape, "output shape mismatch"
-    assert np.all(np.isfinite(output_arr)), "output contains non-finite values"
-    assert not np.any(output_arr < 0), "sigma must be non-negative"
+    assert out.shape == input_arr.shape, "output shape mismatch"
+    assert np.all(np.isfinite(out)), "output contains non-finite values"
+    assert not np.any(out < 0), "sigma must be non-negative"
 
     print("  \u2713 Basic functionality test passed")
 
@@ -52,21 +50,15 @@ def test_data_types():
     
     # Test with correct types
     input_arr = np.array([[1, 2], [3, 4]], dtype=np.float64)
-    output_arr = np.zeros_like(input_arr, dtype=np.float64)
-    fsigma(input_arr, output_arr, 1, 1, 1)
+    out = fsigma(input_arr, 1, 1, 1)
+    assert out.dtype == np.float64
     print("  \u2713 Correct data types accepted")
 
-    # Test with wrong input type (should fail)
-    with pytest.raises(TypeError):
-        wrong_input = np.array([[1, 2], [3, 4]], dtype=np.float32)
-        fsigma(wrong_input, output_arr, 1, 1, 1)
-    print("  \u2713 Wrong input type correctly rejected")
-
-    # Test with wrong output type (should fail)
-    with pytest.raises(TypeError):
-        wrong_output = np.array([[1, 2], [3, 4]], dtype=np.float32)
-        fsigma(input_arr, wrong_output, 1, 1, 1)
-    print("  \u2713 Wrong output type correctly rejected")
+    # Float32 input is coerced to float64 by the wrapper; ensure it runs
+    wrong_input = np.array([[1, 2], [3, 4]], dtype=np.float32)
+    out2 = fsigma(wrong_input, 1, 1, 1)
+    assert out2.dtype == np.float64
+    print("  \u2713 Float32 input coerced to float64 and accepted")
 
 def test_array_dimensions():
     """Test array dimension validation."""
@@ -74,21 +66,14 @@ def test_array_dimensions():
     
     # Test with matching dimensions
     input_arr = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float64)
-    output_arr = np.zeros((2, 3), dtype=np.float64)
-    fsigma(input_arr, output_arr, 1, 1, 1)
+    out = fsigma(input_arr, 1, 1, 1)
+    assert out.shape == input_arr.shape
     print("  \u2713 Matching dimensions accepted")
-
-    # Test with mismatched dimensions (should fail)
-    with pytest.raises(ValueError):
-        wrong_output = np.zeros((3, 3), dtype=np.float64)
-        fsigma(input_arr, wrong_output, 1, 1, 1)
-    print("  \u2713 Mismatched dimensions correctly rejected")
 
     # Test with 1D array (should fail)
     with pytest.raises(ValueError):
         input_1d = np.array([1, 2, 3], dtype=np.float64)
-        output_1d = np.zeros(3, dtype=np.float64)
-        fsigma(input_1d, output_1d, 1, 1, 1)
+        fsigma(input_1d, 1, 1, 1)
     print("  \u2713 1D arrays correctly rejected")
 
 def test_window_sizes():
@@ -104,15 +89,14 @@ def test_window_sizes():
     ], dtype=np.float64)
     
     # Test with xsize=0, ysize=0 (only the pixel itself) => sigma should be 0
-    output_0 = np.zeros_like(input_arr, dtype=np.float64)
-    fsigma(input_arr, output_0, 0, 0, 1)
+    output_0 = fsigma(input_arr, 0, 0, 1)
 
     assert np.allclose(output_0, 0.0), "Window size (1x1) produced non-zero sigma"
     print("  \u2713 Window size (1x1) produces zero sigma")
 
     # Test with xsize=2, ysize=2 (5x5 window)
-    output_2 = np.zeros_like(input_arr, dtype=np.float64)
-    fsigma(input_arr, output_2, 2, 2, 1)
+    output_2 = fsigma(input_arr, 2, 2, 1)
+    assert output_2.shape == input_arr.shape
     print("  \u2713 Window size (5x5) produced sigma values")
 
 def test_center_exclusion():
@@ -126,21 +110,14 @@ def test_center_exclusion():
         [7.0, 8.0, 9.0]
     ], dtype=np.float64)
 
-    output_arr = np.zeros_like(input_arr, dtype=np.float64)
-
-    # Apply fsigma with a 3x3 window (xsize=1, ysize=1)
-    # First compute with center included (exclude_center=0)
-    fsigma(input_arr, output_arr, 1, 1, 0)
-    output_included = output_arr.copy()
-
-    # Now compute excluding the center from the neighborhood
-    fsigma(input_arr, output_arr, 1, 1, 1)
-    output_excluded = output_arr.copy()
+    # Compute with center included and excluded
+    output_included = fsigma(input_arr, 1, 1, 0)
+    output_excluded = fsigma(input_arr, 1, 1, 1)
 
     print("  Input array:")
     print(input_arr)
-    print("\n  Output array:")
-    print(output_arr)
+    print("\n  Output array (excluded):")
+    print(output_excluded)
 
     # Neighbors excluding the center are [1,2,3,4,6,7,8,9]; including the outlier should
     # increase the measured sigma relative to the excluded case
@@ -157,17 +134,15 @@ def test_edge_cases():
     
     # Test with 1x1 array
     input_1x1 = np.array([[42]], dtype=np.float64)
-    output_1x1 = np.zeros_like(input_1x1, dtype=np.float64)
-    fsigma(input_1x1, output_1x1, 1, 1, 1)
-    
+    output_1x1 = fsigma(input_1x1, 1, 1, 1)
+
     # With only one pixel and excluding the center, sigma should be 0.0
     assert np.isclose(output_1x1[0, 0], 0.0), f"Expected sigma 0.0, got {output_1x1[0,0]}"
     print("  \u2713 1x1 array produced zero sigma")
 
     # Test with 2x2 array
     input_2x2 = np.array([[1, 2], [3, 4]], dtype=np.float64)
-    output_2x2 = np.zeros_like(input_2x2, dtype=np.float64)
-    fsigma(input_2x2, output_2x2, 1, 1, 1)
+    output_2x2 = fsigma(input_2x2, 1, 1, 1)
     assert np.all(np.isfinite(output_2x2)) and not np.any(output_2x2 < 0), "2x2 produced invalid sigma values"
     print("  \u2713 2x2 array handled correctly")
 

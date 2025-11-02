@@ -6,14 +6,9 @@ The script creates a sample 2D array with an injected outlier and computes
 the local standard deviation (sigma) around each pixel.
 """
 
-import sys
-import os
 import numpy as np
 
-# Add parent directory to path so we can import from fsigma.fsigma_ext
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from fsigma.fsigma_ext import fsigma
+from crtools.fsigma import fsigma
 
 def main():
     print("=" * 60)
@@ -38,9 +33,6 @@ def main():
     print("Input array:")
     print(input_array)
     
-    # Create output array with same shape but float64 type
-    output_array = np.zeros_like(input_array, dtype=np.float64)
-    
     # Define filter parameters
     xsize = 1      # Window half-width in x direction
     ysize = 1      # Window half-width in y direction
@@ -50,7 +42,7 @@ def main():
 
     # Call the fsigma function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    fsigma(input_array, output_array, xsize, ysize, exclude_center)
+    output_array = fsigma(input_array, xsize, ysize, exclude_center)
     
     print("\n3. Output array (local sigma values):")
     print(output_array)
@@ -76,10 +68,9 @@ def main():
     
     # Re-run with the center pixel included in the sigma calculation
     print("\n6. Re-running filter (center pixel included)...")
-    output_array2 = np.zeros_like(input_array, dtype=np.float64)
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0
-    fsigma(input_array, output_array2, xsize, ysize, exclude_center)
+    output_array2 = fsigma(input_array, xsize, ysize, exclude_center)
     print("Output array (second run, exclude_center=0 -> center included):")
     print(output_array2)
     

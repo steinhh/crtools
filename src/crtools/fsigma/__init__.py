@@ -38,8 +38,27 @@ except Exception:
     loader.exec_module(_ext)  # type: ignore[arg-type]
 
 try:
-    fsigma = _ext.fsigma  # type: ignore[attr-defined]
+    _c_fsigma = _ext.fsigma  # type: ignore[attr-defined]
 except Exception as exc:  # pragma: no cover - defensive
     raise ImportError("Loaded fsigma extension but could not find 'fsigma' symbol") from exc
+
+
+def fsigma(input_array, xsize: int, ysize: int, exclude_center: int):
+    """Compute local population sigma and return the output array.
+
+    Signature: fsigma(input_array, xsize, ysize, exclude_center) -> numpy.ndarray
+
+    The input will be coerced to float64; the returned array is float64.
+    """
+    import numpy as _np
+
+    if xsize is None or ysize is None or exclude_center is None:
+        raise TypeError("fsigma requires xsize, ysize and exclude_center parameters")
+
+    arr = _np.asarray(input_array, dtype=_np.float64)
+    out = _np.empty_like(arr, dtype=_np.float64)
+    _c_fsigma(arr, out, int(xsize), int(ysize), int(exclude_center))
+    return out
+
 
 __all__ = ["fsigma"]
