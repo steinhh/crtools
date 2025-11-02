@@ -8,14 +8,12 @@ import sys
 import os
 import pytest
 
-# Add parent directory to path so we can import from fsigma.fsigma_ext
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 try:
-    from fsigma.fsigma_ext import fsigma
+    # Prefer the new package import path
+    from crtools import fsigma
 except ImportError:
-    print("ERROR: Could not import fsigma.fsigma_ext module.")
-    print("Please build the extension first using: python setup.py build_ext --inplace")
+    print("ERROR: Could not import crtools.fsigma module.")
+    print("Please build the extension first (create fsigma_ext shared object) or install the package.")
     sys.exit(1)
 
 def test_basic_functionality():

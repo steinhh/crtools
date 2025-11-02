@@ -173,12 +173,12 @@ static PyMethodDef FsigmaMethods[] = {
      "    ysize : int\n"
      "        Half-width of window in y direction\n"
      "    exclude_center : int\n"
-  "        If non-zero, exclude the center pixel from the computation.\n"
-  "\n"
-  "Notes:\n"
-  "    NaN values in the neighborhood (including the center if included)\n"
-  "    are ignored when computing sigma. If no valid neighbors remain,\n"
-  "    the result is 0.0.\n"},
+     "        If non-zero, exclude the center pixel from the computation.\n"
+     "\n"
+     "Notes:\n"
+     "    NaN values in the neighborhood (including the center if included)\n"
+     "    are ignored when computing sigma. If no valid neighbors remain,\n"
+     "    the result is 0.0.\n"},
     {NULL, NULL, 0, NULL}};
 
 /* Module definition */

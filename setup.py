@@ -1,31 +1,63 @@
-from setuptools import setup, Extension, find_packages
-import numpy
+from __future__ import annotations
 
-# Define the extension module
-fmedian_module = Extension(
-    'fmedian.fmedian_ext',  # build as a submodule inside the fmedian package
-    sources=['fmedian/fmedian_ext.c'],
-    include_dirs=[numpy.get_include()],
-    extra_compile_args=['-O3'],
-)
+import io
+import os
+from setuptools import setup, find_packages, Extension
 
-# Also build the fsigma extension (copied from fmedian into fsigma/)
-fsigma_module = Extension(
-    'fsigma.fsigma_ext',  # build as a submodule inside the fsigma package
-    sources=['fsigma/fsigma_ext.c'],
-    include_dirs=[numpy.get_include()],
-    extra_compile_args=['-O3'],
-)
 
-# Setup configuration
+def read_readme():
+    here = os.path.abspath(os.path.dirname(__file__))
+    readme = os.path.join(here, "README.md")
+    if os.path.exists(readme):
+        with io.open(readme, "r", encoding="utf8") as fh:
+            return fh.read()
+    return "crtools: C-based local image filters (fmedian, fsigma)"
+
+
+# Try to obtain numpy include dir; setup_requires ensures numpy is available when
+# building via setuptools, but fall back gracefully to an empty list at import-time.
+include_dirs = []
+try:
+    import numpy as _np
+
+    include_dirs = [_np.get_include()]
+except Exception:
+    # numpy may not yet be available at import time; setup_requires=['numpy'] will
+    # request it at build time.
+    include_dirs = []
+
+
+ext_modules = [
+    Extension(
+        "crtools.fmedian.fmedian_ext",
+        sources=[os.path.join("src", "crtools", "fmedian", "fmedian_ext.c")],
+        include_dirs=include_dirs,
+    ),
+    Extension(
+        "crtools.fsigma.fsigma_ext",
+        sources=[os.path.join("src", "crtools", "fsigma", "fsigma_ext.c")],
+        include_dirs=include_dirs,
+    ),
+]
+
+
 setup(
-    name='crtools',
-    version='1.0.0',
-    description='crtools: C-accelerated local median and sigma filters for cosmic ray removal',
-    packages=find_packages(),
-    # Include the top-level convenience shim so `from crtools import ...`
-    # works when the package is installed from sdist/wheel.
-    py_modules=['crtools'],
-    ext_modules=[fmedian_module, fsigma_module],
-    install_requires=['numpy'],
+    name="crtools",
+    version="0.0.0",
+    description="Small C extensions for local image filters (fmedian, fsigma)",
+    long_description=read_readme(),
+    long_description_content_type="text/markdown",
+    author="",
+    license="MIT",
+    package_dir={"": "src"},
+    packages=find_packages("src"),
+    ext_modules=ext_modules,
+    setup_requires=["numpy>=1.20"],
+    install_requires=["numpy>=1.20"],
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Programming Language :: C",
+        "Operating System :: OS Independent",
+    ],
+    zip_safe=False,
 )

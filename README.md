@@ -2,226 +2,91 @@
 
 A high-performance Python library for cosmic ray detection and removal in astronomical images.
 This repository provides utility functions for removing cosmic ray hits in single exposures,
-implemented as C extensions for optimal speed.
+# CRTools: Cosmic Ray Removal Tools
 
-## Overview
+High-performance C-backed utilities for local image filtering used in cosmic-ray
+detection and removal workflows.
 
-CRTools implements two core algorithms for cosmic ray detection and removal:
+This repository provides two small C extensions exposed to Python:
 
-- **`fmedian`**: Filtered median computation for outlier smoothing
-- **`fsigma`**: Local standard deviation calculation for statistical outlier detection
+- crtools.fmedian ? filtered median over a local neighborhood
+- crtools.fsigma  ? local (population) standard deviation over a neighborhood
 
-Both functions are implemented in C for maximum performance while maintaining a simple Python interface.
+Key change: native C sources live under `src/crtools/<module>/` (e.g.
+`src/crtools/fmedian/fmedian_ext.c`). Legacy prebuilt `.so` files and top-level
+C sources were removed; build the package to produce extension modules.
 
-## Features
+## Requirements
 
-- **High Performance**: C implementations provide significant speedup over pure Python
-- **Robust Cosmic Ray Detection**: Uses local statistics to identify and remove cosmic ray hits
-- **Flexible Window Sizes**: Configurable neighborhood sizes for different image characteristics
-- **NumPy Integration**: Seamless integration with NumPy arrays
-- **Well Tested**: Comprehensive test suite ensures reliability
-
-## Installation
-
-### Prerequisites
-
-- Python 3.7+
+- Python 3.8+
 - NumPy
-- C compiler (gcc, clang, or MSVC)
+- C compiler toolchain (clang, gcc, or MSVC)
 
-### Build from Source
+## Build & Install
 
-Clone the repository:
-
-```bash
-git clone <repository-url>
-cd crtools
-```
-
-Build the C extensions:
+Prefer using an editable install during development so Python imports the
+package from `src/`:
 
 ```bash
-python setup.py build_ext --inplace
+# from repository root
+python3 -m pip install -e .
 ```
 
-Install the package:
+To build extension modules in-place (no install):
 
 ```bash
-pip install .
+python3 setup.py build_ext --inplace
 ```
 
-Or install in development mode:
+To install normally:
 
 ```bash
-pip install -e .
+python3 -m pip install .
 ```
 
-## Quick Start
+Note: for isolated PEP 517 builds it's recommended to add a `pyproject.toml`
+with build-system requirements (setuptools, wheel, numpy). If you'd like I can
+add a minimal `pyproject.toml` for reproducible builds.
 
-```python
+## Quick usage
+
+```py
 import numpy as np
 from crtools import fmedian, fsigma
 
-# Create sample astronomical image data
-image = np.random.normal(100, 10, (256, 256)).astype(np.float64)
-# Add some cosmic ray hits (bright outliers)
-image[100, 100] = 5000  # cosmic ray hit
-
-# Method 1: Use filtered median to smooth outliers
-smoothed = np.zeros_like(image)
-fmedian(image, smoothed, xsize=1, ysize=1, exclude_center=1)
-
-# Method 2: Use sigma-clipping approach
-sigma_map = np.zeros_like(image)
-fsigma(image, sigma_map, xsize=2, ysize=2, exclude_center=1)
-
-# Calculate z-scores for outlier detection
-mean_image = smoothed  # or compute local mean separately
-z_scores = (image - mean_image) / (sigma_map + 1e-8)
-
-# Identify cosmic rays (e.g., >5 sigma outliers)
-cosmic_ray_mask = np.abs(z_scores) > 5.0
-
-# Replace cosmic rays with smoothed values
-cleaned_image = image.copy()
-cleaned_image[cosmic_ray_mask] = smoothed[cosmic_ray_mask]
+arr = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
+out = np.zeros_like(arr)
+fmedian(arr, out, 1, 1, 1)
 ```
 
-## API Reference
+## Running tests
 
-### fmedian
-
-Computes a filtered median over a local neighborhood around each pixel.
-
-```python
-fmedian(input_array, output_array, xsize, ysize, exclude_center)
-```
-
-**Parameters:**
-
-- `input_array` (numpy.ndarray): Input image array (float64)
-- `output_array` (numpy.ndarray): Output array for results (float64, same shape as input)
-- `xsize` (int): Half-width of window in x-direction
-- `ysize` (int): Half-width of window in y-direction  
-- `exclude_center` (int): If 1, exclude center pixel from median calculation; if 0, include it
-
-**Window Size:** The actual window size is `(2*xsize+1) × (2*ysize+1)`.
-
-### fsigma
-
-Computes the local standard deviation over a neighborhood around each pixel.
-
-```python
-fsigma(input_array, output_array, xsize, ysize, exclude_center)
-```
-
-**Parameters:**
-
-- `input_array` (numpy.ndarray): Input image array (float64)
-- `output_array` (numpy.ndarray): Output array for standard deviation values (float64, same shape as input)
-- `xsize` (int): Half-width of window in x-direction
-- `ysize` (int): Half-width of window in y-direction
-- `exclude_center` (int): If 1, exclude center pixel from sigma calculation; if 0, include it
-
-## Examples
-
-### Basic Cosmic Ray Removal
-
-```python
-import numpy as np
-from crtools import fmedian, fsigma
-
-# Load your astronomical image
-image = fits.getdata('your_image.fits').astype(np.float64)
-
-# Create output arrays
-median_filtered = np.zeros_like(image)
-sigma_map = np.zeros_like(image)
-
-# Compute local statistics (3x3 windows)
-fmedian(image, median_filtered, 1, 1, 1)  # exclude center
-fsigma(image, sigma_map, 1, 1, 1)
-
-# Detect outliers
-z_scores = (image - median_filtered) / (sigma_map + 1e-8)
-cosmic_rays = np.abs(z_scores) > 5.0
-
-# Clean the image
-cleaned = image.copy()
-cleaned[cosmic_rays] = median_filtered[cosmic_rays]
-```
-
-## Development
-
-### Running Tests
+Run tests against the locally built package (recommended to install/editable):
 
 ```bash
-# Run all tests
-pytest
-
-# Run specific module tests
-python fmedian/test_fmedian.py
-python fsigma/test_fsigma.py
-
-# Run smoke test
-python scripts/quickstart_smoke.py
+# ensure src/ is on PYTHONPATH (pip editable install handles this for you)
+PYTHONPATH=src pytest -q
 ```
 
-### Development Dependencies
-
-Install development dependencies:
+Or run individual scripts:
 
 ```bash
-pip install -r requirements-dev.txt
+PYTHONPATH=src python3 fmedian/test_fmedian.py
+PYTHONPATH=src python3 fsigma/test_fsigma.py
 ```
 
-This includes:
+## Project layout
 
-- pytest and pytest-cov for testing
-- matplotlib for examples and visualization
+Relevant locations after these changes:
 
-### Project Structure
+- `src/crtools/fmedian/` ? python + C source for fmedian
+- `src/crtools/fsigma/`  ? python + C source for fsigma
+- `setup.py`              ? setuptools configuration to build extensions
 
-```text
-crtools/
-?   ??? fmedian_ext.c     # C implementation
-?   ??? example_fmedian.py
-?   ??? test_fmedian.py
-??? fsigma/                  # Fsigma module for local standard deviation
-?   ??? fsigma_ext.c      # C implementation
-?   ??? example_fsigma.py
-?   ??? test_fsigma.py
-??? scripts/              # Utility scripts
-??? tests/                # Additional tests
-??? crtools.py           # Main convenience import module
-??? cosmic_tools.py      # Alternative import interface
-??? setup.py             # Build configuration
-```
+## Further improvements (optional)
 
-## Performance
+- Add `pyproject.toml` with build-system requirements for PEP 517/518 builds
+- Add CI workflow to build wheels and run tests on push/PR
+- Add MANIFEST.in/package_data if you need to include non-Python files in sdist
 
-The C implementations provide significant performance improvements over pure Python/NumPy implementations:
-
-- **fmedian**: Optimized median calculation with boundary handling
-- **fsigma**: Efficient standard deviation computation
-- **Memory efficient**: In-place operations where possible
-- **Boundary handling**: Proper edge/corner pixel treatment
-
-## License
-
-[Include your license information here]
-
-## Contributing
-
-[Include contribution guidelines here]
-
-## Citation
-
-If you use CRTools in your research, please cite:
-
-[Include citation information if applicable]
-
-## Acknowledgments
-
-This library was developed for astronomical image processing applications,
-particularly for removing cosmic ray artifacts from CCD/CMOS detector images.
+If you want, I can add any of the above improvements.
