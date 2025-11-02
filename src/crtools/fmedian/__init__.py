@@ -48,10 +48,28 @@ except Exception:
     _ext = importlib.util.module_from_spec(spec)
     loader.exec_module(_ext)  # type: ignore[arg-type]
 
-# Expose the function expected by the tests
 try:
-    fmedian = _ext.fmedian  # type: ignore[attr-defined]
+    _c_fmedian = _ext.fmedian  # type: ignore[attr-defined]
 except Exception as exc:  # pragma: no cover - defensive
     raise ImportError("Loaded fmedian extension but could not find 'fmedian' symbol") from exc
+
+
+def fmedian(input_array, xsize: int, ysize: int, exclude_center: int):
+    """Compute filtered median and return the output array.
+
+    Signature: fmedian(input_array, xsize, ysize, exclude_center) -> numpy.ndarray
+
+    The input will be coerced to float64; the returned array is float64.
+    """
+    import numpy as _np
+
+    if xsize is None or ysize is None or exclude_center is None:
+        raise TypeError("fmedian requires xsize, ysize and exclude_center parameters")
+
+    arr = _np.asarray(input_array, dtype=_np.float64)
+    out = _np.empty_like(arr, dtype=_np.float64)
+    _c_fmedian(arr, out, int(xsize), int(ysize), int(exclude_center))
+    return out
+
 
 __all__ = ["fmedian"]

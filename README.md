@@ -40,9 +40,11 @@ import numpy as np
 from crtools import fmedian, fsigma
 
 arr = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
-out = np.zeros_like(arr)
-fmedian(arr, out, 1, 1, 1)
-fsigma(arr, out, 1, 1, 1)
+# fmedian returns a new float64 array
+out = fmedian(arr, 1, 1, 1)
+# fsigma is the C extension that still expects an output array (in-place)
+out2 = np.zeros_like(arr)
+fsigma(arr, out2, 1, 1, 1)
 ```
 
 ## Running tests
