@@ -20,9 +20,8 @@ print("Imported fmedian from crtools")
 
 # create a small test array
 a = np.arange(25.0, dtype=np.float64).reshape(5, 5)
-out = np.empty_like(a)
 
-fmedian_shim(a, out, 1, 1, 0)
+out = fmedian_shim(a, 1, 1, 0)
 print("fmedian (via crtools) call succeeded. sample output[2,2] =", out[2,2])
 
 print("quickstart smoke test completed successfully")
