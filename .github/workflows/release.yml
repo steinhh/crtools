@@ -27,26 +27,16 @@ jobs:
       - name: Build distributions
         run: python -m build
 
-      - id: create_release
-        name: Create GitHub Release
-        uses: actions/create-release@v1
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
+          files: dist/*
           body: |
-            Automated release produced by CI. See attached artifacts for wheels/sdist.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload built artifacts to release
-        run: |
-          echo "Uploading artifacts to release..."
-          for f in dist/*; do
-            echo "Uploading $f"
-            curl -s -X POST \
-              -H "Authorization: token ${GITHUB_TOKEN}" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary @"$f" "${{ steps.create_release.outputs.upload_url }}?name=$(basename "$f")"
-          done
+            Automated release for ${{ github.ref_name }}.
+            
+            ## Installation
+            ```bash
+            pip install crtools==${{ github.ref_name }}
+            ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

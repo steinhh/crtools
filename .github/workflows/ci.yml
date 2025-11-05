@@ -47,8 +47,12 @@ jobs:
 
       - name: Run Markdown linter
         run: |
-          # Use repository-level config if present
-          markdownlint -c .markdownlint.json "**/*.md"
+          # Use repository-level config if present, otherwise use defaults
+          if [ -f .markdownlint.json ]; then
+            markdownlint -c .markdownlint.json "**/*.md"
+          else
+            markdownlint "**/*.md"
+          fi
 
       - name: Build C extensions in-place
         run: python3 setup.py build_ext --inplace
@@ -60,4 +64,4 @@ jobs:
         # Run the smoke test from the repo root; require PYTHONPATH so the
         # in-place-built extension modules are importable.
         run: |
-          PYTHONPATH=. python3 scripts/quickstart_smoke.py
+          PYTHONPATH=src python3 scripts/quickstart_smoke.py
