@@ -1,6 +1,6 @@
 # crtools
 
-**C-based local image filters for cosmic ray detection and removal**
+## C-based local image filters for cosmic ray detection and removal
 
 `crtools` provides fast, local neighborhood filters commonly used for cosmic ray detection and removal. The package currently includes two core filtering functions `fmedian` and `fsigma`, both implemented as C extensions with NumPy integration.
 
@@ -73,15 +73,18 @@ output = fmedian(input_array, xsize, ysize, exclude_center)
 ```
 
 **Parameters:**
+
 - `input_array`: Input 2D NumPy array (will be converted to float64)
 - `xsize`: Window half-width in x-direction (pixels to left/right)
 - `ysize`: Window half-width in y-direction (pixels above/below)
 - `exclude_center`: If 1, exclude center pixel from median calculation; if 0, include it
 
 **Returns:**
+
 - NumPy array of same shape as input, containing filtered median values (float64)
 
 **Example:**
+
 ```python
 import numpy as np
 from crtools import fmedian
@@ -106,15 +109,18 @@ output = fsigma(input_array, xsize, ysize, exclude_center)
 ```
 
 **Parameters:**
+
 - `input_array`: Input 2D NumPy array (will be converted to float64)
 - `xsize`: Window half-width in x-direction
 - `ysize`: Window half-width in y-direction
 - `exclude_center`: If 1, exclude center pixel from sigma calculation; if 0, include it
 
 **Returns:**
+
 - NumPy array of same shape as input, containing local sigma values (float64)
 
 **Example:**
+
 ```python
 import numpy as np
 from crtools import fsigma
@@ -176,7 +182,7 @@ pytest --cov=crtools --cov-report=html
 
 ## Project Structure
 
-```
+```text
 crtools/
 ??? setup.py                          # Package configuration and build
 ??? pytest.ini                        # Pytest configuration
@@ -260,6 +266,7 @@ python setup.py clean --all
 ### Code Style
 
 The project follows standard Python conventions:
+
 - PEP 8 for Python code
 - Type hints where applicable
 - Comprehensive docstrings
@@ -271,6 +278,7 @@ MIT License
 ## Contributing
 
 Contributions are welcome! Please ensure:
+
 1. All tests pass (`pytest`)
 2. New features include tests
 3. Code follows project style conventions
@@ -285,4 +293,5 @@ Contributions are welcome! Please ensure:
 
 ## Acknowledgments
 
-These tools are designed for astronomical image processing workflows, particularly for removing cosmic ray artifacts from CCD images.
+These tools are designed for astronomical image processing workflows, particularly for removing cosmic ray
+artifacts from CCD images.
