@@ -5,7 +5,6 @@ Test script to verify the fsigma_ext module functionality.
 
 import numpy as np
 import sys
-import os
 import pytest
 
 try:

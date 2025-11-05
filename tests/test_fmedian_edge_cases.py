@@ -1,6 +1,5 @@
 """Additional edge case and validation tests for fmedian."""
 import numpy as np
-import pytest
 
 from crtools import fmedian
 

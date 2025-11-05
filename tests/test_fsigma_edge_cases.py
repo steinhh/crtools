@@ -1,6 +1,5 @@
 """Additional edge case and validation tests for fsigma."""
 import numpy as np
-import pytest
 
 from crtools import fsigma
 
