@@ -54,10 +54,10 @@ from crtools import fmedian, fsigma
 data = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
 
 # Apply filtered median (3x3 window, excluding center pixel)
-median_filtered = fmedian(data, xsize=1, ysize=1, exclude_center=1)
+median_filtered = fmedian(data, xsize=3, ysize=3, exclude_center=1)
 
 # Calculate local sigma (3x3 window, excluding center pixel)
-sigma_map = fsigma(data, xsize=1, ysize=1, exclude_center=1)
+sigma_map = fsigma(data, xsize=3, ysize=3, exclude_center=1)
 ```
 
 ## Usage
@@ -75,8 +75,8 @@ output = fmedian(input_array, xsize, ysize, exclude_center)
 **Parameters:**
 
 - `input_array`: Input 2D NumPy array (will be converted to float64)
-- `xsize`: Window half-width in x-direction (pixels to left/right)
-- `ysize`: Window half-width in y-direction (pixels above/below)
+- `xsize`: Full window width (must be an odd number ? 1)
+- `ysize`: Full window height (must be an odd number ? 1)
 - `exclude_center`: If 1, exclude center pixel from median calculation; if 0, include it
 
 **Returns:**
@@ -94,7 +94,7 @@ data = np.ones((5, 5)) * 10.0
 data[2, 2] = 100.0  # Cosmic ray hit
 
 # Filter with 3x3 window, excluding center
-filtered = fmedian(data, xsize=1, ysize=1, exclude_center=1)
+filtered = fmedian(data, xsize=3, ysize=3, exclude_center=1)
 # The outlier at [2,2] will be replaced with median of surrounding pixels
 ```
 
@@ -111,8 +111,8 @@ output = fsigma(input_array, xsize, ysize, exclude_center)
 **Parameters:**
 
 - `input_array`: Input 2D NumPy array (will be converted to float64)
-- `xsize`: Window half-width in x-direction
-- `ysize`: Window half-width in y-direction
+- `xsize`: Full window width (must be an odd number ? 1)
+- `ysize`: Full window height (must be an odd number ? 1)
 - `exclude_center`: If 1, exclude center pixel from sigma calculation; if 0, include it
 
 **Returns:**
@@ -130,7 +130,7 @@ data = np.ones((5, 5)) * 10.0
 data[2, 2] = 100.0
 
 # Calculate local sigma with 3x3 window
-sigma = fsigma(data, xsize=1, ysize=1, exclude_center=1)
+sigma = fsigma(data, xsize=3, ysize=3, exclude_center=1)
 # High sigma value at [2,2] indicates an outlier
 ```
 
@@ -223,8 +223,8 @@ from crtools import fmedian, fsigma
 image = np.load('science_image.npy')
 
 # Calculate local statistics
-local_median = fmedian(image, xsize=2, ysize=2, exclude_center=1)
-local_sigma = fsigma(image, xsize=2, ysize=2, exclude_center=1)
+local_median = fmedian(image, xsize=5, ysize=5, exclude_center=1)
+local_sigma = fsigma(image, xsize=5, ysize=5, exclude_center=1)
 
 # Detect cosmic rays (simple sigma-clipping approach)
 deviation = np.abs(image - local_median)
@@ -240,7 +240,7 @@ cleaned_image[cosmic_ray_mask] = local_median[cosmic_ray_mask]
 
 ```python
 # Calculate noise map across image
-noise_map = fsigma(image, xsize=3, ysize=3, exclude_center=0)
+noise_map = fsigma(image, xsize=7, ysize=7, exclude_center=0)
 
 # Identify regions with high local variation
 high_noise_regions = noise_map > np.percentile(noise_map, 90)
