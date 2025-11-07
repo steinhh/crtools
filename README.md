@@ -1,14 +1,24 @@
 # crtools
 
+# crtools
+
 ## C-based local image filters for cosmic ray detection and removal
 
-`crtools` provides fast, local neighborhood filters commonly used for cosmic ray detection and removal. The package currently includes two core filtering functions `fmedian` and `fsigma`, both implemented as C extensions with NumPy integration.
+`crtools` provides fast, local neighborhood filters commonly used for cosmic ray detection and removal. The package includes both 2D and 3D filtering functions implemented as C extensions with NumPy integration.
 
 ## Features
 
+### 2D Filters
 - **`fmedian`**: Filtered median computation over local neighborhoods
 - **`fsigma`**: Local population standard deviation (sigma) calculation
-- Optional center pixel exclusion for better outlier detection
+
+### 3D Filters
+- **`fmedian3`**: 3D filtered median computation for volumetric data
+- **`fsigma3`**: 3D local population standard deviation calculation
+
+### Common Features
+- Optional center pixel/voxel exclusion for better outlier detection
+- Robust NaN handling
 - Full test coverage with unit, edge case, and integration tests
 
 ## Requirements
@@ -134,16 +144,46 @@ sigma = fsigma(data, xsize=3, ysize=3, exclude_center=1)
 # High sigma value at [2,2] indicates an outlier
 ```
 
+### 3D Functions - `fmedian3` and `fsigma3`
+
+The 3D versions work with volumetric data (3D arrays) and provide the same functionality as their 2D counterparts but operate on 3D neighborhoods.
+
+```python
+from crtools import fmedian3, fsigma3
+import numpy as np
+
+# Create 3D sample data
+data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
+
+# Add an outlier
+data_3d[32, 32, 32] = 100.0
+
+# Apply 3D filtered median (3x3x3 window, excluding center voxel)
+median_filtered_3d = fmedian3(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
+
+# Calculate local 3D sigma (3x3x3 window, excluding center voxel)  
+sigma_map_3d = fsigma3(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
+```
+
+**Parameters for 3D functions:**
+- `input_array`: Input 3D NumPy array (will be converted to float64)
+- `xsize`: Full window width (must be an odd number ? 1)
+- `ysize`: Full window height (must be an odd number ? 1)
+- `zsize`: Full window depth (must be an odd number ? 1)
+- `exclude_center`: If 1, exclude center voxel; if 0, include it
+
 ## Examples
 
 Complete example scripts are provided in the package:
 
 ```bash
-# Run the fmedian example
+# Run the 2D examples
 python src/crtools/fmedian/example_fmedian.py
-
-# Run the fsigma example
 python src/crtools/fsigma/example_fsigma.py
+
+# Run the 3D examples  
+python src/crtools/fmedian3/example_fmedian3.py
+python src/crtools/fsigma3/example_fsigma3.py
 ```
 
 ## Testing

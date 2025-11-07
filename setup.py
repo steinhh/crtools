@@ -38,6 +38,16 @@ ext_modules = [
         sources=[os.path.join("src", "crtools", "fsigma", "fsigma_ext.c")],
         include_dirs=include_dirs,
     ),
+    Extension(
+        "crtools.fmedian3.fmedian3_ext",
+        sources=[os.path.join("src", "crtools", "fmedian3", "fmedian3_ext.c")],
+        include_dirs=include_dirs,
+    ),
+    Extension(
+        "crtools.fsigma3.fsigma3_ext",
+        sources=[os.path.join("src", "crtools", "fsigma3", "fsigma3_ext.c")],
+        include_dirs=include_dirs,
+    ),
 ]
 
 
