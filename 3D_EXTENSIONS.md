@@ -12,6 +12,7 @@ Two new C extensions have been added to provide 3D versions of the existing 2D i
 ## Features
 
 ### fmedian3
+
 - Computes the median value within a 3D neighborhood around each voxel
 - Handles NaN values gracefully (ignores them in calculations)
 - Supports excluding the center voxel from the calculation
@@ -19,6 +20,7 @@ Two new C extensions have been added to provide 3D versions of the existing 2D i
 - Robust outlier detection and removal in 3D volumes
 
 ### fsigma3
+
 - Computes the population standard deviation within a 3D neighborhood
 - Useful for detecting areas of high local variation in 3D data
 - Handles NaN values gracefully (ignores them in calculations)  
@@ -29,7 +31,7 @@ Two new C extensions have been added to provide 3D versions of the existing 2D i
 
 New directories and files added:
 
-```
+```text
 src/crtools/
 ??? fmedian3/
 ?   ??? __init__.py              # Python interface for fmedian3
@@ -45,6 +47,7 @@ src/crtools/
 ```
 
 Modified files:
+
 - `setup.py`: Added the new extensions to the build configuration
 - `src/crtools/__init__.py`: Added imports for fmedian3 and fsigma3
 
@@ -103,6 +106,7 @@ def fsigma3(input_array, xsize: int, ysize: int, zsize: int, exclude_center: int
 ### Parameter Validation
 
 Both functions include comprehensive parameter validation:
+
 - Window sizes must be positive odd integers
 - Input must be a 3D array
 - All parameters are required
@@ -110,6 +114,7 @@ Both functions include comprehensive parameter validation:
 ### NaN Handling
 
 Both functions handle NaN values robustly:
+
 - NaN values in the input are ignored during calculations
 - If all values in a neighborhood are NaN, the result is NaN (fsigma3) or the center value (fmedian3)
 - Edge cases are handled gracefully
@@ -158,13 +163,15 @@ python setup.py build_ext --inplace
 
 ## Use Cases
 
-### fmedian3
+### fmedian3 Use Cases
+
 - 3D noise reduction in volumetric datasets
 - Outlier removal in medical imaging (CT, MRI)
 - Edge-preserving smoothing of 3D point clouds
 - Preprocessing for 3D computer vision applications
 
-### fsigma3  
+### fsigma3 Use Cases
+
 - Feature detection in volumetric data
 - Texture analysis in 3D datasets
 - Quality control in manufacturing (3D scanning)

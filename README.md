@@ -68,7 +68,7 @@ sigma_map_3d = fsigma(data_3d, xsize, ysize, zsize)
 
 ## Usage
 
-#### `fmedian` - Filtered Median (2D/3D)
+### `fmedian` - Filtered Median (2D/3D)
 
 Computes the median of pixels/voxels in a local neighborhood around each pixel/voxel.
 
@@ -187,7 +187,6 @@ python src/crtools/fsigma/example_fsigma.py
 python src/crtools/fmedian3/example_fmedian3.py
 python src/crtools/fsigma3/example_fsigma3.py
 ```
-
 
 ## Testing
 
