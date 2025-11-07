@@ -206,31 +206,41 @@ pytest --cov=crtools --cov-report=html
 
 ```text
 crtools/
-??? setup.py                          # Package configuration and build
-??? pytest.ini                        # Pytest configuration
-??? src/
-?   ??? crtools/
-?       ??? __init__.py              # Package entry point
-?       ??? fmedian/
-?       ?   ??? __init__.py          # fmedian module loader
-?       ?   ??? fmedian_ext.c        # C implementation
-?       ?   ??? example_fmedian.py   # Usage example
-?       ?   ??? test_fmedian.py      # Module tests
-?       ??? fsigma/
-?           ??? __init__.py          # fsigma module loader
-?           ??? fsigma_ext.c         # C implementation
-?           ??? example_fsigma.py    # Usage example
-?           ??? test_fsigma.py       # Module tests
-??? tests/
-?   ??? test_fmedian_unit.py         # fmedian unit tests
-?   ??? test_fmedian_edge_cases.py   # fmedian edge cases
-?   ??? test_fsigma_unit.py          # fsigma unit tests
-?   ??? test_fsigma_edge_cases.py    # fsigma edge cases
-?   ??? test_parameter_validation.py # Parameter validation tests
-?   ??? test_smoke_integration.py    # Integration tests
-??? scripts/
-    ??? quickstart_smoke.py          # Quick smoke test
-    ??? set_utf8_locale.sh           # Locale setup script
+├── setup.py                          # Package configuration and build
+├── pytest.ini                        # Pytest configuration
+├── src/
+│   └── crtools/
+│       ├── __init__.py               # Package entry point with unified API
+│       ├── fmedian/
+│       │   ├── __init__.py           # fmedian 2D module loader
+│       │   ├── fmedian_ext.c         # C implementation (2D)
+│       │   ├── example_fmedian.py    # Usage example
+│       │   └── test_fmedian.py       # Module tests
+│       ├── fmedian3/
+│       │   ├── __init__.py           # fmedian 3D module loader
+│       │   ├── fmedian3_ext.c        # C implementation (3D)
+│       │   ├── example_fmedian3.py   # Usage example
+│       │   └── test_fmedian3.py      # Module tests
+│       ├── fsigma/
+│       │   ├── __init__.py           # fsigma 2D module loader
+│       │   ├── fsigma_ext.c          # C implementation (2D)
+│       │   ├── example_fsigma.py     # Usage example
+│       │   └── test_fsigma.py        # Module tests
+│       └── fsigma3/
+│           ├── __init__.py           # fsigma 3D module loader
+│           ├── fsigma3_ext.c         # C implementation (3D)
+│           ├── example_fsigma3.py    # Usage example
+│           └── test_fsigma3.py       # Module tests
+├── tests/
+│   ├── test_fmedian_unit.py          # fmedian unit tests
+│   ├── test_fmedian_edge_cases.py    # fmedian edge cases
+│   ├── test_fsigma_unit.py           # fsigma unit tests
+│   ├── test_fsigma_edge_cases.py     # fsigma edge cases
+│   ├── test_parameter_validation.py  # Parameter validation tests
+│   └── test_smoke_integration.py     # Integration tests
+└── scripts/
+    ├── quickstart_smoke.py           # Quick smoke test
+    └── set_utf8_locale.sh            # Locale setup script
 ```
 
 ## Development
