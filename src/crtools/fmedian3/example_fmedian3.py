@@ -42,7 +42,7 @@ def main():
 
     # Call the fmedian3 function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    output_array = fmedian3(input_array, xsize, ysize, zsize, exclude_center)
+    output_array = fmedian3(input_array, xsize, ysize, zsize, exclude_center=exclude_center)
     
     print("\n3. Output array (filtered median):")
     print("Output array shape:", output_array.shape)
@@ -59,7 +59,7 @@ def main():
     # Test with center included
     print("\n5. Testing with center included (exclude_center=0):")
     exclude_center = 0
-    output_with_center = fmedian3(input_array, xsize, ysize, zsize, exclude_center)
+    output_with_center = fmedian3(input_array, xsize, ysize, zsize, exclude_center=exclude_center)
     print("Filtered value at [2, 2, 1] (with center):", output_with_center[2, 2, 1])
     
     print("\n6. Summary:")

@@ -63,11 +63,11 @@ from crtools import fmedian, fsigma
 # Create sample data
 data = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
 
-# Apply filtered median (3x3 window, excluding center pixel)
-median_filtered = fmedian(data, xsize=3, ysize=3, exclude_center=1)
+# Apply filtered median (3x3 window, center pixel included by default)
+median_filtered = fmedian(data, xsize=3, ysize=3)
 
-# Calculate local sigma (3x3 window, excluding center pixel)
-sigma_map = fsigma(data, xsize=3, ysize=3, exclude_center=1)
+# Calculate local sigma (3x3 window, center pixel included by default)
+sigma_map = fsigma(data, xsize=3, ysize=3)
 ```
 
 ## Usage
@@ -79,7 +79,7 @@ Computes the median of pixels in a local neighborhood around each pixel.
 ```python
 from crtools import fmedian
 
-output = fmedian(input_array, xsize, ysize, exclude_center)
+output = fmedian(input_array, xsize, ysize, exclude_center=0)
 ```
 
 **Parameters:**
@@ -87,7 +87,7 @@ output = fmedian(input_array, xsize, ysize, exclude_center)
 - `input_array`: Input 2D NumPy array (will be converted to float64)
 - `xsize`: Full window width (must be an odd number ? 1)
 - `ysize`: Full window height (must be an odd number ? 1)
-- `exclude_center`: If 1, exclude center pixel from median calculation; if 0, include it
+- `exclude_center`: Optional, if 1, exclude center pixel from median calculation; if 0, include it (default: 0)
 
 **Returns:**
 
@@ -103,9 +103,12 @@ from crtools import fmedian
 data = np.ones((5, 5)) * 10.0
 data[2, 2] = 100.0  # Cosmic ray hit
 
-# Filter with 3x3 window, excluding center
-filtered = fmedian(data, xsize=3, ysize=3, exclude_center=1)
-# The outlier at [2,2] will be replaced with median of surrounding pixels
+# Filter with 3x3 window, including center (default behavior)
+filtered = fmedian(data, xsize=3, ysize=3)
+# The outlier at [2,2] will be included in the median calculation
+
+# Or explicitly exclude the center pixel for outlier detection
+filtered_no_center = fmedian(data, xsize=3, ysize=3, exclude_center=1)
 ```
 
 ### `fsigma` - Local Standard Deviation
@@ -115,7 +118,7 @@ Computes the population standard deviation in a local neighborhood around each p
 ```python
 from crtools import fsigma
 
-output = fsigma(input_array, xsize, ysize, exclude_center)
+output = fsigma(input_array, xsize, ysize, exclude_center=0)
 ```
 
 **Parameters:**
@@ -123,7 +126,7 @@ output = fsigma(input_array, xsize, ysize, exclude_center)
 - `input_array`: Input 2D NumPy array (will be converted to float64)
 - `xsize`: Full window width (must be an odd number ? 1)
 - `ysize`: Full window height (must be an odd number ? 1)
-- `exclude_center`: If 1, exclude center pixel from sigma calculation; if 0, include it
+- `exclude_center`: Optional, if 1, exclude center pixel from sigma calculation; if 0, include it (default: 0)
 
 **Returns:**
 
@@ -139,9 +142,12 @@ from crtools import fsigma
 data = np.ones((5, 5)) * 10.0
 data[2, 2] = 100.0
 
-# Calculate local sigma with 3x3 window
-sigma = fsigma(data, xsize=3, ysize=3, exclude_center=1)
-# High sigma value at [2,2] indicates an outlier
+# Calculate local sigma with 3x3 window (default includes center)
+sigma = fsigma(data, xsize=3, ysize=3)
+# Sigma value at [2,2] will include the outlier in the calculation
+
+# Or exclude center for outlier detection
+sigma_no_center = fsigma(data, xsize=3, ysize=3, exclude_center=1)
 ```
 
 ### 3D Functions - `fmedian3` and `fsigma3`
@@ -158,11 +164,11 @@ data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
 # Add an outlier
 data_3d[32, 32, 32] = 100.0
 
-# Apply 3D filtered median (3x3x3 window, excluding center voxel)
-median_filtered_3d = fmedian3(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
+# Apply 3D filtered median (3x3x3 window, default includes center voxel)
+median_filtered_3d = fmedian3(data_3d, xsize=3, ysize=3, zsize=3)
 
-# Calculate local 3D sigma (3x3x3 window, excluding center voxel)  
-sigma_map_3d = fsigma3(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
+# Calculate local 3D sigma (3x3x3 window, default includes center voxel)
+sigma_map_3d = fsigma3(data_3d, xsize=3, ysize=3, zsize=3)
 ```
 
 **Parameters for 3D functions:**
@@ -170,7 +176,7 @@ sigma_map_3d = fsigma3(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
 - `xsize`: Full window width (must be an odd number ? 1)
 - `ysize`: Full window height (must be an odd number ? 1)
 - `zsize`: Full window depth (must be an odd number ? 1)
-- `exclude_center`: If 1, exclude center voxel; if 0, include it
+- `exclude_center`: Optional, if 1, exclude center voxel; if 0, include it (default: 0)
 
 ## Examples
 

@@ -42,7 +42,7 @@ def main():
 
     # Call the fsigma function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    output_array = fsigma(input_array, xsize, ysize, exclude_center)
+    output_array = fsigma(input_array, xsize, ysize, exclude_center=exclude_center)
     
     print("\n3. Output array (local sigma values):")
     print(output_array)
@@ -70,7 +70,7 @@ def main():
     print("\n6. Re-running filter (center pixel included)...")
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0
-    output_array2 = fsigma(input_array, xsize, ysize, exclude_center)
+    output_array2 = fsigma(input_array, xsize, ysize, exclude_center=exclude_center)
     print("Output array (second run, exclude_center=0 -> center included):")
     print(output_array2)
     

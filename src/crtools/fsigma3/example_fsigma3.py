@@ -42,7 +42,7 @@ def main():
 
     # Call the fsigma3 function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    output_array = fsigma3(input_array, xsize, ysize, zsize, exclude_center)
+    output_array = fsigma3(input_array, xsize, ysize, zsize, exclude_center=exclude_center)
     
     print("\n3. Output array (local sigma values):")
     print("Output array shape:", output_array.shape)
@@ -53,7 +53,7 @@ def main():
     # Test with center included
     print("\n4. Testing with center included (exclude_center=0):")
     exclude_center = 0
-    output_with_center = fsigma3(input_array, xsize, ysize, zsize, exclude_center)
+    output_with_center = fsigma3(input_array, xsize, ysize, zsize, exclude_center=exclude_center)
     print(f"Sigma value at [2, 2, 1] (with center): {output_with_center[2, 2, 1]:.3f}")
     
     # Show values around the outlier position

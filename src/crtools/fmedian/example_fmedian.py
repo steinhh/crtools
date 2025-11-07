@@ -42,7 +42,7 @@ def main():
 
     # Call the fmedian function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    output_array = fmedian(input_array, xsize, ysize, exclude_center)
+    output_array = fmedian(input_array, xsize, ysize, exclude_center=exclude_center)
     
     print("\n3. Output array (filtered median):")
     print(output_array)
@@ -70,7 +70,7 @@ def main():
     print("\n6. Re-running filter (center pixel included)...")
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0
-    output_array2 = fmedian(input_array, xsize, ysize, exclude_center)
+    output_array2 = fmedian(input_array, xsize, ysize, exclude_center=exclude_center)
     print("Output array (second run, exclude_center=0 -> center included):")
     print(output_array2)
     

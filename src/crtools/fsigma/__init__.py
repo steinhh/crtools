@@ -43,21 +43,21 @@ except Exception as exc:  # pragma: no cover - defensive
     raise ImportError("Loaded fsigma extension but could not find 'fsigma' symbol") from exc
 
 
-def fsigma(input_array, xsize: int, ysize: int, exclude_center: int):
+def fsigma(input_array, xsize: int, ysize: int, exclude_center: int = 0):
     """Compute local population sigma and return the output array.
 
-    Signature: fsigma(input_array, xsize, ysize, exclude_center) -> numpy.ndarray
+    Signature: fsigma(input_array, xsize, ysize, exclude_center=0) -> numpy.ndarray
 
     Parameters:
     - xsize, ysize: Full window sizes (must be odd numbers)
-    - exclude_center: Whether to exclude the center pixel from the calculation
+    - exclude_center: Whether to exclude the center pixel from the calculation (default: 0)
 
     The input will be coerced to float64; the returned array is float64.
     """
     import numpy as _np
 
-    if xsize is None or ysize is None or exclude_center is None:
-        raise TypeError("fsigma requires xsize, ysize and exclude_center parameters")
+    if xsize is None or ysize is None:
+        raise TypeError("fsigma requires xsize and ysize parameters")
 
     # Convert to integers and validate
     xsize = int(xsize)

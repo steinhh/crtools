@@ -56,21 +56,21 @@ except Exception as exc:  # pragma: no cover - defensive
     raise ImportError("Loaded fmedian3 extension but could not find 'fmedian3' symbol") from exc
 
 
-def fmedian3(input_array, xsize: int, ysize: int, zsize: int, exclude_center: int):
+def fmedian3(input_array, xsize: int, ysize: int, zsize: int, exclude_center: int = 0):
     """Compute filtered median and return the output array.
 
-    Signature: fmedian3(input_array, xsize, ysize, zsize, exclude_center) -> numpy.ndarray
+    Signature: fmedian3(input_array, xsize, ysize, zsize, exclude_center=0) -> numpy.ndarray
 
     Parameters:
     - xsize, ysize, zsize: Full window sizes (must be odd numbers)
-    - exclude_center: Whether to exclude the center voxel from the calculation
+    - exclude_center: Whether to exclude the center voxel from the calculation (default: 0)
 
     The input will be coerced to float64; the returned array is float64.
     """
     import numpy as _np
 
-    if xsize is None or ysize is None or zsize is None or exclude_center is None:
-        raise TypeError("fmedian3 requires xsize, ysize, zsize and exclude_center parameters")
+    if xsize is None or ysize is None or zsize is None:
+        raise TypeError("fmedian3 requires xsize, ysize, and zsize parameters")
 
     # Convert to integers and validate
     xsize = int(xsize)
