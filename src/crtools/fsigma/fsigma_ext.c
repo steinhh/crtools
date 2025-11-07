@@ -90,6 +90,10 @@ static PyObject *fsigma(PyObject *self, PyObject *args)
     return NULL;
   }
 
+  /* Convert from full window size to half-size for internal use */
+  int xsize_half = xsize / 2;
+  int ysize_half = ysize / 2;
+
   /* Check input arguments */
   if (check_inputs(input_array, output_array, &height, &width) != 0)
   {
@@ -105,7 +109,7 @@ static PyObject *fsigma(PyObject *self, PyObject *args)
   npy_intp *output_strides = PyArray_STRIDES(output_array);
 
   /* Allocate buffer for neighborhood values */
-  int max_neighbors = (2 * xsize + 1) * (2 * ysize + 1);
+  int max_neighbors = (2 * xsize_half + 1) * (2 * ysize_half + 1);
   double *neighbors = (double *)malloc(max_neighbors * sizeof(double));
   if (neighbors == NULL)
   {
@@ -121,9 +125,9 @@ static PyObject *fsigma(PyObject *self, PyObject *args)
       int count = 0;
 
       /* Collect neighborhood values (conditionally include center) */
-      for (int dy = -ysize; dy <= ysize; dy++)
+      for (int dy = -ysize_half; dy <= ysize_half; dy++)
       {
-        for (int dx = -xsize; dx <= xsize; dx++)
+        for (int dx = -xsize_half; dx <= xsize_half; dx++)
         {
           int ny = y + dy;
           int nx = x + dx;
@@ -169,9 +173,9 @@ static PyMethodDef FsigmaMethods[] = {
      "    output_array : numpy.ndarray (float64, 2D)\n"
      "        Output array (same size as input)\n"
      "    xsize : int\n"
-     "        Half-width of window in x direction\n"
+     "        Full width of window in x direction\n"
      "    ysize : int\n"
-     "        Half-width of window in y direction\n"
+     "        Full height of window in y direction\n"
      "    exclude_center : int\n"
      "        If non-zero, exclude the center pixel from the computation.\n"
      "\n"

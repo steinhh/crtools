@@ -86,14 +86,9 @@ def fmedian(input_array, xsize: int, ysize: int, exclude_center: int):
     if ysize <= 0:
         raise ValueError(f"ysize must be positive, got {ysize}")
     
-    # Convert from full window size to half-size for the C extension
-    # For a window of size 3, we need half-size of 1
-    xhalf = xsize // 2
-    yhalf = ysize // 2
-
     arr = _np.asarray(input_array, dtype=_np.float64)
     out = _np.empty_like(arr, dtype=_np.float64)
-    _c_fmedian(arr, out, xhalf, yhalf, int(exclude_center))
+    _c_fmedian(arr, out, xsize, ysize, int(exclude_center))
     return out
 
 
