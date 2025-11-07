@@ -34,11 +34,11 @@ def main():
     print(input_array)
     
     # Define filter parameters
-    xsize = 1      # Window half-width in x direction
-    ysize = 1      # Window half-width in y direction
+    xsize = 3      # Window size in x direction (must be odd)
+    ysize = 3      # Window size in y direction (must be odd)
 
     print("\n2. Applying filtered median with parameters:")
-    print(f"   - Window size: ({2*xsize+1} x {2*ysize+1})")
+    print(f"   - Window size: ({xsize} x {ysize})")
 
     # Call the fmedian function (exclude_center controls whether center is skipped)
     exclude_center = 1

@@ -48,6 +48,10 @@ def fsigma(input_array, xsize: int, ysize: int, exclude_center: int):
 
     Signature: fsigma(input_array, xsize, ysize, exclude_center) -> numpy.ndarray
 
+    Parameters:
+    - xsize, ysize: Full window sizes (must be odd numbers)
+    - exclude_center: Whether to exclude the center pixel from the calculation
+
     The input will be coerced to float64; the returned array is float64.
     """
     import numpy as _np
@@ -55,9 +59,30 @@ def fsigma(input_array, xsize: int, ysize: int, exclude_center: int):
     if xsize is None or ysize is None or exclude_center is None:
         raise TypeError("fsigma requires xsize, ysize and exclude_center parameters")
 
+    # Convert to integers and validate
+    xsize = int(xsize)
+    ysize = int(ysize)
+    
+    # Check that xsize and ysize are odd numbers
+    if xsize % 2 == 0:
+        raise ValueError(f"xsize must be an odd number, got {xsize}")
+    if ysize % 2 == 0:
+        raise ValueError(f"ysize must be an odd number, got {ysize}")
+    
+    # Check that sizes are positive
+    if xsize <= 0:
+        raise ValueError(f"xsize must be positive, got {xsize}")
+    if ysize <= 0:
+        raise ValueError(f"ysize must be positive, got {ysize}")
+    
+    # Convert from full window size to half-size for the C extension
+    # For a window of size 3, we need half-size of 1
+    xhalf = xsize // 2
+    yhalf = ysize // 2
+
     arr = _np.asarray(input_array, dtype=_np.float64)
     out = _np.empty_like(arr, dtype=_np.float64)
-    _c_fsigma(arr, out, int(xsize), int(ysize), int(exclude_center))
+    _c_fsigma(arr, out, xhalf, yhalf, int(exclude_center))
     return out
 
 

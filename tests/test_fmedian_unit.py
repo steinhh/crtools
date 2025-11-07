@@ -13,7 +13,7 @@ def test_median_excludes_nan_neighbors():
     ], dtype=np.float64)
 
     # 3x3 window excluding the center from neighbors
-    out = fmedian(arr, 1, 1, 1)
+    out = fmedian(arr, 3, 3, 1)
 
     # For the center pixel, neighbors excluding center are [1,2,3,4,6,7,8,9]
     # median = (4 + 6) / 2 = 5.0
@@ -26,7 +26,7 @@ def test_median_with_all_nan_window_writes_nan():
     arr = np.array([[np.nan]], dtype=np.float64)
 
     # Window 1x1, exclude center -> no neighbors; center is NaN -> output should be NaN
-    out = fmedian(arr, 0, 0, 1)
+    out = fmedian(arr, 1, 1, 1)
     assert np.isnan(out[0, 0])
 
 
@@ -38,7 +38,7 @@ def test_include_center_nan_is_ignored():
         [7.0, 8.0, 9.0],
     ], dtype=np.float64)
     # 3x3 window including center
-    out = fmedian(a, 1, 1, 0)
+    out = fmedian(a, 3, 3, 0)
     # Values considered: [1,2,3,4,6,7,8,9] (center NaN ignored) -> median = (4+6)/2 = 5
     np.testing.assert_allclose(out[1, 1], 5.0, rtol=0, atol=1e-12)
 
@@ -46,7 +46,7 @@ def test_include_center_nan_is_ignored():
 def test_1x1_excluding_center_uses_center_when_finite():
     """With a 1x1 window and center excluded, no neighbors means we fall back to the center value if finite."""
     a = np.array([[42.0]], dtype=np.float64)
-    out = fmedian(a, 0, 0, 1)
+    out = fmedian(a, 1, 1, 1)
     np.testing.assert_allclose(out[0, 0], 42.0, rtol=0, atol=1e-12)
 
 
@@ -55,7 +55,7 @@ def test_corner_partial_window_even_count():
     a = np.array([[1.0, 2.0],
                   [3.0, 4.0]], dtype=np.float64)
     # 3x3 window including center at top-left corner -> values: [1,2,3,4]
-    out = fmedian(a, 1, 1, 0)
+    out = fmedian(a, 3, 3, 0)
     np.testing.assert_allclose(out[0, 0], 2.5, rtol=0, atol=1e-12)
 
 
@@ -67,11 +67,11 @@ def test_include_center_changes_result_with_outlier():
         [7.0, 8.0, 9.0],
     ], dtype=np.float64)
     # Excluding center -> neighbors are [1,2,3,4,6,7,8,9] -> median = 5
-    out = fmedian(a, 1, 1, 1)
+    out = fmedian(a, 3, 3, 1)
     med_excl = out[1, 1]
 
     # Including center -> values [1,2,3,4,6,7,8,9,999] -> median = 6
-    out = fmedian(a, 1, 1, 0)
+    out = fmedian(a, 3, 3, 0)
     med_incl = out[1, 1]
 
     np.testing.assert_allclose(med_excl, 5.0, rtol=0, atol=1e-12)
@@ -86,7 +86,7 @@ def test_single_valid_neighbor_median():
         [np.nan, np.nan, np.nan],
     ], dtype=np.float64)
     # Exclude center, compute at (1,1); only (0,0) is valid within the 3x3 window
-    out = fmedian(a, 1, 1, 1)
+    out = fmedian(a, 3, 3, 1)
     np.testing.assert_allclose(out[1, 1], 10.0, rtol=0, atol=1e-12)
 
 
@@ -95,12 +95,12 @@ def test_dtype_enforced_float64_fmedian():
     good = np.ones((2, 2), dtype=np.float64)
 
     # Works with float64
-    out = fmedian(good, 1, 1, 1)
+    out = fmedian(good, 3, 3, 1)
     assert out.dtype == np.float64
 
     # New API coerces input to float64; float32 input is accepted and coerced
     bad_in = good.astype(np.float32)
-    out2 = fmedian(bad_in, 1, 1, 1)
+    out2 = fmedian(bad_in, 3, 3, 1)
     assert out2.dtype == np.float64
 
 
@@ -109,10 +109,10 @@ def test_dimension_checks_fmedian():
     a = np.ones((2, 3), dtype=np.float64)
 
     # Happy path
-    out = fmedian(a, 1, 1, 1)
+    out = fmedian(a, 3, 3, 1)
     assert out.shape == a.shape and out.dtype == np.float64
 
     # 1D array should fail
     with pytest.raises(ValueError):
         a1 = np.ones(3, dtype=np.float64)
-        fmedian(a1, 1, 1, 1)
+        fmedian(a1, 3, 3, 1)

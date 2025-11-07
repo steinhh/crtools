@@ -184,8 +184,9 @@ class TestBothFunctions:
         rng = np.random.default_rng(123)
         a = rng.standard_normal((7, 7)).astype(np.float64)
         
-        for xsize in [0, 1, 2, 3]:
-            for ysize in [0, 1, 2, 3]:
+        # Only test odd window sizes since that's what the new API requires
+        for xsize in [1, 3, 5]:
+            for ysize in [1, 3, 5]:
                 med = fmedian(a, xsize, ysize, 1)
                 sig = fsigma(a, xsize, ysize, 1)
                 assert med.shape == sig.shape == a.shape
