@@ -37,17 +37,17 @@ class TestFmedianParameterValidation:
 
         # None for xsize/ysize should still raise TypeError as they're required int parameters  
         with pytest.raises(TypeError):
-            fmedian(a, None, 1)
+            fmedian(a, None, 1)  # NOSONAR - intentionally testing invalid input
         
         with pytest.raises(TypeError):
-            fmedian(a, 1, None)
+            fmedian(a, 1, None)  # NOSONAR - intentionally testing invalid input
 
     def test_fmedian_non_integer_parameters(self):
         """Test fmedian handles float parameters (should convert to int)."""
         a = np.ones((3, 3), dtype=np.float64)
         # Float values as positional args treated as zsize, should fail for 2D
         with pytest.raises(ValueError, match="zsize parameter not allowed for 2D arrays"):
-            fmedian(a, 1.5, 1.7, 1.0)
+            fmedian(a, 1.5, 1.7, 1.0)  # NOSONAR - intentionally testing invalid input
     
     def test_fmedian_empty_array(self):
         """Test fmedian with empty array."""
@@ -73,20 +73,20 @@ class TestFmedianParameterValidation:
     def test_fmedian_no_input(self):
         """Test fmedian raises TypeError when called with no arguments."""
         with pytest.raises(TypeError):
-            fmedian()
+            fmedian()  # NOSONAR - intentionally testing invalid input
     
     def test_fmedian_missing_parameters(self):
         """Test fmedian raises TypeError when called with too few arguments.""" 
         a = np.ones((3, 3), dtype=np.float64)
         # These should still raise TypeError for missing required parameters
         with pytest.raises(TypeError):
-            fmedian()
+            fmedian()  # NOSONAR - intentionally testing invalid input
         
         with pytest.raises(TypeError):
-            fmedian(a)
+            fmedian(a)  # NOSONAR - intentionally testing invalid input
         
         with pytest.raises(TypeError):
-            fmedian(a, 1)
+            fmedian(a, 1)  # NOSONAR - intentionally testing invalid input
 class TestFsigmaParameterValidation:
     """Test parameter validation for fsigma."""
     
@@ -119,17 +119,17 @@ class TestFsigmaParameterValidation:
         
         # None for xsize/ysize should still raise TypeError as they're required int parameters
         with pytest.raises(TypeError):
-            fsigma(a, None, 1)
+            fsigma(a, None, 1)  # NOSONAR - intentionally testing invalid input
         
         with pytest.raises(TypeError):
-            fsigma(a, 1, None)
+            fsigma(a, 1, None)  # NOSONAR - intentionally testing invalid input
 
     def test_fsigma_non_integer_parameters(self):
         """Test fsigma handles float parameters (should convert to int)."""
         a = np.ones((3, 3), dtype=np.float64)
         # Float values as positional args treated as zsize, should fail for 2D
         with pytest.raises(ValueError, match="zsize parameter not allowed for 2D arrays"):
-            fsigma(a, 1.5, 1.7, 1.0)
+            fsigma(a, 1.5, 1.7, 1.0)  # NOSONAR - intentionally testing invalid input
 
     def test_fsigma_empty_array(self):
         """Test fsigma with empty array."""
@@ -155,20 +155,20 @@ class TestFsigmaParameterValidation:
     def test_fsigma_no_input(self):
         """Test fsigma raises TypeError when called with no arguments."""
         with pytest.raises(TypeError):
-            fsigma()
+            fsigma()  # NOSONAR - intentionally testing invalid input
     
     def test_fsigma_missing_parameters(self):
         """Test fsigma raises TypeError when called with too few arguments."""
         a = np.ones((3, 3), dtype=np.float64)
         # These should still raise TypeError for missing required parameters
         with pytest.raises(TypeError):
-            fsigma()
+            fsigma()  # NOSONAR - intentionally testing invalid input
         
         with pytest.raises(TypeError):
-            fsigma(a)
+            fsigma(a)  # NOSONAR - intentionally testing invalid input
         
         with pytest.raises(TypeError):
-            fsigma(a, 1)
+            fsigma(a, 1)  # NOSONAR - intentionally testing invalid input
 
 
 class TestBothFunctions:
