@@ -2,24 +2,12 @@
 
 ## C-based local image filters for cosmic ray detection and removal
 
-`crtools` provides fast, local neighborhood filters commonly used for cosmic ray detection and removal. The package includes unified filtering functions that automatically handle both 2D and 3D arrays, implemented as C extensions with NumPy integration.
+`crtools` provides fast, local neighborhood filters `fmedian` and `fsigma` that automatically handle both 2D and 3D arrays, implemented as C extensions with NumPy integration.
 
 ## Features
 
-### Unified Interface
-
 - **`fmedian`**: Filtered median computation - automatically works with 2D and 3D arrays
 - **`fsigma`**: Local population standard deviation - automatically works with 2D and 3D arrays
-- Automatic dimensionality detection and dispatch to appropriate implementations
-- Clean, consistent API for both 2D and 3D data
-
-### Direct Access Functions
-
-- **`fmedian2d`/`fsigma2d`**: Explicit 2D filtering functions
-- **`fmedian3d`/`fsigma3d`**: Explicit 3D filtering functions for volumetric data
-
-### Common Features
-
 - Optional center pixel/voxel exclusion for better outlier detection (default: include center)
 - Robust NaN handling
 - Full test coverage with unit, edge case, and integration tests
@@ -67,20 +55,18 @@ from crtools import fmedian, fsigma
 
 # 2D example
 data_2d = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
-median_filtered_2d = fmedian(data_2d, xsize=3, ysize=3)
-sigma_map_2d = fsigma(data_2d, xsize=3, ysize=3)
+xsize = ysize = 3
+median_filtered_2d = fmedian(data_2d, xsize, ysize)
+sigma_map_2d = fsigma(data_2d, xsize, ysize)
 
 # 3D example  
 data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
-median_filtered_3d = fmedian(data_3d, xsize=3, ysize=3, zsize=3)
-sigma_map_3d = fsigma(data_3d, xsize=3, ysize=3, zsize=3)
+xsize = ysize = zsize = 3
+median_filtered_3d = fmedian(data_3d, xsize, ysize, zsize)
+sigma_map_3d = fsigma(data_3d, xsize, ysize, zsize)
 ```
 
 ## Usage
-
-### Unified Functions
-
-The main functions automatically detect array dimensions and dispatch to the appropriate 2D or 3D implementation:
 
 #### `fmedian` - Filtered Median (2D/3D)
 
@@ -188,22 +174,6 @@ sigma_3d = fsigma(data_3d, xsize=3, ysize=3, zsize=3)
 sigma_3d_no_center = fsigma(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
 ```
 
-### Direct Function Access
-
-If you need to explicitly call specific dimensional versions:
-
-```python
-from crtools import fmedian2d, fsigma2d, fmedian3d, fsigma3d
-
-# Explicitly call 2D versions
-result_2d_median = fmedian2d(data_2d, xsize=3, ysize=3)
-result_2d_sigma = fsigma2d(data_2d, xsize=3, ysize=3)
-
-# Explicitly call 3D versions  
-result_3d_median = fmedian3d(data_3d, xsize=3, ysize=3, zsize=3)
-result_3d_sigma = fsigma3d(data_3d, xsize=3, ysize=3, zsize=3)
-```
-
 ## Examples
 
 Complete example scripts are provided in the package:
@@ -218,65 +188,13 @@ python src/crtools/fmedian3/example_fmedian3.py
 python src/crtools/fsigma3/example_fsigma3.py
 ```
 
-### Unified Interface Examples
-
-The unified functions automatically detect array dimensionality:
-
-```python
-import numpy as np
-from crtools import fmedian, fsigma
-
-# Works seamlessly with 2D data
-data_2d = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
-median_2d = fmedian(data_2d, xsize=5, ysize=5)
-sigma_2d = fsigma(data_2d, xsize=5, ysize=5)
-
-# And automatically handles 3D data
-data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64) 
-median_3d = fmedian(data_3d, xsize=3, ysize=3, zsize=3)
-sigma_3d = fsigma(data_3d, xsize=3, ysize=3, zsize=3)
-
-# Error handling for invalid dimensions
-try:
-    # This will raise an error - 1D arrays not supported
-    bad_data = np.array([1, 2, 3, 4, 5])
-    fmedian(bad_data, xsize=3, ysize=3)
-except ValueError as e:
-    print(f"Expected error: {e}")
-
-try:
-    # This will raise an error - zsize required for 3D arrays
-    fmedian(data_3d, xsize=3, ysize=3)  # Missing zsize
-except ValueError as e:
-    print(f"Expected error: {e}")
-```
 
 ## Testing
 
-The project includes comprehensive tests covering unit tests, edge cases, parameter validation, and integration scenarios.
-
-### Run all tests
+The project includes comprehensive tests covering unit tests, edge cases, parameter validation, and integration scenarios. Run tests using `pytest`:
 
 ```bash
 pytest
-```
-
-### Run specific test modules
-
-```bash
-# Unit tests
-pytest tests/test_fmedian_unit.py
-pytest tests/test_fsigma_unit.py
-
-# Edge case tests
-pytest tests/test_fmedian_edge_cases.py
-pytest tests/test_fsigma_edge_cases.py
-
-# Parameter validation tests
-pytest tests/test_parameter_validation.py
-
-# Integration tests
-pytest tests/test_smoke_integration.py
 ```
 
 ### Run tests with coverage
@@ -314,41 +232,6 @@ crtools/
 ??? scripts/
     ??? quickstart_smoke.py          # Quick smoke test
     ??? set_utf8_locale.sh           # Locale setup script
-```
-
-## Use Cases
-
-### Cosmic Ray Detection
-
-```python
-import numpy as np
-from crtools import fmedian, fsigma
-
-# Read your astronomical image
-image = np.load('science_image.npy')
-
-# Calculate local statistics
-local_median = fmedian(image, xsize=5, ysize=5, exclude_center=1)
-local_sigma = fsigma(image, xsize=5, ysize=5, exclude_center=1)
-
-# Detect cosmic rays (simple sigma-clipping approach)
-deviation = np.abs(image - local_median)
-threshold = 5.0  # 5-sigma threshold
-cosmic_ray_mask = deviation > (threshold * local_sigma)
-
-# Clean the image
-cleaned_image = image.copy()
-cleaned_image[cosmic_ray_mask] = local_median[cosmic_ray_mask]
-```
-
-### Image Quality Assessment
-
-```python
-# Calculate noise map across image
-noise_map = fsigma(image, xsize=7, ysize=7, exclude_center=0)
-
-# Identify regions with high local variation
-high_noise_regions = noise_map > np.percentile(noise_map, 90)
 ```
 
 ## Development
@@ -393,10 +276,4 @@ Contributions are welcome! Please ensure:
 
 - Both functions convert input to `float64` for computation
 - C implementations provide significant speedup over pure Python/NumPy equivalents
-- Memory allocation is efficient with pre-allocated output arrays
 - Edge handling uses appropriate boundary conditions
-
-## Acknowledgments
-
-These tools are designed for astronomical image processing workflows, particularly for removing cosmic ray
-artifacts from CCD images.
