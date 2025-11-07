@@ -1,23 +1,26 @@
 # crtools
 
-# crtools
-
 ## C-based local image filters for cosmic ray detection and removal
 
-`crtools` provides fast, local neighborhood filters commonly used for cosmic ray detection and removal. The package includes both 2D and 3D filtering functions implemented as C extensions with NumPy integration.
+`crtools` provides fast, local neighborhood filters commonly used for cosmic ray detection and removal. The package includes unified filtering functions that automatically handle both 2D and 3D arrays, implemented as C extensions with NumPy integration.
 
 ## Features
 
-### 2D Filters
-- **`fmedian`**: Filtered median computation over local neighborhoods
-- **`fsigma`**: Local population standard deviation (sigma) calculation
+### Unified Interface
 
-### 3D Filters
-- **`fmedian3`**: 3D filtered median computation for volumetric data
-- **`fsigma3`**: 3D local population standard deviation calculation
+- **`fmedian`**: Filtered median computation - automatically works with 2D and 3D arrays
+- **`fsigma`**: Local population standard deviation - automatically works with 2D and 3D arrays
+- Automatic dimensionality detection and dispatch to appropriate implementations
+- Clean, consistent API for both 2D and 3D data
+
+### Direct Access Functions
+
+- **`fmedian2d`/`fsigma2d`**: Explicit 2D filtering functions
+- **`fmedian3d`/`fsigma3d`**: Explicit 3D filtering functions for volumetric data
 
 ### Common Features
-- Optional center pixel/voxel exclusion for better outlier detection
+
+- Optional center pixel/voxel exclusion for better outlier detection (default: include center)
 - Robust NaN handling
 - Full test coverage with unit, edge case, and integration tests
 
@@ -60,123 +63,146 @@ python setup.py build_ext --inplace
 import numpy as np
 from crtools import fmedian, fsigma
 
-# Create sample data
-data = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
+# Works with both 2D and 3D data automatically!
 
-# Apply filtered median (3x3 window, center pixel included by default)
-median_filtered = fmedian(data, xsize=3, ysize=3)
+# 2D example
+data_2d = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
+median_filtered_2d = fmedian(data_2d, xsize=3, ysize=3)
+sigma_map_2d = fsigma(data_2d, xsize=3, ysize=3)
 
-# Calculate local sigma (3x3 window, center pixel included by default)
-sigma_map = fsigma(data, xsize=3, ysize=3)
+# 3D example  
+data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
+median_filtered_3d = fmedian(data_3d, xsize=3, ysize=3, zsize=3)
+sigma_map_3d = fsigma(data_3d, xsize=3, ysize=3, zsize=3)
 ```
 
 ## Usage
 
-### `fmedian` - Filtered Median
+### Unified Functions
 
-Computes the median of pixels in a local neighborhood around each pixel.
+The main functions automatically detect array dimensions and dispatch to the appropriate 2D or 3D implementation:
+
+#### `fmedian` - Filtered Median (2D/3D)
+
+Computes the median of pixels/voxels in a local neighborhood around each pixel/voxel.
 
 ```python
 from crtools import fmedian
 
-output = fmedian(input_array, xsize, ysize, exclude_center=0)
+# For 2D arrays
+output_2d = fmedian(input_array_2d, xsize, ysize, exclude_center=0)
+
+# For 3D arrays  
+output_3d = fmedian(input_array_3d, xsize, ysize, zsize, exclude_center=0)
 ```
 
 **Parameters:**
 
-- `input_array`: Input 2D NumPy array (will be converted to float64)
+- `input_array`: Input NumPy array (2D or 3D, will be converted to float64)
 - `xsize`: Full window width (must be an odd number ? 1)
-- `ysize`: Full window height (must be an odd number ? 1)
-- `exclude_center`: Optional, if 1, exclude center pixel from median calculation; if 0, include it (default: 0)
+- `ysize`: Full window height (must be an odd number ? 1)  
+- `zsize`: Full window depth (required for 3D arrays, ignored for 2D arrays)
+- `exclude_center`: Optional, if 1, exclude center pixel/voxel from median calculation; if 0, include it (default: 0)
 
 **Returns:**
 
 - NumPy array of same shape as input, containing filtered median values (float64)
 
-**Example:**
+**Examples:**
 
 ```python
 import numpy as np
 from crtools import fmedian
 
-# Create data with an outlier
-data = np.ones((5, 5)) * 10.0
-data[2, 2] = 100.0  # Cosmic ray hit
+# 2D example
+data_2d = np.ones((5, 5)) * 10.0
+data_2d[2, 2] = 100.0  # Outlier
 
-# Filter with 3x3 window, including center (default behavior)
-filtered = fmedian(data, xsize=3, ysize=3)
-# The outlier at [2,2] will be included in the median calculation
+# Filter with 3x3 window (center included by default)
+filtered_2d = fmedian(data_2d, xsize=3, ysize=3)
 
-# Or explicitly exclude the center pixel for outlier detection
-filtered_no_center = fmedian(data, xsize=3, ysize=3, exclude_center=1)
+# Exclude center pixel for outlier detection
+filtered_2d_no_center = fmedian(data_2d, xsize=3, ysize=3, exclude_center=1)
+
+# 3D example
+data_3d = np.ones((5, 5, 5)) * 10.0
+data_3d[2, 2, 2] = 100.0  # Outlier
+
+# Filter with 3x3x3 window (center included by default)
+filtered_3d = fmedian(data_3d, xsize=3, ysize=3, zsize=3)
+
+# Exclude center voxel for outlier detection
+filtered_3d_no_center = fmedian(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
 ```
 
-### `fsigma` - Local Standard Deviation
+#### `fsigma` - Local Standard Deviation (2D/3D)
 
-Computes the population standard deviation in a local neighborhood around each pixel.
+Computes the population standard deviation in a local neighborhood around each pixel/voxel.
 
 ```python
 from crtools import fsigma
 
-output = fsigma(input_array, xsize, ysize, exclude_center=0)
+# For 2D arrays
+output_2d = fsigma(input_array_2d, xsize, ysize, exclude_center=0)
+
+# For 3D arrays
+output_3d = fsigma(input_array_3d, xsize, ysize, zsize, exclude_center=0)
 ```
 
 **Parameters:**
 
-- `input_array`: Input 2D NumPy array (will be converted to float64)
+- `input_array`: Input NumPy array (2D or 3D, will be converted to float64)
 - `xsize`: Full window width (must be an odd number ? 1)
 - `ysize`: Full window height (must be an odd number ? 1)
-- `exclude_center`: Optional, if 1, exclude center pixel from sigma calculation; if 0, include it (default: 0)
+- `zsize`: Full window depth (required for 3D arrays, ignored for 2D arrays)
+- `exclude_center`: Optional, if 1, exclude center pixel/voxel from sigma calculation; if 0, include it (default: 0)
 
 **Returns:**
 
 - NumPy array of same shape as input, containing local sigma values (float64)
 
-**Example:**
+**Examples:**
 
 ```python
 import numpy as np
 from crtools import fsigma
 
-# Create uniform data with one outlier
-data = np.ones((5, 5)) * 10.0
-data[2, 2] = 100.0
+# 2D example
+data_2d = np.ones((5, 5)) * 10.0
+data_2d[2, 2] = 100.0  # Outlier
 
-# Calculate local sigma with 3x3 window (default includes center)
-sigma = fsigma(data, xsize=3, ysize=3)
-# Sigma value at [2,2] will include the outlier in the calculation
+# Calculate local sigma with 3x3 window (center included by default)
+sigma_2d = fsigma(data_2d, xsize=3, ysize=3)
 
-# Or exclude center for outlier detection
-sigma_no_center = fsigma(data, xsize=3, ysize=3, exclude_center=1)
+# Exclude center for outlier detection  
+sigma_2d_no_center = fsigma(data_2d, xsize=3, ysize=3, exclude_center=1)
+
+# 3D example
+data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
+data_3d[32, 32, 32] = 100.0  # Outlier
+
+# Calculate local 3D sigma with 3x3x3 window (center included by default)
+sigma_3d = fsigma(data_3d, xsize=3, ysize=3, zsize=3)
+
+# Exclude center voxel for outlier detection
+sigma_3d_no_center = fsigma(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
 ```
 
-### 3D Functions - `fmedian3` and `fsigma3`
+### Direct Function Access
 
-The 3D versions work with volumetric data (3D arrays) and provide the same functionality as their 2D counterparts but operate on 3D neighborhoods.
+If you need to explicitly call specific dimensional versions:
 
 ```python
-from crtools import fmedian3, fsigma3
-import numpy as np
+from crtools import fmedian2d, fsigma2d, fmedian3d, fsigma3d
 
-# Create 3D sample data
-data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
+# Explicitly call 2D versions
+result_2d_median = fmedian2d(data_2d, xsize=3, ysize=3)
+result_2d_sigma = fsigma2d(data_2d, xsize=3, ysize=3)
 
-# Add an outlier
-data_3d[32, 32, 32] = 100.0
-
-# Apply 3D filtered median (3x3x3 window, default includes center voxel)
-median_filtered_3d = fmedian3(data_3d, xsize=3, ysize=3, zsize=3)
-
-# Calculate local 3D sigma (3x3x3 window, default includes center voxel)
-sigma_map_3d = fsigma3(data_3d, xsize=3, ysize=3, zsize=3)
+# Explicitly call 3D versions  
+result_3d_median = fmedian3d(data_3d, xsize=3, ysize=3, zsize=3)
+result_3d_sigma = fsigma3d(data_3d, xsize=3, ysize=3, zsize=3)
 ```
-
-**Parameters for 3D functions:**
-- `input_array`: Input 3D NumPy array (will be converted to float64)
-- `xsize`: Full window width (must be an odd number ? 1)
-- `ysize`: Full window height (must be an odd number ? 1)
-- `zsize`: Full window depth (must be an odd number ? 1)
-- `exclude_center`: Optional, if 1, exclude center voxel; if 0, include it (default: 0)
 
 ## Examples
 
@@ -190,6 +216,39 @@ python src/crtools/fsigma/example_fsigma.py
 # Run the 3D examples  
 python src/crtools/fmedian3/example_fmedian3.py
 python src/crtools/fsigma3/example_fsigma3.py
+```
+
+### Unified Interface Examples
+
+The unified functions automatically detect array dimensionality:
+
+```python
+import numpy as np
+from crtools import fmedian, fsigma
+
+# Works seamlessly with 2D data
+data_2d = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
+median_2d = fmedian(data_2d, xsize=5, ysize=5)
+sigma_2d = fsigma(data_2d, xsize=5, ysize=5)
+
+# And automatically handles 3D data
+data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64) 
+median_3d = fmedian(data_3d, xsize=3, ysize=3, zsize=3)
+sigma_3d = fsigma(data_3d, xsize=3, ysize=3, zsize=3)
+
+# Error handling for invalid dimensions
+try:
+    # This will raise an error - 1D arrays not supported
+    bad_data = np.array([1, 2, 3, 4, 5])
+    fmedian(bad_data, xsize=3, ysize=3)
+except ValueError as e:
+    print(f"Expected error: {e}")
+
+try:
+    # This will raise an error - zsize required for 3D arrays
+    fmedian(data_3d, xsize=3, ysize=3)  # Missing zsize
+except ValueError as e:
+    print(f"Expected error: {e}")
 ```
 
 ## Testing

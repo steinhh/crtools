@@ -23,29 +23,31 @@ class TestFmedianParameterValidation:
     def test_fmedian_invalid_exclude_center(self):
         """Test fmedian with invalid exclude_center values."""
         a = np.ones((3, 3), dtype=np.float64)
-        # Should handle non-0/1 values (likely treating as boolean)
-        out = fmedian(a, 1, 1, 2)
-        assert out.shape == a.shape
+        # Invalid values as positional arguments (treated as zsize) should fail for 2D
+        with pytest.raises(ValueError, match="zsize parameter not allowed for 2D arrays"):
+            fmedian(a, 1, 1, 2)
+        
+        # But as keyword arguments, non-0/1 values should work (treated as boolean)
+        out = fmedian(a, 1, 1, exclude_center=2)
+        assert out.shape == (3, 3)
     
     def test_fmedian_none_parameters(self):
         """Test fmedian rejects None parameters."""
         a = np.ones((3, 3), dtype=np.float64)
+
+        # None for xsize/ysize should still raise TypeError as they're required int parameters  
+        with pytest.raises(TypeError):
+            fmedian(a, None, 1)
         
         with pytest.raises(TypeError):
-            fmedian(a, None, 1, 1)
-        
-        with pytest.raises(TypeError):
-            fmedian(a, 1, None, 1)
-        
-        with pytest.raises(TypeError):
-            fmedian(a, 1, 1, None)
-    
+            fmedian(a, 1, None)
+
     def test_fmedian_non_integer_parameters(self):
         """Test fmedian handles float parameters (should convert to int)."""
         a = np.ones((3, 3), dtype=np.float64)
-        # Should work by converting to int
-        out = fmedian(a, 1.5, 1.7, 1.0)
-        assert out.shape == a.shape
+        # Float values as positional args treated as zsize, should fail for 2D
+        with pytest.raises(ValueError, match="zsize parameter not allowed for 2D arrays"):
+            fmedian(a, 1.5, 1.7, 1.0)
     
     def test_fmedian_empty_array(self):
         """Test fmedian with empty array."""
@@ -58,10 +60,15 @@ class TestFmedianParameterValidation:
             pass  # Acceptable to reject empty arrays
     
     def test_fmedian_3d_array(self):
-        """Test fmedian rejects 3D arrays."""
+        """Test fmedian accepts 3D arrays with zsize parameter."""
         a = np.ones((3, 3, 3), dtype=np.float64)
-        with pytest.raises(ValueError):
-            fmedian(a, 1, 1, 1)
+        # Should work with zsize parameter
+        result = fmedian(a, 1, 1, zsize=1)
+        assert result.shape == (3, 3, 3)
+        
+        # Should fail without zsize parameter
+        with pytest.raises(ValueError, match="zsize parameter required for 3D arrays"):
+            fmedian(a, 1, 1)
     
     def test_fmedian_no_input(self):
         """Test fmedian raises TypeError when called with no arguments."""
@@ -69,18 +76,17 @@ class TestFmedianParameterValidation:
             fmedian()
     
     def test_fmedian_missing_parameters(self):
-        """Test fmedian raises TypeError when called with too few arguments."""
+        """Test fmedian raises TypeError when called with too few arguments.""" 
         a = np.ones((3, 3), dtype=np.float64)
+        # These should still raise TypeError for missing required parameters
+        with pytest.raises(TypeError):
+            fmedian()
+        
         with pytest.raises(TypeError):
             fmedian(a)
         
         with pytest.raises(TypeError):
             fmedian(a, 1)
-        
-        with pytest.raises(TypeError):
-            fmedian(a, 1, 1)
-
-
 class TestFsigmaParameterValidation:
     """Test parameter validation for fsigma."""
     
@@ -99,30 +105,32 @@ class TestFsigmaParameterValidation:
     def test_fsigma_invalid_exclude_center(self):
         """Test fsigma with invalid exclude_center values."""
         a = np.ones((3, 3), dtype=np.float64)
-        # Should handle non-0/1 values (likely treating as boolean)
-        out = fsigma(a, 1, 1, 2)
-        assert out.shape == a.shape
+        # Invalid values as positional arguments (treated as zsize) should fail for 2D
+        with pytest.raises(ValueError, match="zsize parameter not allowed for 2D arrays"):
+            fsigma(a, 1, 1, 2)
+        
+        # But as keyword arguments, non-0/1 values should work (treated as boolean)
+        out = fsigma(a, 1, 1, exclude_center=2)
+        assert out.shape == (3, 3)
     
     def test_fsigma_none_parameters(self):
         """Test fsigma rejects None parameters."""
         a = np.ones((3, 3), dtype=np.float64)
         
+        # None for xsize/ysize should still raise TypeError as they're required int parameters
         with pytest.raises(TypeError):
-            fsigma(a, None, 1, 1)
+            fsigma(a, None, 1)
         
         with pytest.raises(TypeError):
-            fsigma(a, 1, None, 1)
-        
-        with pytest.raises(TypeError):
-            fsigma(a, 1, 1, None)
-    
+            fsigma(a, 1, None)
+
     def test_fsigma_non_integer_parameters(self):
         """Test fsigma handles float parameters (should convert to int)."""
         a = np.ones((3, 3), dtype=np.float64)
-        # Should work by converting to int
-        out = fsigma(a, 1.5, 1.7, 1.0)
-        assert out.shape == a.shape
-    
+        # Float values as positional args treated as zsize, should fail for 2D
+        with pytest.raises(ValueError, match="zsize parameter not allowed for 2D arrays"):
+            fsigma(a, 1.5, 1.7, 1.0)
+
     def test_fsigma_empty_array(self):
         """Test fsigma with empty array."""
         a = np.array([], dtype=np.float64).reshape(0, 0)
@@ -134,10 +142,15 @@ class TestFsigmaParameterValidation:
             pass  # Acceptable to reject empty arrays
     
     def test_fsigma_3d_array(self):
-        """Test fsigma rejects 3D arrays."""
+        """Test fsigma accepts 3D arrays with zsize parameter."""
         a = np.ones((3, 3, 3), dtype=np.float64)
-        with pytest.raises(ValueError):
-            fsigma(a, 1, 1, 1)
+        # Should work with zsize parameter
+        result = fsigma(a, 1, 1, zsize=1)
+        assert result.shape == (3, 3, 3)
+        
+        # Should fail without zsize parameter
+        with pytest.raises(ValueError, match="zsize parameter required for 3D arrays"):
+            fsigma(a, 1, 1)
     
     def test_fsigma_no_input(self):
         """Test fsigma raises TypeError when called with no arguments."""
@@ -147,14 +160,15 @@ class TestFsigmaParameterValidation:
     def test_fsigma_missing_parameters(self):
         """Test fsigma raises TypeError when called with too few arguments."""
         a = np.ones((3, 3), dtype=np.float64)
+        # These should still raise TypeError for missing required parameters
+        with pytest.raises(TypeError):
+            fsigma()
+        
         with pytest.raises(TypeError):
             fsigma(a)
         
         with pytest.raises(TypeError):
             fsigma(a, 1)
-        
-        with pytest.raises(TypeError):
-            fsigma(a, 1, 1)
 
 
 class TestBothFunctions:
