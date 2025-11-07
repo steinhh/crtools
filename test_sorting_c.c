@@ -1,12 +1,13 @@
 /*
- * Optimized sorting networks for small arrays
- *
- * This file contains specialized sorting routines for common window sizes
- * used in image filtering operations. These sorting networks are significantly
- * faster than generic sorting algorithms for small, fixed-size arrays.
+ * Direct test of sorting networks from sorting.c
  */
 
-/* Inline swap macro for sorting networks */
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
+/* Copy the sorting network code */
 #define SWAP(a, b)                           \
   do                                         \
   {                                          \
@@ -56,40 +57,6 @@ static inline void sort9(double *d)
   SWAP(d[5], d[6]);
 }
 
-/* Sorting network for 25 elements (5x5 window) */
-static inline void sort25(double *d)
-{
-  /* This is a simplified 25-element sorting network */
-  /* Using a hybrid approach: partial network + insertion sort for remaining */
-
-  /* First pass: sort groups of 5 */
-  for (int i = 0; i < 25; i += 5)
-  {
-    SWAP(d[i], d[i + 1]);
-    SWAP(d[i + 3], d[i + 4]);
-    SWAP(d[i], d[i + 2]);
-    SWAP(d[i + 1], d[i + 2]);
-    SWAP(d[i], d[i + 1]);
-    SWAP(d[i + 2], d[i + 3]);
-    SWAP(d[i + 1], d[i + 2]);
-    SWAP(d[i + 3], d[i + 4]);
-    SWAP(d[i + 2], d[i + 3]);
-  }
-
-  /* Second pass: merge sorted groups using insertion sort */
-  for (int i = 1; i < 25; i++)
-  {
-    double key = d[i];
-    int j = i - 1;
-    while (j >= 0 && d[j] > key)
-    {
-      d[j + 1] = d[j];
-      j--;
-    }
-    d[j + 1] = key;
-  }
-}
-
 /* Sorting network for 27 elements (3x3x3 window) */
 static inline void sort27(double *d)
 {
@@ -130,4 +97,94 @@ static inline void sort27(double *d)
     }
     d[j + 1] = key;
   }
+}
+
+/* Helper function to check if array is sorted */
+int is_sorted(double *arr, int n)
+{
+  for (int i = 1; i < n; i++)
+  {
+    if (arr[i] < arr[i - 1])
+    {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+/* Test function */
+int test_sorting_network(void (*sort_func)(double *), int n, const char *name)
+{
+  int num_tests = 10000;
+  int failures = 0;
+
+  printf("Testing %s with %d random permutations...\n", name, num_tests);
+
+  for (int t = 0; t < num_tests; t++)
+  {
+    double arr[n];
+
+    /* Fill with random values */
+    for (int i = 0; i < n; i++)
+    {
+      arr[i] = (double)rand() / RAND_MAX * 1000.0 - 500.0;
+    }
+
+    /* Sort using the network */
+    sort_func(arr);
+
+    /* Check if sorted */
+    if (!is_sorted(arr, n))
+    {
+      failures++;
+      if (failures <= 3)
+      {
+        printf("  FAILED at test %d:\n  ", t);
+        for (int i = 0; i < n; i++)
+        {
+          printf("%.2f ", arr[i]);
+        }
+        printf("\n");
+      }
+    }
+  }
+
+  if (failures == 0)
+  {
+    printf("  ? PASSED: All %d tests passed\n\n", num_tests);
+    return 1;
+  }
+  else
+  {
+    printf("  ? FAILED: %d/%d tests failed\n\n", failures, num_tests);
+    return 0;
+  }
+}
+
+int main()
+{
+  srand(time(NULL));
+
+  printf("==================================================\n");
+  printf("Sorting Network Verification (C)\n");
+  printf("==================================================\n\n");
+
+  int all_passed = 1;
+
+  all_passed &= test_sorting_network(sort3, 3, "sort3");
+  all_passed &= test_sorting_network(sort9, 9, "sort9");
+  all_passed &= test_sorting_network(sort27, 27, "sort27");
+
+  printf("==================================================\n");
+  if (all_passed)
+  {
+    printf("? ALL TESTS PASSED\n");
+  }
+  else
+  {
+    printf("? SOME TESTS FAILED\n");
+  }
+  printf("==================================================\n");
+
+  return all_passed ? 0 : 1;
 }
