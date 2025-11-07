@@ -53,7 +53,7 @@ ext_modules = [
 
 setup(
     name="crtools",
-    version="2.0.0",
+    version="3.0.0",
     description="Small C extensions for local image filters (fmedian, fsigma)",
     long_description=read_readme(),
     long_description_content_type="text/markdown",

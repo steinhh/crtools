@@ -97,5 +97,5 @@ fsigma2d = _fsigma2d
 fmedian3d = _fmedian3d
 fsigma3d = _fsigma3d
 
-__version__ = "1.0.0"
+__version__ = "3.0.0"
 __all__ = ["fmedian", "fsigma", "fmedian2d", "fsigma2d", "fmedian3d", "fsigma3d"]
