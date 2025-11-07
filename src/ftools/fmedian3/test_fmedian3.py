@@ -8,10 +8,10 @@ import sys
 import pytest
 
 try:
-    # Import the function directly from the crtools package
-    from crtools import fmedian3d as fmedian3
+    # Import the function directly from the ftools package
+    from ftools import fmedian3d as fmedian3
 except ImportError:
-    print("ERROR: Could not import crtools.fmedian3d function.")
+    print("ERROR: Could not import ftools.fmedian3d function.")
     print("Please build the extension first (create fmedian3_ext shared object) or install the package.")
     sys.exit(1)
 

@@ -1,4 +1,4 @@
-"""Top level package for crtools.
+"""Top level package for ftools.
 
 Expose unified function names at package level so users can call
 `fmedian` and `fsigma` with either 2D or 3D arrays.

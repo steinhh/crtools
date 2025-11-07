@@ -9,9 +9,9 @@ import pytest
 
 try:
     # Prefer the new package import path
-    from crtools import fmedian
+    from ftools import fmedian
 except ImportError:
-    print("ERROR: Could not import crtools.fmedian module.")
+    print("ERROR: Could not import ftools.fmedian module.")
     print("Please build the extension first (create fmedian_ext shared object) or install the package.")
     sys.exit(1)
 

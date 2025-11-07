@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from crtools import fmedian
+from ftools import fmedian
 
 
 def test_median_excludes_nan_neighbors():

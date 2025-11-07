@@ -36,7 +36,7 @@ jobs:
             
             ## Installation
             ```bash
-            pip install crtools==${{ github.ref_name }}
+            pip install ftools==${{ github.ref_name }}
             ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

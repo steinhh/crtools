@@ -1,11 +1,7 @@
-"""crtools.fmedian3 package loader.
+"""ftools.fsigma3 package loader.
 
-This module locates the pre-built extension shared object in the repository
-(`../fmedian3/fmedian3_ext*.so`) and loads it as a private module, then
-exposes the `fmedian3` function at package level.
-
-We avoid moving any compiled artifacts; the loader simply finds the first
-matching shared object in the repository layout and imports it.
+Locate the pre-built `fsigma3` extension in the repository and load it.
+Expose `fsigma3` at package level for `from ftools import fsigma3` imports.
 """
 from __future__ import annotations
 
@@ -14,28 +10,21 @@ import importlib.machinery
 import importlib.util
 import os
 
-# Try to import a bundled extension if available (e.g. when package is
-# installed with aligned module names).
 try:
-    from . import _fmedian3_ext as _ext  # type: ignore
+    from . import _fsigma3_ext as _ext  # type: ignore
 except Exception:
-    # First, look for a compiled extension in the package directory (useful when
-    # built in-place or installed). If not found, fall back to the repository
-    # top-level location (legacy layout).
     _HERE = os.path.dirname(__file__)
     repo_root = os.path.abspath(os.path.join(_HERE, "..", "..", ".."))
 
-    candidates = glob.glob(os.path.join(_HERE, "fmedian3_ext*.so"))
+    candidates = glob.glob(os.path.join(_HERE, "fsigma3_ext*.so"))
     if not candidates:
-        # Fallback to legacy location at the repository root
-        candidates = glob.glob(os.path.join(repo_root, "fmedian3", "fmedian3_ext*.so"))
+        candidates = glob.glob(os.path.join(repo_root, "fsigma3", "fsigma3_ext*.so"))
         if not candidates:
-            # macOS sometimes adds extra suffixes
-            candidates = glob.glob(os.path.join(repo_root, "fmedian3", "fmedian3_ext*.*.so"))
+            candidates = glob.glob(os.path.join(repo_root, "fsigma3", "fsigma3_ext*.*.so"))
 
     if not candidates:
         raise ImportError(
-            "Could not locate the compiled fmedian3 extension (expected src/crtools/fmedian3/fmedian3_ext*.so or fmedian3/fmedian3_ext*.so). "
+            "Could not locate the compiled fsigma3 extension (expected src/ftools/fsigma3/fsigma3_ext*.so or fsigma3/fsigma3_ext*.so). "
             "Build it first or install the package so the extension is available."
         )
 
@@ -51,15 +40,15 @@ except Exception:
     loader.exec_module(_ext)  # type: ignore[arg-type]
 
 try:
-    _c_fmedian3 = _ext.fmedian3  # type: ignore[attr-defined]
+    _c_fsigma3 = _ext.fsigma3  # type: ignore[attr-defined]
 except Exception as exc:  # pragma: no cover - defensive
-    raise ImportError("Loaded fmedian3 extension but could not find 'fmedian3' symbol") from exc
+    raise ImportError("Loaded fsigma3 extension but could not find 'fsigma3' symbol") from exc
 
 
-def fmedian3(input_array, xsize: int, ysize: int, zsize: int, exclude_center: int = 0):
-    """Compute filtered median and return the output array.
+def fsigma3(input_array, xsize: int, ysize: int, zsize: int, exclude_center: int = 0):
+    """Compute local population sigma and return the output array.
 
-    Signature: fmedian3(input_array, xsize, ysize, zsize, exclude_center=0) -> numpy.ndarray
+    Signature: fsigma3(input_array, xsize, ysize, zsize, exclude_center=0) -> numpy.ndarray
 
     Parameters:
     - xsize, ysize, zsize: Full window sizes (must be odd numbers)
@@ -70,7 +59,7 @@ def fmedian3(input_array, xsize: int, ysize: int, zsize: int, exclude_center: in
     import numpy as _np
 
     if xsize is None or ysize is None or zsize is None:
-        raise TypeError("fmedian3 requires xsize, ysize, and zsize parameters")
+        raise TypeError("fsigma3 requires xsize, ysize, and zsize parameters")
 
     # Convert to integers and validate
     xsize = int(xsize)
@@ -98,8 +87,8 @@ def fmedian3(input_array, xsize: int, ysize: int, zsize: int, exclude_center: in
         raise ValueError(f"Input array must be 3-dimensional, got {arr.ndim}D")
     
     out = _np.empty_like(arr, dtype=_np.float64)
-    _c_fmedian3(arr, out, xsize, ysize, zsize, int(exclude_center))
+    _c_fsigma3(arr, out, xsize, ysize, zsize, int(exclude_center))
     return out
 
 
-__all__ = ["fmedian3"]
+__all__ = ["fsigma3"]

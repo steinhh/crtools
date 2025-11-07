@@ -1,8 +1,8 @@
-"""Parameter validation and error handling tests for crtools."""
+"""Parameter validation and error handling tests for ftools."""
 import numpy as np
 import pytest
 
-from crtools import fmedian, fsigma
+from ftools import fmedian, fsigma
 
 
 class TestFmedianParameterValidation:

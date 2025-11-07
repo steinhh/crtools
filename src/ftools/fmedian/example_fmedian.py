@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-Example program demonstrating the use of the ``fsigma`` extension module.
+Example program demonstrating the use of fmedian_ext module.
 
-The script creates a sample 2D array with an injected outlier and computes
-the local standard deviation (sigma) around each pixel.
+This program creates a sample 2D array with some noise and applies
+the filtered median function to smooth it.
 """
 
 import numpy as np
 
-from crtools.fsigma import fsigma
+from ftools.fmedian import fmedian
 
 def main():
     print("=" * 60)
-    print("Filtered Sigma Example")
+    print("Filtered Median Example")
     print("=" * 60)
     
     # Create a sample input array (10x10) with float64 type
@@ -37,14 +37,14 @@ def main():
     xsize = 3      # Window size in x direction (must be odd)
     ysize = 3      # Window size in y direction (must be odd)
 
-    print("\n2. Applying filtered sigma with parameters:")
+    print("\n2. Applying filtered median with parameters:")
     print(f"   - Window size: ({xsize} x {ysize})")
 
-    # Call the fsigma function (exclude_center controls whether center is skipped)
+    # Call the fmedian function (exclude_center controls whether center is skipped)
     exclude_center = 1
-    output_array = fsigma(input_array, xsize, ysize, exclude_center=exclude_center)
+    output_array = fmedian(input_array, xsize, ysize, exclude_center=exclude_center)
     
-    print("\n3. Output array (local sigma values):")
+    print("\n3. Output array (filtered median):")
     print(output_array)
     
     # Show the difference (particularly for the outlier)
@@ -66,11 +66,11 @@ def main():
     else:
         print("   No significant changes detected.")
     
-    # Re-run with the center pixel included in the sigma calculation
+    # Re-run with the center pixel included in the neighborhood
     print("\n6. Re-running filter (center pixel included)...")
     # Example: include the center pixel this time (exclude_center=0)
     exclude_center = 0
-    output_array2 = fsigma(input_array, xsize, ysize, exclude_center=exclude_center)
+    output_array2 = fmedian(input_array, xsize, ysize, exclude_center=exclude_center)
     print("Output array (second run, exclude_center=0 -> center included):")
     print(output_array2)
     

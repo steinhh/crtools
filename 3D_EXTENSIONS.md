@@ -1,6 +1,6 @@
-# 3D Extensions for crtools
+# 3D Extensions for ftools
 
-This document describes the new 3D extensions (fmedian3 and fsigma3) that have been added to the crtools package.
+This document describes the new 3D extensions (fmedian3 and fsigma3) that have been added to the ftools package.
 
 ## Overview
 
@@ -32,7 +32,7 @@ Two new C extensions have been added to provide 3D versions of the existing 2D i
 New directories and files added:
 
 ```text
-src/crtools/
+src/ftools/
 ??? fmedian3/
 ?   ??? __init__.py              # Python interface for fmedian3
 ?   ??? fmedian3_ext.c           # C extension implementation
@@ -49,7 +49,7 @@ src/crtools/
 Modified files:
 
 - `setup.py`: Added the new extensions to the build configuration
-- `src/crtools/__init__.py`: Added imports for fmedian3 and fsigma3
+- `src/ftools/__init__.py`: Added imports for fmedian3 and fsigma3
 
 ## Usage
 
@@ -57,7 +57,7 @@ Modified files:
 
 ```python
 import numpy as np
-from crtools import fmedian3, fsigma3
+from ftools import fmedian3, fsigma3
 
 # Create a 3D array
 data = np.random.random((10, 10, 10)).astype(np.float64)
@@ -125,10 +125,10 @@ Run the provided examples to see the functions in action:
 
 ```bash
 # Run fmedian3 example
-python -m src.crtools.fmedian3.example_fmedian3
+python -m src.ftools.fmedian3.example_fmedian3
 
 # Run fsigma3 example  
-python -m src.crtools.fsigma3.example_fsigma3
+python -m src.ftools.fsigma3.example_fsigma3
 ```
 
 ## Testing
@@ -137,13 +137,13 @@ Comprehensive test suites are provided for both functions:
 
 ```bash
 # Test fmedian3
-python -m pytest src/crtools/fmedian3/test_fmedian3.py -v
+python -m pytest src/ftools/fmedian3/test_fmedian3.py -v
 
 # Test fsigma3
-python -m pytest src/crtools/fsigma3/test_fsigma3.py -v
+python -m pytest src/ftools/fsigma3/test_fsigma3.py -v
 
 # Test all extensions
-python -m pytest tests/ src/crtools/*/test_*.py -v
+python -m pytest tests/ src/ftools/*/test_*.py -v
 ```
 
 ## Building

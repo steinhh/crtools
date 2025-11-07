@@ -1,7 +1,7 @@
 """Additional edge case and validation tests for fmedian."""
 import numpy as np
 
-from crtools import fmedian
+from ftools import fmedian
 
 
 def test_fmedian_large_window():

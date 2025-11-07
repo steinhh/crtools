@@ -1,6 +1,6 @@
 import numpy as np
 
-from crtools import fmedian, fsigma
+from ftools import fmedian, fsigma
 
 
 def test_smoke_integration_basic():

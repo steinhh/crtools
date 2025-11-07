@@ -1,7 +1,7 @@
 """Additional edge case and validation tests for fsigma."""
 import numpy as np
 
-from crtools import fsigma
+from ftools import fsigma
 
 
 def test_fsigma_large_window():

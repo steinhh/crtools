@@ -9,9 +9,9 @@ import pytest
 
 try:
     # Prefer the new package import path
-    from crtools import fsigma
+    from ftools import fsigma
 except ImportError:
-    print("ERROR: Could not import crtools.fsigma module.")
+    print("ERROR: Could not import ftools.fsigma module.")
     print("Please build the extension first (create fsigma_ext shared object) or install the package.")
     sys.exit(1)
 

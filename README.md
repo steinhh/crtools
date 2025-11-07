@@ -1,8 +1,8 @@
-# crtools
+# ftools
 
 ## C-based local image filters for cosmic ray detection and removal
 
-`crtools` provides fast, local neighborhood filters `fmedian` and `fsigma` that automatically handle both 2D and 3D arrays, implemented as C extensions with NumPy integration.
+`ftools` provides fast, local neighborhood filters `fmedian` and `fsigma` that automatically handle both 2D and 3D arrays, implemented as C extensions with NumPy integration.
 
 ## Features
 
@@ -25,7 +25,7 @@
 ```bash
 # Clone the repository
 git clone <repository-url>
-cd crtools
+cd ftools
 
 # Install in editable mode
 pip install -e .
@@ -49,7 +49,7 @@ python setup.py build_ext --inplace
 
 ```python
 import numpy as np
-from crtools import fmedian, fsigma
+from ftools import fmedian, fsigma
 
 # Works with both 2D and 3D data automatically!
 
@@ -71,7 +71,7 @@ sigma_map_3d = fsigma(data_3d, (3, 3, 3))
 Computes the median of pixels/voxels in a local neighborhood around each pixel/voxel.
 
 ```python
-from crtools import fmedian
+from ftools import fmedian
 
 # For 2D arrays
 output_2d = fmedian(input_array_2d, (xsize, ysize), exclude_center=0)
@@ -94,7 +94,7 @@ output_3d = fmedian(input_array_3d, (xsize, ysize, zsize), exclude_center=0)
 
 ```python
 import numpy as np
-from crtools import fmedian
+from ftools import fmedian
 
 # 2D example
 data_2d = np.ones((5, 5)) * 10.0
@@ -122,7 +122,7 @@ filtered_3d_no_center = fmedian(data_3d, (3, 3, 3), exclude_center=1)
 Computes the population standard deviation in a local neighborhood around each pixel/voxel.
 
 ```python
-from crtools import fsigma
+from ftools import fsigma
 
 # For 2D arrays
 output_2d = fsigma(input_array_2d, (xsize, ysize), exclude_center=0)
@@ -145,7 +145,7 @@ output_3d = fsigma(input_array_3d, (xsize, ysize, zsize), exclude_center=0)
 
 ```python
 import numpy as np
-from crtools import fsigma
+from ftools import fsigma
 
 # 2D example
 data_2d = np.ones((5, 5)) * 10.0
@@ -174,12 +174,12 @@ Complete example scripts are provided in the package:
 
 ```bash
 # Run the 2D examples
-python src/crtools/fmedian/example_fmedian.py
-python src/crtools/fsigma/example_fsigma.py
+python src/ftools/fmedian/example_fmedian.py
+python src/ftools/fsigma/example_fsigma.py
 
 # Run the 3D examples  
-python src/crtools/fmedian3/example_fmedian3.py
-python src/crtools/fsigma3/example_fsigma3.py
+python src/ftools/fmedian3/example_fmedian3.py
+python src/ftools/fsigma3/example_fsigma3.py
 ```
 
 ## Testing
@@ -193,17 +193,17 @@ pytest
 ### Run tests with coverage
 
 ```bash
-pytest --cov=crtools --cov-report=html
+pytest --cov=ftools --cov-report=html
 ```
 
 ## Project Structure
 
 ```text
-crtools/
+ftools/
 ├── setup.py                          # Package configuration and build
 ├── pytest.ini                        # Pytest configuration
 ├── src/
-│   └── crtools/
+│   └── ftools/
 │       ├── __init__.py               # Package entry point with unified API
 │       ├── fmedian/
 │       │   ├── __init__.py           # fmedian 2D module loader

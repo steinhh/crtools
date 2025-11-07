@@ -11,7 +11,7 @@ def read_readme():
     if os.path.exists(readme):
         with io.open(readme, "r", encoding="utf8") as fh:
             return fh.read()
-    return "crtools: C-based local image filters (fmedian, fsigma)"
+    return "ftools: C-based local image filters (fmedian, fsigma)"
 
 
 # Try to obtain numpy include dir; setup_requires ensures numpy is available when
@@ -29,30 +29,30 @@ except Exception:
 
 ext_modules = [
     Extension(
-        "crtools.fmedian.fmedian_ext",
-        sources=[os.path.join("src", "crtools", "fmedian", "fmedian_ext.c")],
+        "ftools.fmedian.fmedian_ext",
+        sources=[os.path.join("src", "ftools", "fmedian", "fmedian_ext.c")],
         include_dirs=include_dirs,
     ),
     Extension(
-        "crtools.fsigma.fsigma_ext",
-        sources=[os.path.join("src", "crtools", "fsigma", "fsigma_ext.c")],
+        "ftools.fsigma.fsigma_ext",
+        sources=[os.path.join("src", "ftools", "fsigma", "fsigma_ext.c")],
         include_dirs=include_dirs,
     ),
     Extension(
-        "crtools.fmedian3.fmedian3_ext",
-        sources=[os.path.join("src", "crtools", "fmedian3", "fmedian3_ext.c")],
+        "ftools.fmedian3.fmedian3_ext",
+        sources=[os.path.join("src", "ftools", "fmedian3", "fmedian3_ext.c")],
         include_dirs=include_dirs,
     ),
     Extension(
-        "crtools.fsigma3.fsigma3_ext",
-        sources=[os.path.join("src", "crtools", "fsigma3", "fsigma3_ext.c")],
+        "ftools.fsigma3.fsigma3_ext",
+        sources=[os.path.join("src", "ftools", "fsigma3", "fsigma3_ext.c")],
         include_dirs=include_dirs,
     ),
 ]
 
 
 setup(
-    name="crtools",
+    name="ftools",
     version="3.0.0",
     description="Small C extensions for local image filters (fmedian, fsigma)",
     long_description=read_readme(),

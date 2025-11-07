@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from crtools import fsigma
+from ftools import fsigma
 
 
 def test_sigma_zero_on_constant_window():
