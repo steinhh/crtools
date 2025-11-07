@@ -157,8 +157,8 @@ python setup.py build_ext --inplace
 ## Performance Characteristics
 
 - Both functions are implemented in C for high performance
-- Memory usage scales with window size: O(xsize × ysize × zsize) per voxel
-- Time complexity: O(N × W × log W) where N is the number of voxels and W is the window size
+- Memory usage scales with window size: O(xsize Ã— ysize Ã— zsize) per voxel
+- Time complexity: O(N Ã— W Ã— log W) where N is the number of voxels and W is the window size
 - Efficient handling of boundary conditions using array bounds checking
 
 ## Use Cases

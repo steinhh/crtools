@@ -9,90 +9,88 @@ from .fmedian3 import fmedian3 as _fmedian3d
 from .fsigma3 import fsigma3 as _fsigma3d
 
 
-def fmedian(input_array, xsize: int, ysize: int, zsize: int | None = None, exclude_center: int = 0):
+def fmedian(input_array, window_size: tuple, exclude_center: int = 0):
     """Compute filtered median for 2D or 3D arrays.
 
-    Automatically dispatches to the appropriate implementation based on input dimensionality.
+    Automatically dispatches to the appropriate implementation based on window_size length.
 
     Parameters:
     - input_array: 2D or 3D numpy array
-    - xsize: Full window width (must be odd)
-    - ysize: Full window height (must be odd)
-    - zsize: Full window depth (must be odd, required for 3D arrays)
+    - window_size: Tuple of window dimensions (xsize, ysize) for 2D or (xsize, ysize, zsize) for 3D
+                   All values must be odd positive integers
     - exclude_center: Whether to exclude center pixel/voxel (default: 0)
 
     Returns:
     - Filtered array of same shape as input
+
+    Examples:
+    >>> # 2D array
+    >>> result = fmedian(array_2d, (3, 3))
+    >>> # 3D array
+    >>> result = fmedian(array_3d, (3, 3, 3))
     """
     import numpy as np
 
     arr = np.asarray(input_array)
-
-    if arr.ndim == 2:
-        # For 2D arrays, zsize should not be provided
-        # However, for backward compatibility, check if zsize was passed as exclude_center
-        if zsize is not None:
-            # Backward compatibility: if we got zsize for 2D array, treat it as exclude_center
-            if isinstance(zsize, int) and zsize in [0, 1]:
-                exclude_center = zsize
-                zsize = None
-            else:
-                raise ValueError("zsize parameter not allowed for 2D arrays")
-        
+    
+    if not isinstance(window_size, (tuple, list)):
+        raise TypeError("window_size must be a tuple or list")
+    
+    if len(window_size) == 2:
+        xsize, ysize = window_size
         from .fmedian import fmedian as fmedian2d
         return fmedian2d(arr, xsize, ysize, exclude_center)
     
-    elif arr.ndim == 3:
-        if zsize is None:
-            raise ValueError("zsize parameter required for 3D arrays")
-        
+    elif len(window_size) == 3:
+        xsize, ysize, zsize = window_size
         from .fmedian3 import fmedian3
         return fmedian3(arr, xsize, ysize, zsize, exclude_center)
     
     else:
-        raise ValueError(f"Input array must be 2D or 3D, got {arr.ndim}D")
-def fsigma(input_array, xsize: int, ysize: int, zsize: int | None = None, exclude_center: int = 0):
+        raise ValueError(f"window_size must be a 2-tuple or 3-tuple, got {len(window_size)} elements")
+
+
+def fsigma(input_array, window_size: tuple, exclude_center: int = 0):
     """Compute local population standard deviation for 2D or 3D arrays.
 
-    Automatically dispatches to the appropriate implementation based on input dimensionality.
+    Automatically dispatches to the appropriate implementation based on window_size length.
 
     Parameters:
     - input_array: 2D or 3D numpy array
-    - xsize: Full window width (must be odd)
-    - ysize: Full window height (must be odd)
-    - zsize: Full window depth (must be odd, required for 3D arrays)
+    - window_size: Tuple of window dimensions (xsize, ysize) for 2D or (xsize, ysize, zsize) for 3D
+                   All values must be odd positive integers
     - exclude_center: Whether to exclude center pixel/voxel (default: 0)
 
     Returns:
     - Array of local standard deviations, same shape as input
+
+    Examples:
+    >>> # 2D array
+    >>> result = fsigma(array_2d, (3, 3))
+    >>> # 3D array
+    >>> result = fsigma(array_3d, (3, 3, 3))
     """
     import numpy as np
 
     arr = np.asarray(input_array)
-
-    if arr.ndim == 2:
-        # For 2D arrays, zsize should not be provided
-        # However, for backward compatibility, check if zsize was passed as exclude_center
-        if zsize is not None:
-            # Backward compatibility: if we got zsize for 2D array, treat it as exclude_center
-            if isinstance(zsize, int) and zsize in [0, 1]:
-                exclude_center = zsize
-                zsize = None
-            else:
-                raise ValueError("zsize parameter not allowed for 2D arrays")
-        
+    
+    if not isinstance(window_size, (tuple, list)):
+        raise TypeError("window_size must be a tuple or list")
+    
+    if len(window_size) == 2:
+        xsize, ysize = window_size
         from .fsigma import fsigma as fsigma2d
         return fsigma2d(arr, xsize, ysize, exclude_center)
     
-    elif arr.ndim == 3:
-        if zsize is None:
-            raise ValueError("zsize parameter required for 3D arrays")
-        
+    elif len(window_size) == 3:
+        xsize, ysize, zsize = window_size
         from .fsigma3 import fsigma3
         return fsigma3(arr, xsize, ysize, zsize, exclude_center)
     
     else:
-        raise ValueError(f"Input array must be 2D or 3D, got {arr.ndim}D")
+        raise ValueError(f"window_size must be a 2-tuple or 3-tuple, got {len(window_size)} elements")
+
+
 # Keep the specific implementations available for direct access if needed
 fmedian2d = _fmedian2d
 fsigma2d = _fsigma2d

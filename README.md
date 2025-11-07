@@ -55,15 +55,13 @@ from crtools import fmedian, fsigma
 
 # 2D example
 data_2d = np.random.normal(0.0, 1.0, (128, 128)).astype(np.float64)
-xsize = ysize = 3
-median_filtered_2d = fmedian(data_2d, xsize, ysize)
-sigma_map_2d = fsigma(data_2d, xsize, ysize)
+median_filtered_2d = fmedian(data_2d, (3, 3))
+sigma_map_2d = fsigma(data_2d, (3, 3))
 
 # 3D example  
 data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
-xsize = ysize = zsize = 3
-median_filtered_3d = fmedian(data_3d, xsize, ysize, zsize)
-sigma_map_3d = fsigma(data_3d, xsize, ysize, zsize)
+median_filtered_3d = fmedian(data_3d, (3, 3, 3))
+sigma_map_3d = fsigma(data_3d, (3, 3, 3))
 ```
 
 ## Usage
@@ -76,18 +74,16 @@ Computes the median of pixels/voxels in a local neighborhood around each pixel/v
 from crtools import fmedian
 
 # For 2D arrays
-output_2d = fmedian(input_array_2d, xsize, ysize, exclude_center=0)
+output_2d = fmedian(input_array_2d, (xsize, ysize), exclude_center=0)
 
 # For 3D arrays  
-output_3d = fmedian(input_array_3d, xsize, ysize, zsize, exclude_center=0)
+output_3d = fmedian(input_array_3d, (xsize, ysize, zsize), exclude_center=0)
 ```
 
 **Parameters:**
 
 - `input_array`: Input NumPy array (2D or 3D, will be converted to float64)
-- `xsize`: Full window width (must be an odd number ? 1)
-- `ysize`: Full window height (must be an odd number ? 1)  
-- `zsize`: Full window depth (required for 3D arrays, ignored for 2D arrays)
+- `window_size`: Tuple of (xsize, ysize) for 2D or (xsize, ysize, zsize) for 3D. All values must be odd positive integers.
 - `exclude_center`: Optional, if 1, exclude center pixel/voxel from median calculation; if 0, include it (default: 0)
 
 **Returns:**
@@ -105,20 +101,20 @@ data_2d = np.ones((5, 5)) * 10.0
 data_2d[2, 2] = 100.0  # Outlier
 
 # Filter with 3x3 window (center included by default)
-filtered_2d = fmedian(data_2d, xsize=3, ysize=3)
+filtered_2d = fmedian(data_2d, (3, 3))
 
 # Exclude center pixel for outlier detection
-filtered_2d_no_center = fmedian(data_2d, xsize=3, ysize=3, exclude_center=1)
+filtered_2d_no_center = fmedian(data_2d, (3, 3), exclude_center=1)
 
 # 3D example
 data_3d = np.ones((5, 5, 5)) * 10.0
 data_3d[2, 2, 2] = 100.0  # Outlier
 
 # Filter with 3x3x3 window (center included by default)
-filtered_3d = fmedian(data_3d, xsize=3, ysize=3, zsize=3)
+filtered_3d = fmedian(data_3d, (3, 3, 3))
 
 # Exclude center voxel for outlier detection
-filtered_3d_no_center = fmedian(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
+filtered_3d_no_center = fmedian(data_3d, (3, 3, 3), exclude_center=1)
 ```
 
 #### `fsigma` - Local Standard Deviation (2D/3D)
@@ -129,18 +125,16 @@ Computes the population standard deviation in a local neighborhood around each p
 from crtools import fsigma
 
 # For 2D arrays
-output_2d = fsigma(input_array_2d, xsize, ysize, exclude_center=0)
+output_2d = fsigma(input_array_2d, (xsize, ysize), exclude_center=0)
 
 # For 3D arrays
-output_3d = fsigma(input_array_3d, xsize, ysize, zsize, exclude_center=0)
+output_3d = fsigma(input_array_3d, (xsize, ysize, zsize), exclude_center=0)
 ```
 
 **Parameters:**
 
 - `input_array`: Input NumPy array (2D or 3D, will be converted to float64)
-- `xsize`: Full window width (must be an odd number ? 1)
-- `ysize`: Full window height (must be an odd number ? 1)
-- `zsize`: Full window depth (required for 3D arrays, ignored for 2D arrays)
+- `window_size`: Tuple of (xsize, ysize) for 2D or (xsize, ysize, zsize) for 3D. All values must be odd positive integers.
 - `exclude_center`: Optional, if 1, exclude center pixel/voxel from sigma calculation; if 0, include it (default: 0)
 
 **Returns:**
@@ -158,20 +152,20 @@ data_2d = np.ones((5, 5)) * 10.0
 data_2d[2, 2] = 100.0  # Outlier
 
 # Calculate local sigma with 3x3 window (center included by default)
-sigma_2d = fsigma(data_2d, xsize=3, ysize=3)
+sigma_2d = fsigma(data_2d, (3, 3))
 
 # Exclude center for outlier detection  
-sigma_2d_no_center = fsigma(data_2d, xsize=3, ysize=3, exclude_center=1)
+sigma_2d_no_center = fsigma(data_2d, (3, 3), exclude_center=1)
 
 # 3D example
 data_3d = np.random.normal(0.0, 1.0, (64, 64, 64)).astype(np.float64)
 data_3d[32, 32, 32] = 100.0  # Outlier
 
 # Calculate local 3D sigma with 3x3x3 window (center included by default)
-sigma_3d = fsigma(data_3d, xsize=3, ysize=3, zsize=3)
+sigma_3d = fsigma(data_3d, (3, 3, 3))
 
 # Exclude center voxel for outlier detection
-sigma_3d_no_center = fsigma(data_3d, xsize=3, ysize=3, zsize=3, exclude_center=1)
+sigma_3d_no_center = fsigma(data_3d, (3, 3, 3), exclude_center=1)
 ```
 
 ## Examples

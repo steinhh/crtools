@@ -29,7 +29,7 @@ def test_basic_functionality():
     ], dtype=np.float64)
     
     # Apply filter with 3x3 window (includes immediate neighbors)
-    out = fmedian(input_arr, 3, 3, 1)
+    out = fmedian(input_arr, (3, 3), 1)
 
     print("  Input array:")
     print(input_arr)
@@ -44,13 +44,13 @@ def test_data_types():
     
     # Test with correct types
     input_arr = np.array([[1, 2], [3, 4]], dtype=np.float64)
-    out = fmedian(input_arr, 3, 3, 1)
+    out = fmedian(input_arr, (3, 3), 1)
     assert out.dtype == np.float64
     print("  \u2713 Correct data types accepted")
 
     # Float32 input is coerced to float64 by the Python wrapper; ensure it runs
     wrong_input = np.array([[1, 2], [3, 4]], dtype=np.float32)
-    out2 = fmedian(wrong_input, 3, 3, 1)
+    out2 = fmedian(wrong_input, (3, 3), 1)
     assert out2.dtype == np.float64
     print("  \u2713 Float32 input coerced to float64 and accepted")
 
@@ -60,14 +60,14 @@ def test_array_dimensions():
     
     # Test with matching dimensions
     input_arr = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float64)
-    out = fmedian(input_arr, 3, 3, 1)
+    out = fmedian(input_arr, (3, 3), 1)
     assert out.shape == input_arr.shape and out.dtype == np.float64
     print("  \u2713 Matching dimensions accepted")
 
     # Test with 1D array (should fail in the underlying extension)
     with pytest.raises(ValueError):
         input_1d = np.array([1, 2, 3], dtype=np.float64)
-        fmedian(input_1d, 3, 3, 1)
+        fmedian(input_1d, (3, 3), 1)
     print("  \u2713 1D arrays correctly rejected")
 
 def test_window_sizes():
@@ -83,14 +83,14 @@ def test_window_sizes():
     ], dtype=np.float64)
     
     # Test with xsize=0, ysize=0 (only the pixel itself)
-    out0 = fmedian(input_arr, 1, 1, 1)
+    out0 = fmedian(input_arr, (1, 1), 1)
 
     # Should be identical to input when window is 1x1
     assert np.allclose(out0, input_arr.astype(np.float64)), "Window size (1x1) produced unexpected output"
     print("  \u2713 Window size (1x1) works correctly")
 
     # Test with xsize=2, ysize=2 (5x5 window)
-    out2 = fmedian(input_arr, 5, 5, 1)
+    out2 = fmedian(input_arr, (5, 5), 1)
     assert out2.shape == input_arr.shape
     print("  \u2713 Window size (5x5) works correctly")
 
@@ -106,7 +106,7 @@ def test_center_exclusion():
     ], dtype=np.float64)
 
     # Apply fmedian with a 3x3 window (xsize=3, ysize=3)
-    out = fmedian(input_arr, 3, 3, 1)
+    out = fmedian(input_arr, (3, 3), 1)
 
     print("  Input array:")
     print(input_arr)
@@ -124,14 +124,14 @@ def test_edge_cases():
     
     # Test with 1x1 array
     input_1x1 = np.array([[42]], dtype=np.float64)
-    out1 = fmedian(input_1x1, 3, 3, 1)
+    out1 = fmedian(input_1x1, (3, 3), 1)
 
     assert np.isclose(out1[0, 0], 42.0), f"Expected 42.0, got {out1[0,0]}"
     print("  \u2713 1x1 array handled correctly")
     
     # Test with 2x2 array
     input_2x2 = np.array([[1, 2], [3, 4]], dtype=np.float64)
-    out2 = fmedian(input_2x2, 3, 3, 1)
+    out2 = fmedian(input_2x2, (3, 3), 1)
     assert out2.shape == input_2x2.shape
     print("  \u2713 2x2 array handled correctly")
 
