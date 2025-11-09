@@ -40,7 +40,7 @@ static int compare_double(const void *a, const void *b)
 }
 
 /* Hybrid sort: specialized sorting networks for common sizes, fallback to generic sorts */
-static void sort_doubles(double *values, int count)
+static void sort_doubles_fast(double *values, int count)
 {
   if (count <= 1)
   {
@@ -123,7 +123,7 @@ static void sort_doubles(double *values, int count)
     sort26(values);
     break;
   case 27:
-    sort27b(values);
+    sort27(values);
     break;
   default:
     /* For other sizes, use insertion sort or qsort */
@@ -136,5 +136,22 @@ static void sort_doubles(double *values, int count)
       qsort(values, count, sizeof(double), compare_double);
     }
     break;
+  }
+}
+
+static void sort_doubles_safe(double *values, int count)
+{
+  qsort(values, count, sizeof(double), compare_double);
+}
+
+static void sort_doubles(double *values, int count)
+{
+  if (0)
+  {
+    sort_doubles_fast(values, count);
+  }
+  else
+  {
+    sort_doubles_safe(values, count);
   }
 }

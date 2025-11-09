@@ -180,65 +180,59 @@ static inline void sort8(double *d)
   SWAP(d[5], d[6]);
 }
 
-/* Sorting network for 11 elements - 39 comparators */
+/* Sorting network for 11 elements - 35 comparators */
 static inline void sort11(double *d)
 {
   /* Stage 1 */
-  SWAP(d[0], d[8]);
-  SWAP(d[1], d[7]);
-  SWAP(d[2], d[6]);
-  SWAP(d[3], d[11]);
-  SWAP(d[4], d[10]);
-  SWAP(d[5], d[9]);
+  SWAP(d[0], d[9]);
+  SWAP(d[1], d[6]);
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[7]);
+  SWAP(d[5], d[8]);
 
   /* Stage 2 */
   SWAP(d[0], d[1]);
-  SWAP(d[2], d[5]);
-  SWAP(d[3], d[4]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[10]);
   SWAP(d[6], d[9]);
   SWAP(d[7], d[8]);
-  SWAP(d[10], d[11]);
 
   /* Stage 3 */
-  SWAP(d[0], d[2]);
-  SWAP(d[1], d[6]);
-  SWAP(d[5], d[10]);
-  SWAP(d[9], d[11]);
-
-  /* Stage 4 */
-  SWAP(d[0], d[3]);
-  SWAP(d[1], d[2]);
-  SWAP(d[4], d[6]);
-  SWAP(d[5], d[7]);
-  SWAP(d[8], d[11]);
-  SWAP(d[9], d[10]);
-
-  /* Stage 5 */
-  SWAP(d[1], d[4]);
-  SWAP(d[3], d[5]);
-  SWAP(d[6], d[8]);
-  SWAP(d[7], d[10]);
-
-  /* Stage 6 */
   SWAP(d[1], d[3]);
   SWAP(d[2], d[5]);
-  SWAP(d[6], d[9]);
+  SWAP(d[4], d[7]);
   SWAP(d[8], d[10]);
 
-  /* Stage 7 */
-  SWAP(d[2], d[3]);
+  /* Stage 4 */
+  SWAP(d[0], d[4]);
+  SWAP(d[1], d[2]);
+  SWAP(d[3], d[7]);
+  SWAP(d[5], d[9]);
+  SWAP(d[6], d[8]);
+
+  /* Stage 5 */
+  SWAP(d[0], d[1]);
+  SWAP(d[2], d[6]);
   SWAP(d[4], d[5]);
-  SWAP(d[6], d[7]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[10]);
+
+  /* Stage 6 */
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[6]);
+  SWAP(d[5], d[7]);
   SWAP(d[8], d[9]);
 
-  /* Stage 8 */
-  SWAP(d[4], d[6]);
-  SWAP(d[5], d[7]);
-
-  /* Stage 9 */
+  /* Stage 7 */
+  SWAP(d[1], d[2]);
   SWAP(d[3], d[4]);
   SWAP(d[5], d[6]);
   SWAP(d[7], d[8]);
+
+  /* Stage 8 */
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
 }
 
 /* Sorting network for 12 elements - 39 comparators */
