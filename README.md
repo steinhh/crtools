@@ -220,11 +220,16 @@ ftools/
 │       │   ├── fsigma_ext.c          # C implementation (2D)
 │       │   ├── example_fsigma.py     # Usage example
 │       │   └── test_fsigma.py        # Module tests
-│       └── fsigma3/
-│           ├── __init__.py           # fsigma 3D module loader
-│           ├── fsigma3_ext.c         # C implementation (3D)
-│           ├── example_fsigma3.py    # Usage example
-│           └── test_fsigma3.py       # Module tests
+│       ├── fsigma3/
+│       │   ├── __init__.py           # fsigma 3D module loader
+│       │   ├── fsigma3_ext.c         # C implementation (3D)
+│       │   ├── example_fsigma3.py    # Usage example
+│       │   └── test_fsigma3.py       # Module tests
+│       └── sorting/
+│           ├── sorting.c             # Sorting network implementations
+│           ├── sorting_networks_generated.c  # Auto-generated networks
+│           ├── generate_sorting_networks.py  # Network generator script
+│           └── test_all_sorts.c      # Sorting network tests
 ├── tests/
 │   ├── test_fmedian_unit.py          # fmedian unit tests
 │   ├── test_fmedian_edge_cases.py    # fmedian edge cases
