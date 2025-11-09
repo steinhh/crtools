@@ -123,7 +123,7 @@ static void sort_doubles(double *values, int count)
     sort26(values);
     break;
   case 27:
-    sort27(values);
+    sort27b(values);
     break;
   default:
     /* For other sizes, use insertion sort or qsort */
