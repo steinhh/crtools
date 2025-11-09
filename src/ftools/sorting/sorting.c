@@ -59,8 +59,62 @@ static void sort_doubles(double *values, int count)
   case 4:
     sort4(values);
     break;
+  case 5:
+    sort5(values);
+    break;
+  case 6:
+    sort6(values);
+    break;
+  case 7:
+    sort7(values);
+    break;
+  case 8:
+    sort8(values);
+    break;
   case 9:
     sort9(values);
+    break;
+  case 11:
+    sort11(values);
+    break;
+  case 12:
+    sort12(values);
+    break;
+  case 13:
+    sort13(values);
+    break;
+  case 14:
+    sort14(values);
+    break;
+  case 15:
+    sort15(values);
+    break;
+  case 16:
+    sort16(values);
+    break;
+  case 17:
+    sort17(values);
+    break;
+  case 18:
+    sort18(values);
+    break;
+  case 19:
+    sort19(values);
+    break;
+  case 20:
+    sort20(values);
+    break;
+  case 21:
+    sort21(values);
+    break;
+  case 22:
+    sort22(values);
+    break;
+  case 23:
+    sort23(values);
+    break;
+  case 24:
+    sort24(values);
     break;
   case 25:
     sort25(values);
