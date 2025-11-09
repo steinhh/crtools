@@ -2,7 +2,7 @@
 
 ## C-based local image filters for cosmic ray detection and removal
 
-`ftools` provides fast, local neighborhood filters `fmedian` and `fsigma` that automatically handle both 2D and 3D arrays, implemented as C extensions with NumPy integration.
+`ftools` provides fast local neighborhood filters `fmedian` and `fsigma` that automatically handle both 2D and 3D arrays, implemented as C extensions with optimized sorting networks for small window sizes up to 27 elements.
 
 ## Features
 
@@ -285,3 +285,8 @@ Contributions are welcome! Please ensure:
 - Both functions convert input to `float64` for computation
 - C implementations provide significant speedup over pure Python/NumPy equivalents
 - Edge handling uses appropriate boundary conditions
+
+## Credits
+
+- Blazingly fast sorting networks adapted from [Sorting Networks](https://bertdobbelaere.github.io/sorting_networks.html)
+- Many thanks to Claude!
