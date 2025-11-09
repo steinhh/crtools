@@ -148,6 +148,189 @@ static inline void sort27(double *d)
   }
 }
 
+/* Complete sorting network for 27 elements - 114 comparators */
+static inline void sort27b(double *d)
+{
+  /* Stage 1 */
+  SWAP(d[0], d[1]);
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[14]);
+  SWAP(d[15], d[16]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[20]);
+  SWAP(d[21], d[22]);
+  SWAP(d[23], d[24]);
+  SWAP(d[25], d[26]);
+
+  /* Stage 2 */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[3]);
+  SWAP(d[4], d[6]);
+  SWAP(d[5], d[7]);
+  SWAP(d[8], d[10]);
+  SWAP(d[9], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[15], d[17]);
+  SWAP(d[16], d[18]);
+  SWAP(d[19], d[21]);
+  SWAP(d[20], d[22]);
+  SWAP(d[23], d[25]);
+  SWAP(d[24], d[26]);
+
+  /* Stage 3 */
+  SWAP(d[0], d[23]);
+  SWAP(d[1], d[24]);
+  SWAP(d[2], d[25]);
+  SWAP(d[3], d[26]);
+  SWAP(d[4], d[8]);
+  SWAP(d[5], d[9]);
+  SWAP(d[6], d[10]);
+  SWAP(d[7], d[11]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[19]);
+  SWAP(d[16], d[20]);
+  SWAP(d[17], d[21]);
+  SWAP(d[18], d[22]);
+
+  /* Stage 4 */
+  SWAP(d[0], d[4]);
+  SWAP(d[1], d[6]);
+  SWAP(d[2], d[19]);
+  SWAP(d[3], d[20]);
+  SWAP(d[5], d[13]);
+  SWAP(d[9], d[21]);
+  SWAP(d[11], d[14]);
+  SWAP(d[12], d[16]);
+  SWAP(d[17], d[23]);
+  SWAP(d[18], d[24]);
+  SWAP(d[22], d[26]);
+
+  /* Stage 5 */
+  SWAP(d[5], d[17]);
+  SWAP(d[6], d[16]);
+  SWAP(d[7], d[22]);
+  SWAP(d[9], d[25]);
+  SWAP(d[10], d[24]);
+  SWAP(d[12], d[15]);
+  SWAP(d[13], d[20]);
+  SWAP(d[14], d[26]);
+
+  /* Stage 6 */
+  SWAP(d[1], d[12]);
+  SWAP(d[4], d[15]);
+  SWAP(d[7], d[23]);
+  SWAP(d[10], d[19]);
+  SWAP(d[11], d[16]);
+  SWAP(d[13], d[18]);
+  SWAP(d[20], d[24]);
+  SWAP(d[22], d[25]);
+
+  /* Stage 7 */
+  SWAP(d[0], d[1]);
+  SWAP(d[6], d[12]);
+  SWAP(d[8], d[11]);
+  SWAP(d[9], d[15]);
+  SWAP(d[10], d[17]);
+  SWAP(d[14], d[24]);
+  SWAP(d[16], d[21]);
+  SWAP(d[18], d[19]);
+
+  /* Stage 8 */
+  SWAP(d[1], d[4]);
+  SWAP(d[2], d[8]);
+  SWAP(d[3], d[11]);
+  SWAP(d[12], d[15]);
+  SWAP(d[14], d[20]);
+  SWAP(d[16], d[22]);
+  SWAP(d[21], d[25]);
+
+  /* Stage 9 */
+  SWAP(d[2], d[5]);
+  SWAP(d[3], d[17]);
+  SWAP(d[8], d[13]);
+  SWAP(d[11], d[23]);
+  SWAP(d[21], d[22]);
+  SWAP(d[24], d[25]);
+
+  /* Stage 10 */
+  SWAP(d[1], d[2]);
+  SWAP(d[3], d[10]);
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[13]);
+  SWAP(d[11], d[15]);
+  SWAP(d[14], d[21]);
+  SWAP(d[18], d[23]);
+  SWAP(d[20], d[22]);
+
+  /* Stage 11 */
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[9]);
+  SWAP(d[7], d[8]);
+  SWAP(d[13], d[17]);
+  SWAP(d[14], d[16]);
+  SWAP(d[19], d[23]);
+  SWAP(d[22], d[24]);
+
+  /* Stage 12 */
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[6]);
+  SWAP(d[5], d[7]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[13]);
+  SWAP(d[14], d[18]);
+  SWAP(d[15], d[17]);
+  SWAP(d[16], d[19]);
+  SWAP(d[21], d[23]);
+
+  /* Stage 13 */
+  SWAP(d[3], d[5]);
+  SWAP(d[6], d[8]);
+  SWAP(d[7], d[9]);
+  SWAP(d[10], d[12]);
+  SWAP(d[11], d[14]);
+  SWAP(d[13], d[16]);
+  SWAP(d[15], d[18]);
+  SWAP(d[17], d[19]);
+  SWAP(d[20], d[21]);
+  SWAP(d[22], d[23]);
+
+  /* Stage 14 */
+  SWAP(d[5], d[6]);
+  SWAP(d[8], d[11]);
+  SWAP(d[9], d[10]);
+  SWAP(d[12], d[14]);
+  SWAP(d[13], d[15]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[21]);
+
+  /* Stage 15 */
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[14], d[15]);
+  SWAP(d[16], d[17]);
+  SWAP(d[18], d[20]);
+  SWAP(d[21], d[22]);
+
+  /* Stage 16 */
+  SWAP(d[3], d[4]);
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[12]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[16]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[20]);
+}
+
 /* Insertion sort for small arrays (much faster than qsort for n < ~40) */
 static void insertion_sort(double *values, int count)
 {

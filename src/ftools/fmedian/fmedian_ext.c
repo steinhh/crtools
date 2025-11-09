@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 /* Include sorting network routines */
-#include "../sorting.c"
+#include "../sorting/sorting.c"
 
 /* Function to compute median from a sorted array */
 static double compute_median(double *values, int count)
