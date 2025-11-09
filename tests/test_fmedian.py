@@ -410,3 +410,86 @@ class TestFmedianValidation:
         
         with pytest.raises(TypeError):
             fmedian(a, 1)  # NOSONAR - intentionally testing invalid input
+
+
+class TestFmedianIntegration:
+    """Integration tests from module-level test suite."""
+    
+    def test_module_basic_functionality(self):
+        """Test basic functionality with a simple array."""
+        input_arr = np.array([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 10],
+            [11, 12, 13, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25]
+        ], dtype=np.float64)
+        
+        out = fmedian(input_arr, (3, 3), 1)
+        assert out.shape == input_arr.shape and out.dtype == np.float64
+    
+    def test_module_data_types(self):
+        """Test that data type checking works correctly."""
+        input_arr = np.array([[1, 2], [3, 4]], dtype=np.float64)
+        out = fmedian(input_arr, (3, 3), 1)
+        assert out.dtype == np.float64
+        
+        # Float32 input is coerced to float64
+        wrong_input = np.array([[1, 2], [3, 4]], dtype=np.float32)
+        out2 = fmedian(wrong_input, (3, 3), 1)
+        assert out2.dtype == np.float64
+    
+    def test_module_array_dimensions(self):
+        """Test array dimension validation."""
+        input_arr = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float64)
+        out = fmedian(input_arr, (3, 3), 1)
+        assert out.shape == input_arr.shape and out.dtype == np.float64
+        
+        # Test with 1D array (should fail)
+        with pytest.raises(ValueError):
+            input_1d = np.array([1, 2, 3], dtype=np.float64)
+            fmedian(input_1d, (3, 3), 1)
+    
+    def test_module_window_sizes(self):
+        """Test different window sizes."""
+        input_arr = np.array([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 10],
+            [11, 12, 13, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25]
+        ], dtype=np.float64)
+        
+        # Test with 1x1 window
+        out0 = fmedian(input_arr, (1, 1), 1)
+        assert np.allclose(out0, input_arr.astype(np.float64))
+        
+        # Test with 5x5 window
+        out2 = fmedian(input_arr, (5, 5), 1)
+        assert out2.shape == input_arr.shape
+    
+    def test_module_center_exclusion(self):
+        """Test that the center pixel is excluded from the median calculation."""
+        input_arr = np.array([
+            [1.0, 2.0, 3.0],
+            [4.0, 999.0, 6.0],
+            [7.0, 8.0, 9.0]
+        ], dtype=np.float64)
+        
+        out = fmedian(input_arr, (3, 3), 1)
+        
+        # Neighbors excluding the center are [1,2,3,4,6,7,8,9]; median = (4+6)/2 = 5.0
+        expected = 5.0
+        assert np.isclose(out[1, 1], expected)
+    
+    def test_module_edge_cases(self):
+        """Test edge cases like small arrays and boundary conditions."""
+        # Test with 1x1 array
+        input_1x1 = np.array([[42]], dtype=np.float64)
+        out1 = fmedian(input_1x1, (3, 3), 1)
+        assert np.isclose(out1[0, 0], 42.0)
+        
+        # Test with 2x2 array
+        input_2x2 = np.array([[1, 2], [3, 4]], dtype=np.float64)
+        out2 = fmedian(input_2x2, (3, 3), 1)
+        assert out2.shape == input_2x2.shape

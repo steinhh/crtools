@@ -390,3 +390,92 @@ class TestFsigmaValidation:
         
         with pytest.raises(TypeError):
             fsigma(a, 1)
+
+
+class TestFsigmaIntegration:
+    """Integration tests from module-level test suite."""
+    
+    def test_module_basic_functionality(self):
+        """Test basic functionality with a simple array."""
+        input_arr = np.array([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 10],
+            [11, 12, 13, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25]
+        ], dtype=np.float64)
+        
+        out = fsigma(input_arr, (3, 3), 1)
+        
+        # Basic checks
+        assert out.shape == input_arr.shape
+        assert np.all(np.isfinite(out))
+        assert not np.any(out < 0)
+    
+    def test_module_data_types(self):
+        """Test that data type checking works correctly."""
+        input_arr = np.array([[1, 2], [3, 4]], dtype=np.float64)
+        out = fsigma(input_arr, (3, 3), 1)
+        assert out.dtype == np.float64
+        
+        # Float32 input is coerced to float64
+        wrong_input = np.array([[1, 2], [3, 4]], dtype=np.float32)
+        out2 = fsigma(wrong_input, (3, 3), 1)
+        assert out2.dtype == np.float64
+    
+    def test_module_array_dimensions(self):
+        """Test array dimension validation."""
+        input_arr = np.array([[1, 2, 3], [4, 5, 6]], dtype=np.float64)
+        out = fsigma(input_arr, (3, 3), 1)
+        assert out.shape == input_arr.shape
+        
+        # Test with 1D array (should fail)
+        with pytest.raises(ValueError):
+            input_1d = np.array([1, 2, 3], dtype=np.float64)
+            fsigma(input_1d, (3, 3), 1)
+    
+    def test_module_window_sizes(self):
+        """Test different window sizes."""
+        input_arr = np.array([
+            [1, 2, 3, 4, 5],
+            [6, 7, 8, 9, 10],
+            [11, 12, 13, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25]
+        ], dtype=np.float64)
+        
+        # Test with 1x1 window => sigma should be 0
+        output_0 = fsigma(input_arr, (1, 1), 1)
+        assert np.allclose(output_0, 0.0)
+        
+        # Test with 5x5 window
+        output_2 = fsigma(input_arr, (5, 5), 1)
+        assert output_2.shape == input_arr.shape
+    
+    def test_module_center_exclusion(self):
+        """Verify that excluding the center pixel lowers the local sigma."""
+        input_arr = np.array([
+            [1.0, 2.0, 3.0],
+            [4.0, 999.0, 6.0],
+            [7.0, 8.0, 9.0]
+        ], dtype=np.float64)
+        
+        output_included = fsigma(input_arr, (3, 3), 0)
+        output_excluded = fsigma(input_arr, (3, 3), 1)
+        
+        sigma_with = output_included[1, 1]
+        sigma_without = output_excluded[1, 1]
+        
+        assert sigma_with > sigma_without
+    
+    def test_module_edge_cases(self):
+        """Test edge cases like small arrays and boundary conditions."""
+        # Test with 1x1 array
+        input_1x1 = np.array([[42]], dtype=np.float64)
+        output_1x1 = fsigma(input_1x1, (3, 3), 1)
+        assert np.isclose(output_1x1[0, 0], 0.0)
+        
+        # Test with 2x2 array
+        input_2x2 = np.array([[1, 2], [3, 4]], dtype=np.float64)
+        output_2x2 = fsigma(input_2x2, (3, 3), 1)
+        assert np.all(np.isfinite(output_2x2)) and not np.any(output_2x2 < 0)

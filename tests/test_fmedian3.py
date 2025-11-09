@@ -213,3 +213,103 @@ class TestFmedian3Validation:
             assert out.shape == (0, 0, 0)
         except (ValueError, RuntimeError):
             pass
+
+
+class TestFmedian3Integration:
+    """Integration tests from module-level test suite."""
+    
+    def test_module_basic_functionality(self):
+        """Test basic functionality with a simple 3D array."""
+        input_arr = np.arange(1, 28, dtype=np.float64).reshape((3, 3, 3))
+        out = fmedian3(input_arr, 3, 3, 3, 1)
+        assert out.shape == input_arr.shape and out.dtype == np.float64
+    
+    def test_module_data_types(self):
+        """Test that data type checking works correctly."""
+        input_arr = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]], dtype=np.float64)
+        out = fmedian3(input_arr, 3, 3, 3, 1)
+        assert out.dtype == np.float64
+    
+    def test_module_window_sizes(self):
+        """Test various window sizes."""
+        input_arr = np.ones((5, 5, 5), dtype=np.float64)
+        
+        # Test 1x1x1 window (should fall back to original values when center excluded)
+        out = fmedian3(input_arr, 1, 1, 1, 1)
+        assert np.allclose(out, input_arr)
+        
+        # Test 1x1x1 window with center included
+        out = fmedian3(input_arr, 1, 1, 1, 0)
+        assert np.allclose(out, input_arr)
+        
+        # Test 3x3x3 window
+        out = fmedian3(input_arr, 3, 3, 3, 1)
+        assert np.allclose(out, np.ones_like(input_arr))
+        
+        # Test 5x5x5 window
+        out = fmedian3(input_arr, 5, 5, 5, 1)
+        assert np.allclose(out, np.ones_like(input_arr))
+    
+    def test_module_outlier_removal(self):
+        """Test outlier detection/removal capability."""
+        # Create array with outlier
+        input_arr = np.ones((5, 5, 5), dtype=np.float64)
+        input_arr[2, 2, 2] = 100.0
+        
+        # Filter with exclude_center=1
+        out = fmedian3(input_arr, 3, 3, 3, 1)
+        
+        # The outlier position should get the median of its neighbors
+        assert np.isclose(out[2, 2, 2], 1.0)
+        assert np.allclose(out, np.ones_like(input_arr))
+    
+    def test_module_nan_handling(self):
+        """Test handling of NaN values."""
+        # Create array with NaN
+        input_arr = np.ones((3, 3, 3), dtype=np.float64)
+        input_arr[0, 0, 0] = np.nan
+        input_arr[1, 1, 1] = np.nan
+        
+        # Filter should ignore NaN values
+        out = fmedian3(input_arr, 3, 3, 3, 1)
+        
+        # Result should not contain NaN in most positions
+        assert not np.isnan(out[2, 2, 2])
+    
+    def test_module_parameter_validation(self):
+        """Test parameter validation."""
+        input_arr = np.ones((3, 3, 3), dtype=np.float64)
+        
+        # Test that window sizes must be odd
+        with pytest.raises(ValueError, match="must be an odd number"):
+            fmedian3(input_arr, 2, 3, 3, 1)
+        
+        with pytest.raises(ValueError, match="must be an odd number"):
+            fmedian3(input_arr, 3, 2, 3, 1)
+        
+        with pytest.raises(ValueError, match="must be an odd number"):
+            fmedian3(input_arr, 3, 3, 2, 1)
+        
+        # Test that window sizes must be positive
+        with pytest.raises(ValueError, match="must be positive"):
+            fmedian3(input_arr, 0, 3, 3, 1)
+        
+        with pytest.raises(ValueError, match="must be positive"):
+            fmedian3(input_arr, -1, 3, 3, 1)
+        
+        # Test that input must be 3D
+        input_2d = np.ones((3, 3), dtype=np.float64)
+        with pytest.raises(ValueError, match="must be 3-dimensional"):
+            fmedian3(input_2d, 3, 3, 3, 1)
+    
+    def test_module_edge_cases(self):
+        """Test edge cases and boundary conditions."""
+        # Very small array
+        input_arr = np.array([[[1.0]]], dtype=np.float64)
+        out = fmedian3(input_arr, 1, 1, 1, 0)
+        assert np.isclose(out[0, 0, 0], 1.0)
+        
+        # All NaN array
+        input_arr = np.full((2, 2, 2), np.nan, dtype=np.float64)
+        out = fmedian3(input_arr, 3, 3, 3, 1)
+        assert np.all(np.isnan(out))
