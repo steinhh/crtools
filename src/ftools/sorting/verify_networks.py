@@ -7,10 +7,11 @@ the definitions in generate_sorting_networks.py
 import re
 from generate_sorting_networks import networks, parse_network_stage, generate_sort_function
 
-def extract_c_sort_function(c_code, n):
+def extract_c_sort_function(c_code, func_name, n):
     """Extract a sort function from C code."""
-    # Find the function starting with "static inline void sortN"
-    pattern = rf'/\* Sorting network for {n} elements.*?\nstatic inline void sort{n}\(double \*d\)\n{{.*?\n}}'
+    # Find the function starting with "static inline void sortN" or "static inline void sortNb"
+    # More flexible pattern that captures the function regardless of the comment
+    pattern = rf'static inline void {func_name}\(double \*d\)\n{{.*?\n}}'
     match = re.search(pattern, c_code, re.DOTALL)
     if match:
         return match.group(0)
@@ -27,7 +28,7 @@ def normalize_whitespace(code):
 def extract_swaps_from_c(c_func):
     """Extract all SWAP calls from C function."""
     swaps = []
-    for match in re.finditer(r'SWAP\(d\[(\d+)\],d\[(\d+)\]\)', c_func):
+    for match in re.finditer(r'SWAP\(d\[(\d+)\]\s*,\s*d\[(\d+)\]\)', c_func):
         a, b = int(match.group(1)), int(match.group(2))
         swaps.append((a, b))
     return swaps
@@ -58,7 +59,7 @@ for n in sorted(networks.keys()):
     function_name = f"sort{n}{suffix}"
     
     # Extract from C file
-    c_func = extract_c_sort_function(c_code, n if not suffix else f"{n}{suffix}")
+    c_func = extract_c_sort_function(c_code, function_name, n)
     
     if not c_func:
         print(f"? sort{n}{suffix}: NOT FOUND in C file")
