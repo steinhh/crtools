@@ -171,9 +171,11 @@ int main(void)
   total_failures += test_sort_function(sort22, 22, "sort22", num_tests);
   total_failures += test_sort_function(sort23, 23, "sort23", num_tests);
   total_failures += test_sort_function(sort24, 24, "sort24", num_tests);
-  total_failures += test_sort_function(sort25, 25, "sort25", num_tests);
+  total_failures += test_sort_function(sort25, 25, "sort25 (hybrid)", num_tests);
+  total_failures += test_sort_function(sort25b, 25, "sort25b (complete network)", num_tests);
   total_failures += test_sort_function(sort26, 26, "sort26", num_tests);
-  total_failures += test_sort_function(sort27, 27, "sort27", num_tests);
+  total_failures += test_sort_function(sort27, 27, "sort27 (hybrid)", num_tests);
+  total_failures += test_sort_function(sort27b, 27, "sort27b (complete network)", num_tests);
 
   printf("========================================\n");
   if (total_failures == 0)
