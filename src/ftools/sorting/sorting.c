@@ -117,7 +117,7 @@ static void sort_doubles_fast(double *values, int count)
     sort24(values);
     break;
   case 25:
-    sort25(values);
+    sort25b(values);
     break;
   case 26:
     sort26(values);
