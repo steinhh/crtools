@@ -19,9 +19,25 @@
 /* Sorting network for 3 elements */
 static inline void sort3(double *d)
 {
+  /* Stage 1 */
+  SWAP(d[0], d[2]);
+  /* Stage 2 */
   SWAP(d[0], d[1]);
+  /* Stage 3 */
   SWAP(d[1], d[2]);
+}
+
+/* Sorting network for 4 elements */
+static inline void sort4(double *d)
+{
+  /* Stage 1 */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[3]);
+  /* Stage 2 */
   SWAP(d[0], d[1]);
+  SWAP(d[2], d[3]);
+  /* Stage 3 */
+  SWAP(d[1], d[2]);
 }
 
 /* Sorting network for 9 elements (3x3 window) */
@@ -172,6 +188,7 @@ int main()
   int all_passed = 1;
 
   all_passed &= test_sorting_network(sort3, 3, "sort3");
+  all_passed &= test_sorting_network(sort4, 4, "sort4");
   all_passed &= test_sorting_network(sort9, 9, "sort9");
   all_passed &= test_sorting_network(sort27, 27, "sort27");
 
