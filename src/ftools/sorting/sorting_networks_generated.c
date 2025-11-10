@@ -2245,152 +2245,6 @@ static inline void sort27b(double *d)
   SWAP(d[19], d[20]);
 }
 
-/* Hybrid sorting functions for N=28 to N=119
- * Strategy: Use sort27b or sort24 as building blocks, then insertion sort
- * These are optimized for the window sizes used in median/sigma filters
- */
-
-/* Forward declarations for sort28-sort32 (defined later) */
-void sort28(double *d);
-void sort29(double *d);
-void sort30(double *d);
-void sort31(double *d);
-void sort32(double *d);
-
-/* Efficient merge function for combining two sorted regions */
-static inline void merge_sorted_regions(double *d, int left, int mid, int right)
-{
-  int n1 = mid - left + 1;
-  int n2 = right - mid;
-
-  /* Use stack allocation for small merges, malloc for large */
-  double temp_buffer[128];
-  double *temp = (n1 + n2 <= 128) ? temp_buffer : malloc((n1 + n2) * sizeof(double));
-
-  /* Copy data to temp buffer */
-  for (int i = 0; i < n1; i++)
-    temp[i] = d[left + i];
-  for (int i = 0; i < n2; i++)
-    temp[n1 + i] = d[mid + 1 + i];
-
-  /* Merge back to original array */
-  int i = 0, j = n1, k = left;
-  while (i < n1 && j < n1 + n2)
-  {
-    if (temp[i] <= temp[j])
-      d[k++] = temp[i++];
-    else
-      d[k++] = temp[j++];
-  }
-
-  /* Copy remaining elements */
-  while (i < n1)
-    d[k++] = temp[i++];
-  while (j < n1 + n2)
-    d[k++] = temp[j++];
-
-  /* Free if we malloc'd */
-  if (n1 + n2 > 128)
-    free(temp);
-}
-
-/* Apply the best-fitting sorting network to a range of elements */
-static inline void sort_with_best_network(double *d, int size)
-{
-  /* Use the largest optimal network that fits */
-  if (size >= 32)
-    sort32(d);
-  else if (size >= 31)
-    sort31(d);
-  else if (size >= 30)
-    sort30(d);
-  else if (size >= 29)
-    sort29(d);
-  else if (size >= 28)
-    sort28(d);
-  else if (size >= 27)
-    sort27b(d);
-  else if (size >= 26)
-    sort26(d);
-  else if (size >= 25)
-    sort25b(d);
-  else if (size >= 24)
-    sort24(d);
-  else if (size >= 23)
-    sort23(d);
-  else if (size >= 22)
-    sort22(d);
-  else if (size >= 21)
-    sort21(d);
-  else if (size >= 20)
-    sort20(d);
-  else if (size >= 19)
-    sort19(d);
-  else if (size >= 18)
-    sort18(d);
-  else if (size >= 17)
-    sort17(d);
-  else if (size >= 16)
-    sort16(d);
-  else if (size >= 15)
-    sort15(d);
-  else if (size >= 14)
-    sort14(d);
-  else if (size >= 13)
-    sort13(d);
-  else if (size >= 12)
-    sort12(d);
-  else if (size >= 11)
-    sort11(d);
-  else if (size >= 10)
-    sort10(d);
-  else if (size >= 9)
-    sort9(d);
-  else if (size >= 8)
-    sort8(d);
-  else if (size >= 7)
-    sort7(d);
-  else if (size >= 6)
-    sort6(d);
-  else if (size >= 5)
-    sort5(d);
-  else if (size >= 4)
-    sort4(d);
-  else if (size >= 3)
-    sort3(d);
-  else if (size == 2)
-    SWAP(d[0], d[1]);
-  /* size < 2 is already sorted */
-}
-
-/* Optimized hybrid sort: partition into optimal networks, then merge efficiently */
-#define HYBRID_SORT_OPTIMIZED(N)                                        \
-  static inline void sort##N(double *d)                                 \
-  {                                                                     \
-    /* Partition N into optimal network sizes and sort each */          \
-    int pos = 0;                                                        \
-    while (pos < N)                                                     \
-    {                                                                   \
-      int remaining = N - pos;                                          \
-      int chunk_size = (remaining >= 32) ? 32 : remaining;              \
-      sort_with_best_network(&d[pos], chunk_size);                      \
-      pos += chunk_size;                                                \
-    }                                                                   \
-    /* Merge sorted chunks pairwise until fully sorted */               \
-    for (int merge_size = 32; merge_size < N; merge_size *= 2)          \
-    {                                                                   \
-      for (int left = 0; left < N - merge_size; left += merge_size * 2) \
-      {                                                                 \
-        int mid = left + merge_size - 1;                                \
-        int right = (left + merge_size * 2 - 1 < N - 1)                 \
-                        ? left + merge_size * 2 - 1                     \
-                        : N - 1;                                        \
-        if (mid < right)                                                \
-          merge_sorted_regions(d, left, mid, right);                    \
-      }                                                                 \
-    }                                                                   \
-  }
-
 /* ============================================================================
    Optimal Sorting Networks for N=28-32
    ============================================================================ */
@@ -3412,6 +3266,140 @@ void sort32(double *d)
   SWAP(d[25], d[26]);
   SWAP(d[27], d[28]);
 }
+
+/* Efficient merge function for combining two sorted regions */
+static inline void merge_sorted_regions(double *d, int left, int mid, int right)
+{
+  int n1 = mid - left + 1;
+  int n2 = right - mid;
+
+  /* Use stack allocation for small merges, malloc for large */
+  double temp_buffer[128];
+  double *temp = (n1 + n2 <= 128) ? temp_buffer : malloc((n1 + n2) * sizeof(double));
+
+  /* Copy data to temp buffer */
+  for (int i = 0; i < n1; i++)
+    temp[i] = d[left + i];
+  for (int i = 0; i < n2; i++)
+    temp[n1 + i] = d[mid + 1 + i];
+
+  /* Merge back to original array */
+  int i = 0, j = n1, k = left;
+  while (i < n1 && j < n1 + n2)
+  {
+    if (temp[i] <= temp[j])
+      d[k++] = temp[i++];
+    else
+      d[k++] = temp[j++];
+  }
+
+  /* Copy remaining elements */
+  while (i < n1)
+    d[k++] = temp[i++];
+  while (j < n1 + n2)
+    d[k++] = temp[j++];
+
+  /* Free if we malloc'd */
+  if (n1 + n2 > 128)
+    free(temp);
+}
+
+/* Apply the best-fitting sorting network to a range of elements */
+static inline void sort_with_best_network(double *d, int size)
+{
+  /* Use the largest optimal network that fits */
+  if (size >= 32)
+    sort32(d);
+  else if (size >= 31)
+    sort31(d);
+  else if (size >= 30)
+    sort30(d);
+  else if (size >= 29)
+    sort29(d);
+  else if (size >= 28)
+    sort28(d);
+  else if (size >= 27)
+    sort27b(d);
+  else if (size >= 26)
+    sort26(d);
+  else if (size >= 25)
+    sort25b(d);
+  else if (size >= 24)
+    sort24(d);
+  else if (size >= 23)
+    sort23(d);
+  else if (size >= 22)
+    sort22(d);
+  else if (size >= 21)
+    sort21(d);
+  else if (size >= 20)
+    sort20(d);
+  else if (size >= 19)
+    sort19(d);
+  else if (size >= 18)
+    sort18(d);
+  else if (size >= 17)
+    sort17(d);
+  else if (size >= 16)
+    sort16(d);
+  else if (size >= 15)
+    sort15(d);
+  else if (size >= 14)
+    sort14(d);
+  else if (size >= 13)
+    sort13(d);
+  else if (size >= 12)
+    sort12(d);
+  else if (size >= 11)
+    sort11(d);
+  else if (size >= 10)
+    sort10(d);
+  else if (size >= 9)
+    sort9(d);
+  else if (size >= 8)
+    sort8(d);
+  else if (size >= 7)
+    sort7(d);
+  else if (size >= 6)
+    sort6(d);
+  else if (size >= 5)
+    sort5(d);
+  else if (size >= 4)
+    sort4(d);
+  else if (size >= 3)
+    sort3(d);
+  else if (size == 2)
+    SWAP(d[0], d[1]);
+  /* size < 2 is already sorted */
+}
+
+/* Optimized hybrid sort: partition into optimal networks, then merge efficiently */
+#define HYBRID_SORT_OPTIMIZED(N)                                        \
+  static inline void sort##N(double *d)                                 \
+  {                                                                     \
+    /* Partition N into optimal network sizes and sort each */          \
+    int pos = 0;                                                        \
+    while (pos < N)                                                     \
+    {                                                                   \
+      int remaining = N - pos;                                          \
+      int chunk_size = (remaining >= 32) ? 32 : remaining;              \
+      sort_with_best_network(&d[pos], chunk_size);                      \
+      pos += chunk_size;                                                \
+    }                                                                   \
+    /* Merge sorted chunks pairwise until fully sorted */               \
+    for (int merge_size = 32; merge_size < N; merge_size *= 2)          \
+    {                                                                   \
+      for (int left = 0; left < N - merge_size; left += merge_size * 2) \
+      {                                                                 \
+        int mid = left + merge_size - 1;                                \
+        int right = (left + merge_size * 2 - 1 < N - 1)                 \
+                        ? left + merge_size * 2 - 1                     \
+                        : N - 1;                                        \
+        if (mid < right)                                                \
+          merge_sorted_regions(d, left, mid, right);                    \
+      }                                                                 \
+    }                                                                   \
+  }
 
 /* Generate optimized hybrid sorts for N=33-119 */
 /* These use optimal network partitioning + efficient merging instead of insertion sort */
