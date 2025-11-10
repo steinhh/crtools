@@ -60,11 +60,11 @@ sigma_map_3d = fsigma(data_3d, (xsize, ysize, zsize))
 
 - `input_data`: Input NumPy array (2D or 3D, will be converted to float64)
 - `window_size`: tuple with window sizes. Must be odd positive integers.
-- `exclude_center`: Optional, if 1, exclude center pixel/voxel from median calculation; if 0, include it (default: 0)
+- `exclude_center`: Optional, if 1, exclude center pixel/voxel from filter calculation; if 0, include it (default: 0)
 
 ## Returns
 
-- NumPy array of same shape as input, containing filtered median values (float64)
+- NumPy array of same shape as input, containing filtered values (float64)
 
 ## Examples
 
