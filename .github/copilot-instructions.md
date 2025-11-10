@@ -36,7 +36,7 @@ Users call `fmedian(arr, (3,3))` or `fmedian(arr, (3,3,3))` - dispatch is automa
 
 **Location:** `src/ftools/sorting/`
 
-The median/sigma filters include `sorting.c` directly via `#include "../sorting/sorting.c"`. This provides optimized sorting networks for small arrays (3-27 elements) used in window neighborhoods.
+The median/sigma filters include sorting.c directly. This provides optimized sorting networks for small arrays (3-27 elements) used in window neighborhoods.
 
 **Key files:**
 
@@ -70,7 +70,7 @@ See `tests/test_fmedian_unit.py::test_median_excludes_nan_neighbors` for canonic
 
 All `*_ext.c` files follow this structure:
 
-1. Include sorting: `#include "../sorting/sorting.c"`
+1. Include sorting: `include "../sorting/sorting.c"`
 2. Define `compute_median()` or `compute_sigma()` using `sort_doubles(values, count)`
 3. Define `check_inputs()` for array validation (dimensions, types, sizes)
 4. Main function loops over array, builds window buffer, calls compute function
@@ -140,7 +140,7 @@ gcc -O2 -o test_all_sorts.exe test_all_sorts.c -lm
 All `*_ext.c` files include sorting via relative path:
 
 ```c
-#include "../sorting/sorting.c"
+include "../sorting/sorting.c"
 ```
 
 Never link as object file - sorting.c is header-included.
