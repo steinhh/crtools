@@ -171,9 +171,11 @@ This project uses `tcsh` shell. Use tcsh-compatible syntax:
 
 ## Developer-added instructions
 
-### When creating executable files from C test programs, use a file extension like `.exe` to avoid confusion with source files. For example:
+When creating executable files from C test programs, use file extension `.exe` to avoid confusion with source files. For example:
 
 ```bash
 gcc -O2 -o test_all_sorts.exe test_all_sorts.c -lm
 ./test_all_sorts.exe  # Compares all networks against qsort with 10,000 random tests each
 ```
+
+Use a terse style for the README file, try to avoid duplication of information.
