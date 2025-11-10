@@ -44,8 +44,8 @@ from ftools import fmedian, fsigma
 xsize, ysize, zsize = 3, 3, 3  # Example window sizes
 
 # Generate random input data
-data_2d = np.random.normal(0.0, 1.0, (xsize, ysize)).astype(np.float64)
-data_3d = np.random.normal(0.0, 1.0, (xsize, ysize, zsize)).astype(np.float64)
+data_2d = np.random.normal(0.0, 1.0, (100, 200)).astype(np.float64)
+data_3d = np.random.normal(0.0, 1.0, (100, 200, 100)).astype(np.float64)
 
 # 2D example
 median_filtered_2d = fmedian(data_2d, (xsize, ysize), exclude_center=1)
@@ -56,13 +56,13 @@ median_filtered_3d = fmedian(data_3d, (xsize, ysize, zsize))
 sigma_map_3d = fsigma(data_3d, (xsize, ysize, zsize))
 ```
 
-**Parameters:**
+## Parameters
 
-- `data_2d`/`data_3d`: Input NumPy array (2D or 3D, will be converted to float64)
-- (`xsize`,`ysize` [,`zsize`]): tuple with window sizes. Must be odd positive integers.
+- `input_data`: Input NumPy array (2D or 3D, will be converted to float64)
+- `window_size`: tuple with window sizes. Must be odd positive integers.
 - `exclude_center`: Optional, if 1, exclude center pixel/voxel from median calculation; if 0, include it (default: 0)
 
-**Returns:**
+## Returns
 
 - NumPy array of same shape as input, containing filtered median values (float64)
 
