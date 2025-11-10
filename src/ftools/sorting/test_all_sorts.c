@@ -77,6 +77,36 @@ static void generate_random_permutation(double *arr, int n)
   }
 }
 
+/* Hybrid sort124: Uses sort24 blocks + insertion sort for 124 elements */
+static inline void sort124(double *d)
+{
+  /* Hybrid approach: sort 5 blocks of 24 elements + 4 remaining, then insertion sort
+   * 124 = 5 * 24 + 4
+   * Pre-sorting the larger blocks creates a partially sorted structure
+   */
+
+  /* Sort 5 blocks of 24 elements each using sort24 */
+  sort24(&d[0]);  /* Elements 0-23 */
+  sort24(&d[24]); /* Elements 24-47 */
+  sort24(&d[48]); /* Elements 48-71 */
+  sort24(&d[72]); /* Elements 72-95 */
+  sort24(&d[96]); /* Elements 96-119 */
+  /* Elements 120-123 (4 elements) left unsorted initially */
+
+  /* Complete the sort using insertion sort on the partially-sorted array */
+  for (int i = 1; i < 124; i++)
+  {
+    double key = d[i];
+    int j = i - 1;
+    while (j >= 0 && d[j] > key)
+    {
+      d[j + 1] = d[j];
+      j--;
+    }
+    d[j + 1] = key;
+  }
+}
+
 /* Hybrid sort125: Uses sort25 blocks + insertion sort for 125 elements */
 static inline void sort125(double *d)
 {
@@ -207,6 +237,7 @@ int main(void)
   total_failures += test_sort_function(sort26, 26, "sort26", num_tests);
   total_failures += test_sort_function(sort27, 27, "sort27 (hybrid)", num_tests);
   total_failures += test_sort_function(sort27b, 27, "sort27b (complete network)", num_tests);
+  total_failures += test_sort_function(sort124, 124, "sort124 (hybrid)", num_tests);
   total_failures += test_sort_function(sort125, 125, "sort125 (hybrid)", num_tests);
 
   printf("========================================\n");
