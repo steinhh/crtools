@@ -30,7 +30,7 @@ PATCH=$(echo "$CURRENT_VERSION" | cut -d. -f3)
 
 # Increment patch version
 NEW_PATCH=$((PATCH + 1))
-NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}-${BRANCH}"
+NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
 
 # Update version in setup.py
 sed -i.bak -E "s/(version=\")[0-9]+\.[0-9]+\.[0-9]+(\+[^\"]+)?\"/\1$NEW_VERSION\"/" "$SETUP_FILE"
