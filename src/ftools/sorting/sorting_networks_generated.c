@@ -1,6 +1,8 @@
 /* Sorting networks generated file */
 /* This file is generated - do not edit manually */
 
+#include <stdlib.h> /* For malloc/free in merge function */
+
 /* Branchless swap macro using temporary variable */
 #define SWAP(x, y)                      \
   do                                    \
@@ -2248,56 +2250,145 @@ static inline void sort27b(double *d)
  * These are optimized for the window sizes used in median/sigma filters
  */
 
-/* Helper macro for hybrid sorts using sort27b blocks */
-#define HYBRID_SORT_27(N, BLOCKS)       \
-  static inline void sort##N(double *d) \
-  {                                     \
-    for (int i = 0; i < BLOCKS; i++)    \
-    {                                   \
-      int start = i * 27;               \
-      int end = start + 27;             \
-      if (end > N)                      \
-        end = N;                        \
-      if (end - start >= 27)            \
-        sort27b(&d[start]);             \
-    }                                   \
-    for (int i = 1; i < N; i++)         \
-    {                                   \
-      double key = d[i];                \
-      int j = i - 1;                    \
-      while (j >= 0 && d[j] > key)      \
-      {                                 \
-        d[j + 1] = d[j];                \
-        j--;                            \
-      }                                 \
-      d[j + 1] = key;                   \
-    }                                   \
+/* Forward declarations for sort28-sort32 (defined later) */
+void sort28(double *d);
+void sort29(double *d);
+void sort30(double *d);
+void sort31(double *d);
+void sort32(double *d);
+
+/* Efficient merge function for combining two sorted regions */
+static inline void merge_sorted_regions(double *d, int left, int mid, int right)
+{
+  int n1 = mid - left + 1;
+  int n2 = right - mid;
+
+  /* Use stack allocation for small merges, malloc for large */
+  double temp_buffer[128];
+  double *temp = (n1 + n2 <= 128) ? temp_buffer : malloc((n1 + n2) * sizeof(double));
+
+  /* Copy data to temp buffer */
+  for (int i = 0; i < n1; i++)
+    temp[i] = d[left + i];
+  for (int i = 0; i < n2; i++)
+    temp[n1 + i] = d[mid + 1 + i];
+
+  /* Merge back to original array */
+  int i = 0, j = n1, k = left;
+  while (i < n1 && j < n1 + n2)
+  {
+    if (temp[i] <= temp[j])
+      d[k++] = temp[i++];
+    else
+      d[k++] = temp[j++];
   }
 
-/* Helper macro for hybrid sorts using sort24 blocks */
-#define HYBRID_SORT_24(N, BLOCKS)       \
-  static inline void sort##N(double *d) \
-  {                                     \
-    for (int i = 0; i < BLOCKS; i++)    \
-    {                                   \
-      int start = i * 24;               \
-      int end = start + 24;             \
-      if (end > N)                      \
-        end = N;                        \
-      if (end - start >= 24)            \
-        sort24(&d[start]);              \
-    }                                   \
-    for (int i = 1; i < N; i++)         \
-    {                                   \
-      double key = d[i];                \
-      int j = i - 1;                    \
-      while (j >= 0 && d[j] > key)      \
-      {                                 \
-        d[j + 1] = d[j];                \
-        j--;                            \
-      }                                 \
-      d[j + 1] = key;                   \
-    }                                   \
+  /* Copy remaining elements */
+  while (i < n1)
+    d[k++] = temp[i++];
+  while (j < n1 + n2)
+    d[k++] = temp[j++];
+
+  /* Free if we malloc'd */
+  if (n1 + n2 > 128)
+    free(temp);
+}
+
+/* Apply the best-fitting sorting network to a range of elements */
+static inline void sort_with_best_network(double *d, int size)
+{
+  /* Use the largest optimal network that fits */
+  if (size >= 32)
+    sort32(d);
+  else if (size >= 31)
+    sort31(d);
+  else if (size >= 30)
+    sort30(d);
+  else if (size >= 29)
+    sort29(d);
+  else if (size >= 28)
+    sort28(d);
+  else if (size >= 27)
+    sort27b(d);
+  else if (size >= 26)
+    sort26(d);
+  else if (size >= 25)
+    sort25b(d);
+  else if (size >= 24)
+    sort24(d);
+  else if (size >= 23)
+    sort23(d);
+  else if (size >= 22)
+    sort22(d);
+  else if (size >= 21)
+    sort21(d);
+  else if (size >= 20)
+    sort20(d);
+  else if (size >= 19)
+    sort19(d);
+  else if (size >= 18)
+    sort18(d);
+  else if (size >= 17)
+    sort17(d);
+  else if (size >= 16)
+    sort16(d);
+  else if (size >= 15)
+    sort15(d);
+  else if (size >= 14)
+    sort14(d);
+  else if (size >= 13)
+    sort13(d);
+  else if (size >= 12)
+    sort12(d);
+  else if (size >= 11)
+    sort11(d);
+  else if (size >= 10)
+    sort10(d);
+  else if (size >= 9)
+    sort9(d);
+  else if (size >= 8)
+    sort8(d);
+  else if (size >= 7)
+    sort7(d);
+  else if (size >= 6)
+    sort6(d);
+  else if (size >= 5)
+    sort5(d);
+  else if (size >= 4)
+    sort4(d);
+  else if (size >= 3)
+    sort3(d);
+  else if (size == 2)
+    SWAP(d[0], d[1]);
+  /* size < 2 is already sorted */
+}
+
+/* Optimized hybrid sort: partition into optimal networks, then merge efficiently */
+#define HYBRID_SORT_OPTIMIZED(N)                                        \
+  static inline void sort##N(double *d)                                 \
+  {                                                                     \
+    /* Partition N into optimal network sizes and sort each */          \
+    int pos = 0;                                                        \
+    while (pos < N)                                                     \
+    {                                                                   \
+      int remaining = N - pos;                                          \
+      int chunk_size = (remaining >= 32) ? 32 : remaining;              \
+      sort_with_best_network(&d[pos], chunk_size);                      \
+      pos += chunk_size;                                                \
+    }                                                                   \
+    /* Merge sorted chunks pairwise until fully sorted */               \
+    for (int merge_size = 32; merge_size < N; merge_size *= 2)          \
+    {                                                                   \
+      for (int left = 0; left < N - merge_size; left += merge_size * 2) \
+      {                                                                 \
+        int mid = left + merge_size - 1;                                \
+        int right = (left + merge_size * 2 - 1 < N - 1)                 \
+                        ? left + merge_size * 2 - 1                     \
+                        : N - 1;                                        \
+        if (mid < right)                                                \
+          merge_sorted_regions(d, left, mid, right);                    \
+      }                                                                 \
+    }                                                                   \
   }
 
 /* ============================================================================
@@ -3322,277 +3413,101 @@ void sort32(double *d)
   SWAP(d[27], d[28]);
 }
 
-/* Generate hybrid sorts for N=33-53 using sort32 or sort27b blocks */
-HYBRID_SORT_27(33, 2)
-HYBRID_SORT_27(34, 2)
-HYBRID_SORT_27(35, 2)
-HYBRID_SORT_27(36, 2)
-HYBRID_SORT_27(37, 2)
-HYBRID_SORT_27(38, 2)
-HYBRID_SORT_27(39, 2)
-HYBRID_SORT_27(40, 2)
-HYBRID_SORT_27(41, 2)
-HYBRID_SORT_27(42, 2)
-HYBRID_SORT_27(43, 2)
-HYBRID_SORT_27(44, 2)
-HYBRID_SORT_27(45, 2)
-HYBRID_SORT_27(46, 2)
-HYBRID_SORT_27(47, 2)
-HYBRID_SORT_27(48, 2)
-HYBRID_SORT_27(49, 2)
-HYBRID_SORT_27(50, 2)
-HYBRID_SORT_27(51, 2)
-HYBRID_SORT_27(52, 2)
-HYBRID_SORT_27(53, 2)
+/* Generate optimized hybrid sorts for N=33-119 */
+/* These use optimal network partitioning + efficient merging instead of insertion sort */
+HYBRID_SORT_OPTIMIZED(33)
+HYBRID_SORT_OPTIMIZED(34)
+HYBRID_SORT_OPTIMIZED(35)
+HYBRID_SORT_OPTIMIZED(36)
+HYBRID_SORT_OPTIMIZED(37)
+HYBRID_SORT_OPTIMIZED(38)
+HYBRID_SORT_OPTIMIZED(39)
+HYBRID_SORT_OPTIMIZED(40)
+HYBRID_SORT_OPTIMIZED(41)
+HYBRID_SORT_OPTIMIZED(42)
+HYBRID_SORT_OPTIMIZED(43)
+HYBRID_SORT_OPTIMIZED(44)
+HYBRID_SORT_OPTIMIZED(45)
+HYBRID_SORT_OPTIMIZED(46)
+HYBRID_SORT_OPTIMIZED(47)
+HYBRID_SORT_OPTIMIZED(48)
+HYBRID_SORT_OPTIMIZED(49)
+HYBRID_SORT_OPTIMIZED(50)
+HYBRID_SORT_OPTIMIZED(51)
+HYBRID_SORT_OPTIMIZED(52)
+HYBRID_SORT_OPTIMIZED(53)
+HYBRID_SORT_OPTIMIZED(54)
+HYBRID_SORT_OPTIMIZED(55)
+HYBRID_SORT_OPTIMIZED(56)
+HYBRID_SORT_OPTIMIZED(57)
+HYBRID_SORT_OPTIMIZED(58)
+HYBRID_SORT_OPTIMIZED(59)
+HYBRID_SORT_OPTIMIZED(60)
+HYBRID_SORT_OPTIMIZED(61)
+HYBRID_SORT_OPTIMIZED(62)
+HYBRID_SORT_OPTIMIZED(63)
+HYBRID_SORT_OPTIMIZED(64)
+HYBRID_SORT_OPTIMIZED(65)
+HYBRID_SORT_OPTIMIZED(66)
+HYBRID_SORT_OPTIMIZED(67)
+HYBRID_SORT_OPTIMIZED(68)
+HYBRID_SORT_OPTIMIZED(69)
+HYBRID_SORT_OPTIMIZED(70)
+HYBRID_SORT_OPTIMIZED(71)
+HYBRID_SORT_OPTIMIZED(72)
+HYBRID_SORT_OPTIMIZED(73)
+HYBRID_SORT_OPTIMIZED(74)
+HYBRID_SORT_OPTIMIZED(75)
+HYBRID_SORT_OPTIMIZED(76)
+HYBRID_SORT_OPTIMIZED(77)
+HYBRID_SORT_OPTIMIZED(78)
+HYBRID_SORT_OPTIMIZED(79)
+HYBRID_SORT_OPTIMIZED(80)
+HYBRID_SORT_OPTIMIZED(81)
+HYBRID_SORT_OPTIMIZED(82)
+HYBRID_SORT_OPTIMIZED(83)
+HYBRID_SORT_OPTIMIZED(84)
+HYBRID_SORT_OPTIMIZED(85)
+HYBRID_SORT_OPTIMIZED(86)
+HYBRID_SORT_OPTIMIZED(87)
+HYBRID_SORT_OPTIMIZED(88)
+HYBRID_SORT_OPTIMIZED(89)
+HYBRID_SORT_OPTIMIZED(90)
+HYBRID_SORT_OPTIMIZED(91)
+HYBRID_SORT_OPTIMIZED(92)
+HYBRID_SORT_OPTIMIZED(93)
+HYBRID_SORT_OPTIMIZED(94)
+HYBRID_SORT_OPTIMIZED(95)
+HYBRID_SORT_OPTIMIZED(96)
+HYBRID_SORT_OPTIMIZED(97)
+HYBRID_SORT_OPTIMIZED(98)
+HYBRID_SORT_OPTIMIZED(99)
+HYBRID_SORT_OPTIMIZED(100)
+HYBRID_SORT_OPTIMIZED(101)
+HYBRID_SORT_OPTIMIZED(102)
+HYBRID_SORT_OPTIMIZED(103)
+HYBRID_SORT_OPTIMIZED(104)
+HYBRID_SORT_OPTIMIZED(105)
+HYBRID_SORT_OPTIMIZED(106)
+HYBRID_SORT_OPTIMIZED(107)
+HYBRID_SORT_OPTIMIZED(108)
+HYBRID_SORT_OPTIMIZED(109)
+HYBRID_SORT_OPTIMIZED(110)
+HYBRID_SORT_OPTIMIZED(111)
+HYBRID_SORT_OPTIMIZED(112)
+HYBRID_SORT_OPTIMIZED(113)
+HYBRID_SORT_OPTIMIZED(114)
+HYBRID_SORT_OPTIMIZED(115)
+HYBRID_SORT_OPTIMIZED(116)
+HYBRID_SORT_OPTIMIZED(117)
+HYBRID_SORT_OPTIMIZED(118)
+HYBRID_SORT_OPTIMIZED(119)
 
-/* For N=54-80, use 2-3 sort27b blocks */
-HYBRID_SORT_27(54, 2)
-HYBRID_SORT_27(55, 3)
-HYBRID_SORT_27(56, 3)
-HYBRID_SORT_27(57, 3)
-HYBRID_SORT_27(58, 3)
-HYBRID_SORT_27(59, 3)
-HYBRID_SORT_27(60, 3)
-HYBRID_SORT_27(61, 3)
-HYBRID_SORT_27(62, 3)
-HYBRID_SORT_27(63, 3)
-HYBRID_SORT_27(64, 3)
-HYBRID_SORT_27(65, 3)
-HYBRID_SORT_27(66, 3)
-HYBRID_SORT_27(67, 3)
-HYBRID_SORT_27(68, 3)
-HYBRID_SORT_27(69, 3)
-HYBRID_SORT_27(70, 3)
-HYBRID_SORT_27(71, 3)
-HYBRID_SORT_27(72, 3)
-HYBRID_SORT_27(73, 3)
-HYBRID_SORT_27(74, 3)
-HYBRID_SORT_27(75, 3)
-HYBRID_SORT_27(76, 3)
-HYBRID_SORT_27(77, 3)
-HYBRID_SORT_27(78, 3)
-HYBRID_SORT_27(79, 3)
-HYBRID_SORT_27(80, 3)
+/* Optimized hybrid sort for N=120-125 */
+HYBRID_SORT_OPTIMIZED(120)
 
-/* For N=81-107, use 3-4 sort27b blocks */
-HYBRID_SORT_27(81, 3)
-HYBRID_SORT_27(82, 4)
-HYBRID_SORT_27(83, 4)
-HYBRID_SORT_27(84, 4)
-HYBRID_SORT_27(85, 4)
-HYBRID_SORT_27(86, 4)
-HYBRID_SORT_27(87, 4)
-HYBRID_SORT_27(88, 4)
-HYBRID_SORT_27(89, 4)
-HYBRID_SORT_27(90, 4)
-HYBRID_SORT_27(91, 4)
-HYBRID_SORT_27(92, 4)
-HYBRID_SORT_27(93, 4)
-HYBRID_SORT_27(94, 4)
-HYBRID_SORT_27(95, 4)
-HYBRID_SORT_27(96, 4)
-HYBRID_SORT_27(97, 4)
-HYBRID_SORT_27(98, 4)
-HYBRID_SORT_27(99, 4)
-HYBRID_SORT_27(100, 4)
-HYBRID_SORT_27(101, 4)
-HYBRID_SORT_27(102, 4)
-HYBRID_SORT_27(103, 4)
-HYBRID_SORT_27(104, 4)
-HYBRID_SORT_27(105, 4)
-HYBRID_SORT_27(106, 4)
-HYBRID_SORT_27(107, 4)
-
-/* For N=108-119, use sort24 blocks (5 blocks for better coverage) */
-HYBRID_SORT_24(108, 5)
-HYBRID_SORT_24(109, 5)
-HYBRID_SORT_24(110, 5)
-HYBRID_SORT_24(111, 5)
-HYBRID_SORT_24(112, 5)
-HYBRID_SORT_24(113, 5)
-HYBRID_SORT_24(114, 5)
-HYBRID_SORT_24(115, 5)
-HYBRID_SORT_24(116, 5)
-HYBRID_SORT_24(117, 5)
-HYBRID_SORT_24(118, 5)
-HYBRID_SORT_24(119, 5)
-
-/* Hybrid sort120: Uses sort24 blocks + insertion sort for 120 elements */
-static inline void sort120(double *d)
-{
-  /* Hybrid approach: sort 5 blocks of 24 elements, then insertion sort
-   * 120 = 5 * 24
-   * This is an exact fit using sort24 blocks
-   */
-
-  /* Sort 5 blocks of 24 elements each using sort24 */
-  sort24(&d[0]);  /* Elements 0-23 */
-  sort24(&d[24]); /* Elements 24-47 */
-  sort24(&d[48]); /* Elements 48-71 */
-  sort24(&d[72]); /* Elements 72-95 */
-  sort24(&d[96]); /* Elements 96-119 */
-
-  /* Complete the sort using insertion sort on the partially-sorted array */
-  for (int i = 1; i < 120; i++)
-  {
-    double key = d[i];
-    int j = i - 1;
-    while (j >= 0 && d[j] > key)
-    {
-      d[j + 1] = d[j];
-      j--;
-    }
-    d[j + 1] = key;
-  }
-}
-
-/* Hybrid sort121: Uses sort24 blocks + insertion sort for 121 elements */
-static inline void sort121(double *d)
-{
-  /* Hybrid approach: sort 5 blocks of 24 elements + 1 remaining, then insertion sort
-   * 121 = 5 * 24 + 1
-   * Pre-sorting the larger blocks creates a partially sorted structure
-   */
-
-  /* Sort 5 blocks of 24 elements each using sort24 */
-  sort24(&d[0]);  /* Elements 0-23 */
-  sort24(&d[24]); /* Elements 24-47 */
-  sort24(&d[48]); /* Elements 48-71 */
-  sort24(&d[72]); /* Elements 72-95 */
-  sort24(&d[96]); /* Elements 96-119 */
-  /* Element 120 left unsorted initially */
-
-  /* Complete the sort using insertion sort on the partially-sorted array */
-  for (int i = 1; i < 121; i++)
-  {
-    double key = d[i];
-    int j = i - 1;
-    while (j >= 0 && d[j] > key)
-    {
-      d[j + 1] = d[j];
-      j--;
-    }
-    d[j + 1] = key;
-  }
-}
-
-/* Hybrid sort122: Uses sort24 blocks + insertion sort for 122 elements */
-static inline void sort122(double *d)
-{
-  /* Hybrid approach: sort 5 blocks of 24 elements + 2 remaining, then insertion sort
-   * 122 = 5 * 24 + 2
-   * Pre-sorting the larger blocks creates a partially sorted structure
-   */
-
-  /* Sort 5 blocks of 24 elements each using sort24 */
-  sort24(&d[0]);  /* Elements 0-23 */
-  sort24(&d[24]); /* Elements 24-47 */
-  sort24(&d[48]); /* Elements 48-71 */
-  sort24(&d[72]); /* Elements 72-95 */
-  sort24(&d[96]); /* Elements 96-119 */
-  /* Elements 120-121 (2 elements) left unsorted initially */
-
-  /* Complete the sort using insertion sort on the partially-sorted array */
-  for (int i = 1; i < 122; i++)
-  {
-    double key = d[i];
-    int j = i - 1;
-    while (j >= 0 && d[j] > key)
-    {
-      d[j + 1] = d[j];
-      j--;
-    }
-    d[j + 1] = key;
-  }
-}
-
-/* Hybrid sort123: Uses sort24 blocks + insertion sort for 123 elements */
-static inline void sort123(double *d)
-{
-  /* Hybrid approach: sort 5 blocks of 24 elements + 3 remaining, then insertion sort
-   * 123 = 5 * 24 + 3
-   * Pre-sorting the larger blocks creates a partially sorted structure
-   */
-
-  /* Sort 5 blocks of 24 elements each using sort24 */
-  sort24(&d[0]);  /* Elements 0-23 */
-  sort24(&d[24]); /* Elements 24-47 */
-  sort24(&d[48]); /* Elements 48-71 */
-  sort24(&d[72]); /* Elements 72-95 */
-  sort24(&d[96]); /* Elements 96-119 */
-  /* Elements 120-122 (3 elements) left unsorted initially */
-
-  /* Complete the sort using insertion sort on the partially-sorted array */
-  for (int i = 1; i < 123; i++)
-  {
-    double key = d[i];
-    int j = i - 1;
-    while (j >= 0 && d[j] > key)
-    {
-      d[j + 1] = d[j];
-      j--;
-    }
-    d[j + 1] = key;
-  }
-}
-
-/* Hybrid sort124: Uses sort24 blocks + insertion sort for 124 elements */
-static inline void sort124(double *d)
-{
-  /* Hybrid approach: sort 5 blocks of 24 elements + 4 remaining, then insertion sort
-   * 124 = 5 * 24 + 4
-   * Pre-sorting the larger blocks creates a partially sorted structure
-   */
-
-  /* Sort 5 blocks of 24 elements each using sort24 */
-  sort24(&d[0]);  /* Elements 0-23 */
-  sort24(&d[24]); /* Elements 24-47 */
-  sort24(&d[48]); /* Elements 48-71 */
-  sort24(&d[72]); /* Elements 72-95 */
-  sort24(&d[96]); /* Elements 96-119 */
-  /* Elements 120-123 (4 elements) left unsorted initially */
-
-  /* Complete the sort using insertion sort on the partially-sorted array */
-  for (int i = 1; i < 124; i++)
-  {
-    double key = d[i];
-    int j = i - 1;
-    while (j >= 0 && d[j] > key)
-    {
-      d[j + 1] = d[j];
-      j--;
-    }
-    d[j + 1] = key;
-  }
-}
-
-/* Hybrid sort125: Uses sort25 blocks + insertion sort for 125 elements */
-static inline void sort125(double *d)
-{
-  /* Hybrid approach: sort 5 blocks of 25 elements, then insertion sort
-   * 125 = 5 * 25, so we can use sort25b for pre-sorting
-   * This creates a partially sorted structure that makes insertion sort efficient
-   */
-
-  /* Sort 5 blocks of 25 elements each using sort25b */
-  sort25b(&d[0]);   /* Elements 0-24 */
-  sort25b(&d[25]);  /* Elements 25-49 */
-  sort25b(&d[50]);  /* Elements 50-74 */
-  sort25b(&d[75]);  /* Elements 75-99 */
-  sort25b(&d[100]); /* Elements 100-124 */
-
-  /* Complete the sort using insertion sort on the partially-sorted array
-   * The pre-sorted blocks reduce the number of comparisons needed
-   */
-  for (int i = 1; i < 125; i++)
-  {
-    double key = d[i];
-    int j = i - 1;
-    while (j >= 0 && d[j] > key)
-    {
-      d[j + 1] = d[j];
-      j--;
-    }
-    d[j + 1] = key;
-  }
-}
+HYBRID_SORT_OPTIMIZED(121)
+HYBRID_SORT_OPTIMIZED(122)
+HYBRID_SORT_OPTIMIZED(123)
+HYBRID_SORT_OPTIMIZED(124)
+HYBRID_SORT_OPTIMIZED(125)
