@@ -180,6 +180,55 @@ static inline void sort8(double *d)
   SWAP(d[5], d[6]);
 }
 
+/* Sorting network for 10 elements - 29 comparators */
+static inline void sort10(double *d)
+{
+  /* Stage 1 */
+  SWAP(d[0], d[8]);
+  SWAP(d[1], d[9]);
+  SWAP(d[2], d[7]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[6]);
+
+  /* Stage 2 */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[4]);
+  SWAP(d[5], d[8]);
+  SWAP(d[7], d[9]);
+
+  /* Stage 3 */
+  SWAP(d[0], d[3]);
+  SWAP(d[2], d[4]);
+  SWAP(d[5], d[7]);
+  SWAP(d[6], d[9]);
+
+  /* Stage 4 */
+  SWAP(d[0], d[1]);
+  SWAP(d[3], d[6]);
+  SWAP(d[8], d[9]);
+
+  /* Stage 5 */
+  SWAP(d[1], d[5]);
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[8]);
+  SWAP(d[6], d[7]);
+
+  /* Stage 6 */
+  SWAP(d[1], d[2]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[6]);
+  SWAP(d[7], d[8]);
+
+  /* Stage 7 */
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+
+  /* Stage 8 */
+  SWAP(d[3], d[4]);
+  SWAP(d[5], d[6]);
+}
+
 /* Sorting network for 11 elements - 35 comparators */
 static inline void sort11(double *d)
 {
@@ -2192,6 +2241,1299 @@ static inline void sort27b(double *d)
   SWAP(d[15], d[16]);
   SWAP(d[17], d[18]);
   SWAP(d[19], d[20]);
+}
+
+/* Hybrid sorting functions for N=28 to N=119
+ * Strategy: Use sort27b or sort24 as building blocks, then insertion sort
+ * These are optimized for the window sizes used in median/sigma filters
+ */
+
+/* Helper macro for hybrid sorts using sort27b blocks */
+#define HYBRID_SORT_27(N, BLOCKS)       \
+  static inline void sort##N(double *d) \
+  {                                     \
+    for (int i = 0; i < BLOCKS; i++)    \
+    {                                   \
+      int start = i * 27;               \
+      int end = start + 27;             \
+      if (end > N)                      \
+        end = N;                        \
+      if (end - start >= 27)            \
+        sort27b(&d[start]);             \
+    }                                   \
+    for (int i = 1; i < N; i++)         \
+    {                                   \
+      double key = d[i];                \
+      int j = i - 1;                    \
+      while (j >= 0 && d[j] > key)      \
+      {                                 \
+        d[j + 1] = d[j];                \
+        j--;                            \
+      }                                 \
+      d[j + 1] = key;                   \
+    }                                   \
+  }
+
+/* Helper macro for hybrid sorts using sort24 blocks */
+#define HYBRID_SORT_24(N, BLOCKS)       \
+  static inline void sort##N(double *d) \
+  {                                     \
+    for (int i = 0; i < BLOCKS; i++)    \
+    {                                   \
+      int start = i * 24;               \
+      int end = start + 24;             \
+      if (end > N)                      \
+        end = N;                        \
+      if (end - start >= 24)            \
+        sort24(&d[start]);              \
+    }                                   \
+    for (int i = 1; i < N; i++)         \
+    {                                   \
+      double key = d[i];                \
+      int j = i - 1;                    \
+      while (j >= 0 && d[j] > key)      \
+      {                                 \
+        d[j + 1] = d[j];                \
+        j--;                            \
+      }                                 \
+      d[j + 1] = key;                   \
+    }                                   \
+  }
+
+/* ============================================================================
+   Optimal Sorting Networks for N=28-32
+   ============================================================================ */
+
+/* sort28: 28 elements, 14 stages, 155 comparators */
+void sort28(double *d)
+{
+  /* Stage 1: 14 comparators */
+  SWAP(d[0], d[1]);
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[14], d[15]);
+  SWAP(d[16], d[17]);
+  SWAP(d[18], d[19]);
+  SWAP(d[20], d[21]);
+  SWAP(d[22], d[23]);
+  SWAP(d[24], d[25]);
+  SWAP(d[26], d[27]);
+
+  /* Stage 2: 14 comparators */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[3]);
+  SWAP(d[4], d[6]);
+  SWAP(d[5], d[7]);
+  SWAP(d[8], d[10]);
+  SWAP(d[9], d[11]);
+  SWAP(d[12], d[14]);
+  SWAP(d[13], d[15]);
+  SWAP(d[16], d[18]);
+  SWAP(d[17], d[19]);
+  SWAP(d[20], d[22]);
+  SWAP(d[21], d[23]);
+  SWAP(d[24], d[26]);
+  SWAP(d[25], d[27]);
+
+  /* Stage 3: 12 comparators */
+  SWAP(d[0], d[4]);
+  SWAP(d[1], d[5]);
+  SWAP(d[2], d[6]);
+  SWAP(d[3], d[7]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[13]);
+  SWAP(d[14], d[18]);
+  SWAP(d[15], d[19]);
+  SWAP(d[20], d[24]);
+  SWAP(d[21], d[25]);
+  SWAP(d[22], d[26]);
+  SWAP(d[23], d[27]);
+
+  /* Stage 4: 12 comparators */
+  SWAP(d[0], d[20]);
+  SWAP(d[1], d[21]);
+  SWAP(d[2], d[22]);
+  SWAP(d[3], d[23]);
+  SWAP(d[4], d[24]);
+  SWAP(d[5], d[25]);
+  SWAP(d[6], d[26]);
+  SWAP(d[7], d[27]);
+  SWAP(d[9], d[17]);
+  SWAP(d[10], d[18]);
+  SWAP(d[11], d[15]);
+  SWAP(d[12], d[16]);
+
+  /* Stage 5: 12 comparators */
+  SWAP(d[1], d[2]);
+  SWAP(d[4], d[20]);
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[23]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[16]);
+  SWAP(d[10], d[14]);
+  SWAP(d[11], d[18]);
+  SWAP(d[13], d[17]);
+  SWAP(d[15], d[19]);
+  SWAP(d[21], d[22]);
+  SWAP(d[25], d[26]);
+
+  /* Stage 6: 14 comparators */
+  SWAP(d[0], d[8]);
+  SWAP(d[1], d[9]);
+  SWAP(d[2], d[12]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[10]);
+  SWAP(d[6], d[16]);
+  SWAP(d[7], d[13]);
+  SWAP(d[11], d[21]);
+  SWAP(d[14], d[20]);
+  SWAP(d[15], d[25]);
+  SWAP(d[17], d[23]);
+  SWAP(d[18], d[26]);
+  SWAP(d[19], d[27]);
+  SWAP(d[22], d[24]);
+
+  /* Stage 7: 10 comparators */
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[7]);
+  SWAP(d[5], d[17]);
+  SWAP(d[8], d[14]);
+  SWAP(d[9], d[11]);
+  SWAP(d[10], d[22]);
+  SWAP(d[13], d[19]);
+  SWAP(d[16], d[18]);
+  SWAP(d[20], d[24]);
+  SWAP(d[23], d[25]);
+
+  /* Stage 8: 10 comparators */
+  SWAP(d[1], d[8]);
+  SWAP(d[3], d[9]);
+  SWAP(d[5], d[11]);
+  SWAP(d[6], d[10]);
+  SWAP(d[7], d[15]);
+  SWAP(d[12], d[20]);
+  SWAP(d[16], d[22]);
+  SWAP(d[17], d[21]);
+  SWAP(d[18], d[24]);
+  SWAP(d[19], d[26]);
+
+  /* Stage 9: 10 comparators */
+  SWAP(d[1], d[2]);
+  SWAP(d[4], d[6]);
+  SWAP(d[5], d[9]);
+  SWAP(d[10], d[16]);
+  SWAP(d[11], d[17]);
+  SWAP(d[12], d[14]);
+  SWAP(d[13], d[15]);
+  SWAP(d[18], d[22]);
+  SWAP(d[21], d[23]);
+  SWAP(d[25], d[26]);
+
+  /* Stage 10: 8 comparators */
+  SWAP(d[4], d[8]);
+  SWAP(d[6], d[12]);
+  SWAP(d[7], d[11]);
+  SWAP(d[10], d[14]);
+  SWAP(d[13], d[17]);
+  SWAP(d[15], d[21]);
+  SWAP(d[16], d[20]);
+  SWAP(d[19], d[23]);
+
+  /* Stage 11: 10 comparators */
+  SWAP(d[2], d[4]);
+  SWAP(d[6], d[8]);
+  SWAP(d[7], d[16]);
+  SWAP(d[9], d[14]);
+  SWAP(d[10], d[12]);
+  SWAP(d[11], d[20]);
+  SWAP(d[13], d[18]);
+  SWAP(d[15], d[17]);
+  SWAP(d[19], d[21]);
+  SWAP(d[23], d[25]);
+
+  /* Stage 12: 8 comparators */
+  SWAP(d[3], d[10]);
+  SWAP(d[5], d[12]);
+  SWAP(d[7], d[9]);
+  SWAP(d[11], d[13]);
+  SWAP(d[14], d[16]);
+  SWAP(d[15], d[22]);
+  SWAP(d[17], d[24]);
+  SWAP(d[18], d[20]);
+
+  /* Stage 13: 10 comparators */
+  SWAP(d[3], d[6]);
+  SWAP(d[5], d[8]);
+  SWAP(d[7], d[10]);
+  SWAP(d[9], d[12]);
+  SWAP(d[11], d[14]);
+  SWAP(d[13], d[16]);
+  SWAP(d[15], d[18]);
+  SWAP(d[17], d[20]);
+  SWAP(d[19], d[22]);
+  SWAP(d[21], d[24]);
+
+  /* Stage 14: 11 comparators */
+  SWAP(d[3], d[4]);
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[12]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[16]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[20]);
+  SWAP(d[21], d[22]);
+  SWAP(d[23], d[24]);
+}
+
+/* sort29: 29 elements, 15 stages, 164 comparators */
+void sort29(double *d)
+{
+  /* Stage 1: 14 comparators */
+  SWAP(d[0], d[1]);
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[14], d[15]);
+  SWAP(d[16], d[28]);
+  SWAP(d[17], d[26]);
+  SWAP(d[18], d[25]);
+  SWAP(d[19], d[23]);
+  SWAP(d[21], d[27]);
+  SWAP(d[22], d[24]);
+
+  /* Stage 2: 13 comparators */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[3]);
+  SWAP(d[4], d[6]);
+  SWAP(d[5], d[7]);
+  SWAP(d[8], d[10]);
+  SWAP(d[9], d[11]);
+  SWAP(d[12], d[14]);
+  SWAP(d[13], d[15]);
+  SWAP(d[17], d[22]);
+  SWAP(d[18], d[19]);
+  SWAP(d[20], d[27]);
+  SWAP(d[23], d[25]);
+  SWAP(d[24], d[26]);
+
+  /* Stage 3: 14 comparators */
+  SWAP(d[0], d[4]);
+  SWAP(d[1], d[5]);
+  SWAP(d[2], d[6]);
+  SWAP(d[3], d[7]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[13]);
+  SWAP(d[10], d[14]);
+  SWAP(d[11], d[15]);
+  SWAP(d[16], d[20]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[22]);
+  SWAP(d[23], d[24]);
+  SWAP(d[25], d[26]);
+  SWAP(d[27], d[28]);
+
+  /* Stage 4: 13 comparators */
+  SWAP(d[0], d[8]);
+  SWAP(d[1], d[9]);
+  SWAP(d[2], d[10]);
+  SWAP(d[3], d[11]);
+  SWAP(d[4], d[12]);
+  SWAP(d[5], d[13]);
+  SWAP(d[6], d[14]);
+  SWAP(d[7], d[15]);
+  SWAP(d[16], d[18]);
+  SWAP(d[20], d[22]);
+  SWAP(d[21], d[25]);
+  SWAP(d[24], d[27]);
+  SWAP(d[26], d[28]);
+
+  /* Stage 5: 13 comparators */
+  SWAP(d[1], d[8]);
+  SWAP(d[2], d[24]);
+  SWAP(d[4], d[19]);
+  SWAP(d[5], d[20]);
+  SWAP(d[6], d[21]);
+  SWAP(d[7], d[27]);
+  SWAP(d[9], d[18]);
+  SWAP(d[10], d[23]);
+  SWAP(d[11], d[26]);
+  SWAP(d[13], d[22]);
+  SWAP(d[14], d[25]);
+  SWAP(d[15], d[28]);
+  SWAP(d[16], d[17]);
+
+  /* Stage 6: 10 comparators */
+  SWAP(d[0], d[6]);
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[24]);
+  SWAP(d[5], d[10]);
+  SWAP(d[12], d[19]);
+  SWAP(d[13], d[18]);
+  SWAP(d[14], d[21]);
+  SWAP(d[15], d[25]);
+  SWAP(d[20], d[23]);
+  SWAP(d[26], d[27]);
+
+  /* Stage 7: 11 comparators */
+  SWAP(d[0], d[16]);
+  SWAP(d[1], d[6]);
+  SWAP(d[3], d[12]);
+  SWAP(d[4], d[8]);
+  SWAP(d[5], d[17]);
+  SWAP(d[7], d[24]);
+  SWAP(d[14], d[20]);
+  SWAP(d[15], d[26]);
+  SWAP(d[18], d[21]);
+  SWAP(d[19], d[23]);
+  SWAP(d[25], d[27]);
+
+  /* Stage 8: 11 comparators */
+  SWAP(d[1], d[5]);
+  SWAP(d[2], d[16]);
+  SWAP(d[3], d[10]);
+  SWAP(d[6], d[9]);
+  SWAP(d[7], d[18]);
+  SWAP(d[8], d[17]);
+  SWAP(d[11], d[19]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[22]);
+  SWAP(d[21], d[23]);
+  SWAP(d[25], d[26]);
+
+  /* Stage 9: 11 comparators */
+  SWAP(d[1], d[2]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[8]);
+  SWAP(d[6], d[16]);
+  SWAP(d[7], d[11]);
+  SWAP(d[9], d[17]);
+  SWAP(d[10], d[12]);
+  SWAP(d[14], d[20]);
+  SWAP(d[15], d[18]);
+  SWAP(d[19], d[24]);
+  SWAP(d[22], d[27]);
+
+  /* Stage 10: 8 comparators */
+  SWAP(d[4], d[6]);
+  SWAP(d[9], d[16]);
+  SWAP(d[10], d[13]);
+  SWAP(d[11], d[19]);
+  SWAP(d[12], d[14]);
+  SWAP(d[20], d[21]);
+  SWAP(d[22], d[26]);
+  SWAP(d[23], d[24]);
+
+  /* Stage 11: 8 comparators */
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[6]);
+  SWAP(d[7], d[16]);
+  SWAP(d[8], d[9]);
+  SWAP(d[11], d[17]);
+  SWAP(d[15], d[19]);
+  SWAP(d[18], d[23]);
+  SWAP(d[24], d[25]);
+
+  /* Stage 12: 9 comparators */
+  SWAP(d[3], d[4]);
+  SWAP(d[5], d[9]);
+  SWAP(d[7], d[10]);
+  SWAP(d[11], d[13]);
+  SWAP(d[12], d[16]);
+  SWAP(d[14], d[17]);
+  SWAP(d[15], d[20]);
+  SWAP(d[19], d[21]);
+  SWAP(d[22], d[24]);
+
+  /* Stage 13: 10 comparators */
+  SWAP(d[5], d[8]);
+  SWAP(d[6], d[7]);
+  SWAP(d[9], d[12]);
+  SWAP(d[10], d[11]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[16]);
+  SWAP(d[17], d[20]);
+  SWAP(d[18], d[19]);
+  SWAP(d[21], d[23]);
+  SWAP(d[24], d[25]);
+
+  /* Stage 14: 9 comparators */
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[12]);
+  SWAP(d[13], d[15]);
+  SWAP(d[14], d[16]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[20]);
+  SWAP(d[21], d[22]);
+
+  /* Stage 15: 10 comparators */
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[14], d[15]);
+  SWAP(d[16], d[17]);
+  SWAP(d[18], d[19]);
+  SWAP(d[20], d[21]);
+  SWAP(d[22], d[23]);
+}
+
+/* sort30: 30 elements, 14 stages, 172 comparators */
+void sort30(double *d)
+{
+  /* Stage 1: 15 comparators */
+  SWAP(d[0], d[1]);
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[14], d[15]);
+  SWAP(d[16], d[17]);
+  SWAP(d[18], d[19]);
+  SWAP(d[20], d[21]);
+  SWAP(d[22], d[23]);
+  SWAP(d[24], d[25]);
+  SWAP(d[26], d[27]);
+  SWAP(d[28], d[29]);
+
+  /* Stage 2: 14 comparators */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[3]);
+  SWAP(d[4], d[6]);
+  SWAP(d[5], d[7]);
+  SWAP(d[8], d[10]);
+  SWAP(d[9], d[11]);
+  SWAP(d[13], d[15]);
+  SWAP(d[14], d[16]);
+  SWAP(d[18], d[20]);
+  SWAP(d[19], d[21]);
+  SWAP(d[22], d[24]);
+  SWAP(d[23], d[25]);
+  SWAP(d[26], d[28]);
+  SWAP(d[27], d[29]);
+
+  /* Stage 3: 14 comparators */
+  SWAP(d[0], d[4]);
+  SWAP(d[1], d[5]);
+  SWAP(d[2], d[6]);
+  SWAP(d[3], d[7]);
+  SWAP(d[8], d[14]);
+  SWAP(d[9], d[17]);
+  SWAP(d[10], d[16]);
+  SWAP(d[12], d[20]);
+  SWAP(d[13], d[19]);
+  SWAP(d[15], d[21]);
+  SWAP(d[22], d[26]);
+  SWAP(d[23], d[27]);
+  SWAP(d[24], d[28]);
+  SWAP(d[25], d[29]);
+
+  /* Stage 4: 14 comparators */
+  SWAP(d[0], d[8]);
+  SWAP(d[1], d[9]);
+  SWAP(d[2], d[14]);
+  SWAP(d[3], d[17]);
+  SWAP(d[4], d[10]);
+  SWAP(d[5], d[11]);
+  SWAP(d[6], d[16]);
+  SWAP(d[12], d[26]);
+  SWAP(d[13], d[23]);
+  SWAP(d[15], d[27]);
+  SWAP(d[18], d[24]);
+  SWAP(d[19], d[25]);
+  SWAP(d[20], d[28]);
+  SWAP(d[21], d[29]);
+
+  /* Stage 5: 14 comparators */
+  SWAP(d[1], d[13]);
+  SWAP(d[2], d[12]);
+  SWAP(d[3], d[15]);
+  SWAP(d[4], d[18]);
+  SWAP(d[5], d[19]);
+  SWAP(d[6], d[20]);
+  SWAP(d[7], d[21]);
+  SWAP(d[8], d[22]);
+  SWAP(d[9], d[23]);
+  SWAP(d[10], d[24]);
+  SWAP(d[11], d[25]);
+  SWAP(d[14], d[26]);
+  SWAP(d[16], d[28]);
+  SWAP(d[17], d[27]);
+
+  /* Stage 6: 14 comparators */
+  SWAP(d[0], d[4]);
+  SWAP(d[2], d[8]);
+  SWAP(d[3], d[13]);
+  SWAP(d[5], d[9]);
+  SWAP(d[6], d[22]);
+  SWAP(d[7], d[23]);
+  SWAP(d[10], d[12]);
+  SWAP(d[11], d[15]);
+  SWAP(d[14], d[18]);
+  SWAP(d[16], d[26]);
+  SWAP(d[17], d[19]);
+  SWAP(d[20], d[24]);
+  SWAP(d[21], d[27]);
+  SWAP(d[25], d[29]);
+
+  /* Stage 7: 12 comparators */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[14]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[8]);
+  SWAP(d[9], d[13]);
+  SWAP(d[11], d[17]);
+  SWAP(d[12], d[18]);
+  SWAP(d[15], d[28]);
+  SWAP(d[16], d[20]);
+  SWAP(d[21], d[25]);
+  SWAP(d[24], d[26]);
+  SWAP(d[27], d[29]);
+
+  /* Stage 8: 10 comparators */
+  SWAP(d[2], d[4]);
+  SWAP(d[5], d[9]);
+  SWAP(d[6], d[14]);
+  SWAP(d[7], d[13]);
+  SWAP(d[8], d[10]);
+  SWAP(d[15], d[23]);
+  SWAP(d[16], d[22]);
+  SWAP(d[19], d[21]);
+  SWAP(d[20], d[24]);
+  SWAP(d[25], d[27]);
+
+  /* Stage 9: 8 comparators */
+  SWAP(d[6], d[8]);
+  SWAP(d[7], d[11]);
+  SWAP(d[10], d[14]);
+  SWAP(d[12], d[16]);
+  SWAP(d[13], d[17]);
+  SWAP(d[15], d[19]);
+  SWAP(d[18], d[22]);
+  SWAP(d[21], d[23]);
+
+  /* Stage 10: 10 comparators */
+  SWAP(d[4], d[6]);
+  SWAP(d[7], d[9]);
+  SWAP(d[8], d[10]);
+  SWAP(d[11], d[13]);
+  SWAP(d[12], d[14]);
+  SWAP(d[15], d[17]);
+  SWAP(d[16], d[18]);
+  SWAP(d[19], d[21]);
+  SWAP(d[20], d[22]);
+  SWAP(d[23], d[25]);
+
+  /* Stage 11: 11 comparators */
+  SWAP(d[1], d[8]);
+  SWAP(d[3], d[18]);
+  SWAP(d[5], d[20]);
+  SWAP(d[7], d[22]);
+  SWAP(d[9], d[24]);
+  SWAP(d[10], d[12]);
+  SWAP(d[11], d[26]);
+  SWAP(d[13], d[15]);
+  SWAP(d[14], d[16]);
+  SWAP(d[17], d[19]);
+  SWAP(d[21], d[28]);
+
+  /* Stage 12: 11 comparators */
+  SWAP(d[1], d[2]);
+  SWAP(d[3], d[10]);
+  SWAP(d[5], d[12]);
+  SWAP(d[7], d[14]);
+  SWAP(d[9], d[16]);
+  SWAP(d[11], d[18]);
+  SWAP(d[13], d[20]);
+  SWAP(d[15], d[22]);
+  SWAP(d[17], d[24]);
+  SWAP(d[19], d[26]);
+  SWAP(d[27], d[28]);
+
+  /* Stage 13: 13 comparators */
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[6]);
+  SWAP(d[5], d[8]);
+  SWAP(d[7], d[10]);
+  SWAP(d[9], d[12]);
+  SWAP(d[11], d[14]);
+  SWAP(d[13], d[16]);
+  SWAP(d[15], d[18]);
+  SWAP(d[17], d[20]);
+  SWAP(d[19], d[22]);
+  SWAP(d[21], d[24]);
+  SWAP(d[23], d[26]);
+  SWAP(d[25], d[27]);
+
+  /* Stage 14: 12 comparators */
+  SWAP(d[3], d[4]);
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[12]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[16]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[20]);
+  SWAP(d[21], d[22]);
+  SWAP(d[23], d[24]);
+  SWAP(d[25], d[26]);
+}
+
+/* sort31: 31 elements, 14 stages, 180 comparators */
+void sort31(double *d)
+{
+  /* Stage 1: 15 comparators */
+  SWAP(d[0], d[1]);
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[14], d[15]);
+  SWAP(d[16], d[17]);
+  SWAP(d[18], d[19]);
+  SWAP(d[20], d[21]);
+  SWAP(d[22], d[23]);
+  SWAP(d[24], d[25]);
+  SWAP(d[26], d[27]);
+  SWAP(d[28], d[29]);
+
+  /* Stage 2: 15 comparators */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[3]);
+  SWAP(d[4], d[6]);
+  SWAP(d[5], d[7]);
+  SWAP(d[8], d[10]);
+  SWAP(d[9], d[11]);
+  SWAP(d[12], d[14]);
+  SWAP(d[13], d[15]);
+  SWAP(d[16], d[18]);
+  SWAP(d[17], d[19]);
+  SWAP(d[20], d[22]);
+  SWAP(d[21], d[23]);
+  SWAP(d[24], d[26]);
+  SWAP(d[25], d[27]);
+  SWAP(d[28], d[30]);
+
+  /* Stage 3: 15 comparators */
+  SWAP(d[0], d[4]);
+  SWAP(d[1], d[5]);
+  SWAP(d[2], d[6]);
+  SWAP(d[3], d[7]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[13]);
+  SWAP(d[10], d[14]);
+  SWAP(d[11], d[15]);
+  SWAP(d[16], d[20]);
+  SWAP(d[17], d[21]);
+  SWAP(d[18], d[22]);
+  SWAP(d[19], d[23]);
+  SWAP(d[24], d[28]);
+  SWAP(d[25], d[29]);
+  SWAP(d[26], d[30]);
+
+  /* Stage 4: 15 comparators */
+  SWAP(d[0], d[8]);
+  SWAP(d[1], d[9]);
+  SWAP(d[2], d[10]);
+  SWAP(d[3], d[11]);
+  SWAP(d[4], d[12]);
+  SWAP(d[5], d[13]);
+  SWAP(d[6], d[14]);
+  SWAP(d[7], d[15]);
+  SWAP(d[16], d[24]);
+  SWAP(d[17], d[25]);
+  SWAP(d[18], d[26]);
+  SWAP(d[19], d[27]);
+  SWAP(d[20], d[28]);
+  SWAP(d[21], d[29]);
+  SWAP(d[22], d[30]);
+
+  /* Stage 5: 15 comparators */
+  SWAP(d[0], d[16]);
+  SWAP(d[1], d[8]);
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[12]);
+  SWAP(d[5], d[10]);
+  SWAP(d[6], d[9]);
+  SWAP(d[7], d[14]);
+  SWAP(d[11], d[13]);
+  SWAP(d[17], d[24]);
+  SWAP(d[18], d[20]);
+  SWAP(d[19], d[28]);
+  SWAP(d[21], d[26]);
+  SWAP(d[22], d[25]);
+  SWAP(d[23], d[30]);
+  SWAP(d[27], d[29]);
+
+  /* Stage 6: 14 comparators */
+  SWAP(d[1], d[2]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[8]);
+  SWAP(d[6], d[22]);
+  SWAP(d[7], d[11]);
+  SWAP(d[9], d[25]);
+  SWAP(d[10], d[12]);
+  SWAP(d[13], d[14]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[21]);
+  SWAP(d[20], d[24]);
+  SWAP(d[23], d[27]);
+  SWAP(d[26], d[28]);
+  SWAP(d[29], d[30]);
+
+  /* Stage 7: 12 comparators */
+  SWAP(d[1], d[17]);
+  SWAP(d[2], d[18]);
+  SWAP(d[3], d[19]);
+  SWAP(d[4], d[20]);
+  SWAP(d[5], d[10]);
+  SWAP(d[7], d[23]);
+  SWAP(d[8], d[24]);
+  SWAP(d[11], d[27]);
+  SWAP(d[12], d[28]);
+  SWAP(d[13], d[29]);
+  SWAP(d[14], d[30]);
+  SWAP(d[21], d[26]);
+
+  /* Stage 8: 12 comparators */
+  SWAP(d[3], d[17]);
+  SWAP(d[4], d[16]);
+  SWAP(d[5], d[21]);
+  SWAP(d[6], d[18]);
+  SWAP(d[7], d[9]);
+  SWAP(d[8], d[20]);
+  SWAP(d[10], d[26]);
+  SWAP(d[11], d[23]);
+  SWAP(d[13], d[25]);
+  SWAP(d[14], d[28]);
+  SWAP(d[15], d[27]);
+  SWAP(d[22], d[24]);
+
+  /* Stage 9: 12 comparators */
+  SWAP(d[1], d[4]);
+  SWAP(d[3], d[8]);
+  SWAP(d[5], d[16]);
+  SWAP(d[7], d[17]);
+  SWAP(d[9], d[21]);
+  SWAP(d[10], d[22]);
+  SWAP(d[11], d[19]);
+  SWAP(d[12], d[20]);
+  SWAP(d[14], d[24]);
+  SWAP(d[15], d[26]);
+  SWAP(d[23], d[28]);
+  SWAP(d[27], d[30]);
+
+  /* Stage 10: 10 comparators */
+  SWAP(d[2], d[5]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[18]);
+  SWAP(d[11], d[17]);
+  SWAP(d[12], d[16]);
+  SWAP(d[13], d[22]);
+  SWAP(d[14], d[20]);
+  SWAP(d[15], d[19]);
+  SWAP(d[23], d[24]);
+  SWAP(d[26], d[29]);
+
+  /* Stage 11: 10 comparators */
+  SWAP(d[2], d[4]);
+  SWAP(d[6], d[12]);
+  SWAP(d[9], d[16]);
+  SWAP(d[10], d[11]);
+  SWAP(d[13], d[17]);
+  SWAP(d[14], d[18]);
+  SWAP(d[15], d[22]);
+  SWAP(d[19], d[25]);
+  SWAP(d[20], d[21]);
+  SWAP(d[27], d[29]);
+
+  /* Stage 12: 10 comparators */
+  SWAP(d[5], d[6]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[13]);
+  SWAP(d[14], d[16]);
+  SWAP(d[15], d[17]);
+  SWAP(d[18], d[20]);
+  SWAP(d[19], d[23]);
+  SWAP(d[21], d[22]);
+  SWAP(d[25], d[26]);
+
+  /* Stage 13: 12 comparators */
+  SWAP(d[3], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[12]);
+  SWAP(d[11], d[14]);
+  SWAP(d[13], d[16]);
+  SWAP(d[15], d[18]);
+  SWAP(d[17], d[20]);
+  SWAP(d[19], d[21]);
+  SWAP(d[22], d[23]);
+  SWAP(d[24], d[25]);
+  SWAP(d[26], d[28]);
+
+  /* Stage 14: 13 comparators */
+  SWAP(d[3], d[4]);
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[12]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[16]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[20]);
+  SWAP(d[21], d[22]);
+  SWAP(d[23], d[24]);
+  SWAP(d[25], d[26]);
+  SWAP(d[27], d[28]);
+}
+
+/* sort32: 32 elements, 14 stages, 185 comparators */
+void sort32(double *d)
+{
+  /* Stage 1: 16 comparators */
+  SWAP(d[0], d[1]);
+  SWAP(d[2], d[3]);
+  SWAP(d[4], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[11]);
+  SWAP(d[12], d[13]);
+  SWAP(d[14], d[15]);
+  SWAP(d[16], d[17]);
+  SWAP(d[18], d[19]);
+  SWAP(d[20], d[21]);
+  SWAP(d[22], d[23]);
+  SWAP(d[24], d[25]);
+  SWAP(d[26], d[27]);
+  SWAP(d[28], d[29]);
+  SWAP(d[30], d[31]);
+
+  /* Stage 2: 16 comparators */
+  SWAP(d[0], d[2]);
+  SWAP(d[1], d[3]);
+  SWAP(d[4], d[6]);
+  SWAP(d[5], d[7]);
+  SWAP(d[8], d[10]);
+  SWAP(d[9], d[11]);
+  SWAP(d[12], d[14]);
+  SWAP(d[13], d[15]);
+  SWAP(d[16], d[18]);
+  SWAP(d[17], d[19]);
+  SWAP(d[20], d[22]);
+  SWAP(d[21], d[23]);
+  SWAP(d[24], d[26]);
+  SWAP(d[25], d[27]);
+  SWAP(d[28], d[30]);
+  SWAP(d[29], d[31]);
+
+  /* Stage 3: 16 comparators */
+  SWAP(d[0], d[4]);
+  SWAP(d[1], d[5]);
+  SWAP(d[2], d[6]);
+  SWAP(d[3], d[7]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[13]);
+  SWAP(d[10], d[14]);
+  SWAP(d[11], d[15]);
+  SWAP(d[16], d[20]);
+  SWAP(d[17], d[21]);
+  SWAP(d[18], d[22]);
+  SWAP(d[19], d[23]);
+  SWAP(d[24], d[28]);
+  SWAP(d[25], d[29]);
+  SWAP(d[26], d[30]);
+  SWAP(d[27], d[31]);
+
+  /* Stage 4: 16 comparators */
+  SWAP(d[0], d[8]);
+  SWAP(d[1], d[9]);
+  SWAP(d[2], d[10]);
+  SWAP(d[3], d[11]);
+  SWAP(d[4], d[12]);
+  SWAP(d[5], d[13]);
+  SWAP(d[6], d[14]);
+  SWAP(d[7], d[15]);
+  SWAP(d[16], d[24]);
+  SWAP(d[17], d[25]);
+  SWAP(d[18], d[26]);
+  SWAP(d[19], d[27]);
+  SWAP(d[20], d[28]);
+  SWAP(d[21], d[29]);
+  SWAP(d[22], d[30]);
+  SWAP(d[23], d[31]);
+
+  /* Stage 5: 16 comparators */
+  SWAP(d[0], d[16]);
+  SWAP(d[1], d[8]);
+  SWAP(d[2], d[4]);
+  SWAP(d[3], d[12]);
+  SWAP(d[5], d[10]);
+  SWAP(d[6], d[9]);
+  SWAP(d[7], d[14]);
+  SWAP(d[11], d[13]);
+  SWAP(d[15], d[31]);
+  SWAP(d[17], d[24]);
+  SWAP(d[18], d[20]);
+  SWAP(d[19], d[28]);
+  SWAP(d[21], d[26]);
+  SWAP(d[22], d[25]);
+  SWAP(d[23], d[30]);
+  SWAP(d[27], d[29]);
+
+  /* Stage 6: 14 comparators */
+  SWAP(d[1], d[2]);
+  SWAP(d[3], d[5]);
+  SWAP(d[4], d[8]);
+  SWAP(d[6], d[22]);
+  SWAP(d[7], d[11]);
+  SWAP(d[9], d[25]);
+  SWAP(d[10], d[12]);
+  SWAP(d[13], d[14]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[21]);
+  SWAP(d[20], d[24]);
+  SWAP(d[23], d[27]);
+  SWAP(d[26], d[28]);
+  SWAP(d[29], d[30]);
+
+  /* Stage 7: 12 comparators */
+  SWAP(d[1], d[17]);
+  SWAP(d[2], d[18]);
+  SWAP(d[3], d[19]);
+  SWAP(d[4], d[20]);
+  SWAP(d[5], d[10]);
+  SWAP(d[7], d[23]);
+  SWAP(d[8], d[24]);
+  SWAP(d[11], d[27]);
+  SWAP(d[12], d[28]);
+  SWAP(d[13], d[29]);
+  SWAP(d[14], d[30]);
+  SWAP(d[21], d[26]);
+
+  /* Stage 8: 12 comparators */
+  SWAP(d[3], d[17]);
+  SWAP(d[4], d[16]);
+  SWAP(d[5], d[21]);
+  SWAP(d[6], d[18]);
+  SWAP(d[7], d[9]);
+  SWAP(d[8], d[20]);
+  SWAP(d[10], d[26]);
+  SWAP(d[11], d[23]);
+  SWAP(d[13], d[25]);
+  SWAP(d[14], d[28]);
+  SWAP(d[15], d[27]);
+  SWAP(d[22], d[24]);
+
+  /* Stage 9: 12 comparators */
+  SWAP(d[1], d[4]);
+  SWAP(d[3], d[8]);
+  SWAP(d[5], d[16]);
+  SWAP(d[7], d[17]);
+  SWAP(d[9], d[21]);
+  SWAP(d[10], d[22]);
+  SWAP(d[11], d[19]);
+  SWAP(d[12], d[20]);
+  SWAP(d[14], d[24]);
+  SWAP(d[15], d[26]);
+  SWAP(d[23], d[28]);
+  SWAP(d[27], d[30]);
+
+  /* Stage 10: 10 comparators */
+  SWAP(d[2], d[5]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[18]);
+  SWAP(d[11], d[17]);
+  SWAP(d[12], d[16]);
+  SWAP(d[13], d[22]);
+  SWAP(d[14], d[20]);
+  SWAP(d[15], d[19]);
+  SWAP(d[23], d[24]);
+  SWAP(d[26], d[29]);
+
+  /* Stage 11: 10 comparators */
+  SWAP(d[2], d[4]);
+  SWAP(d[6], d[12]);
+  SWAP(d[9], d[16]);
+  SWAP(d[10], d[11]);
+  SWAP(d[13], d[17]);
+  SWAP(d[14], d[18]);
+  SWAP(d[15], d[22]);
+  SWAP(d[19], d[25]);
+  SWAP(d[20], d[21]);
+  SWAP(d[27], d[29]);
+
+  /* Stage 12: 10 comparators */
+  SWAP(d[5], d[6]);
+  SWAP(d[8], d[12]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[13]);
+  SWAP(d[14], d[16]);
+  SWAP(d[15], d[17]);
+  SWAP(d[18], d[20]);
+  SWAP(d[19], d[23]);
+  SWAP(d[21], d[22]);
+  SWAP(d[25], d[26]);
+
+  /* Stage 13: 12 comparators */
+  SWAP(d[3], d[5]);
+  SWAP(d[6], d[7]);
+  SWAP(d[8], d[9]);
+  SWAP(d[10], d[12]);
+  SWAP(d[11], d[14]);
+  SWAP(d[13], d[16]);
+  SWAP(d[15], d[18]);
+  SWAP(d[17], d[20]);
+  SWAP(d[19], d[21]);
+  SWAP(d[22], d[23]);
+  SWAP(d[24], d[25]);
+  SWAP(d[26], d[28]);
+
+  /* Stage 14: 13 comparators */
+  SWAP(d[3], d[4]);
+  SWAP(d[5], d[6]);
+  SWAP(d[7], d[8]);
+  SWAP(d[9], d[10]);
+  SWAP(d[11], d[12]);
+  SWAP(d[13], d[14]);
+  SWAP(d[15], d[16]);
+  SWAP(d[17], d[18]);
+  SWAP(d[19], d[20]);
+  SWAP(d[21], d[22]);
+  SWAP(d[23], d[24]);
+  SWAP(d[25], d[26]);
+  SWAP(d[27], d[28]);
+}
+
+/* Generate hybrid sorts for N=33-53 using sort32 or sort27b blocks */
+HYBRID_SORT_27(33, 2)
+HYBRID_SORT_27(34, 2)
+HYBRID_SORT_27(35, 2)
+HYBRID_SORT_27(36, 2)
+HYBRID_SORT_27(37, 2)
+HYBRID_SORT_27(38, 2)
+HYBRID_SORT_27(39, 2)
+HYBRID_SORT_27(40, 2)
+HYBRID_SORT_27(41, 2)
+HYBRID_SORT_27(42, 2)
+HYBRID_SORT_27(43, 2)
+HYBRID_SORT_27(44, 2)
+HYBRID_SORT_27(45, 2)
+HYBRID_SORT_27(46, 2)
+HYBRID_SORT_27(47, 2)
+HYBRID_SORT_27(48, 2)
+HYBRID_SORT_27(49, 2)
+HYBRID_SORT_27(50, 2)
+HYBRID_SORT_27(51, 2)
+HYBRID_SORT_27(52, 2)
+HYBRID_SORT_27(53, 2)
+
+/* For N=54-80, use 2-3 sort27b blocks */
+HYBRID_SORT_27(54, 2)
+HYBRID_SORT_27(55, 3)
+HYBRID_SORT_27(56, 3)
+HYBRID_SORT_27(57, 3)
+HYBRID_SORT_27(58, 3)
+HYBRID_SORT_27(59, 3)
+HYBRID_SORT_27(60, 3)
+HYBRID_SORT_27(61, 3)
+HYBRID_SORT_27(62, 3)
+HYBRID_SORT_27(63, 3)
+HYBRID_SORT_27(64, 3)
+HYBRID_SORT_27(65, 3)
+HYBRID_SORT_27(66, 3)
+HYBRID_SORT_27(67, 3)
+HYBRID_SORT_27(68, 3)
+HYBRID_SORT_27(69, 3)
+HYBRID_SORT_27(70, 3)
+HYBRID_SORT_27(71, 3)
+HYBRID_SORT_27(72, 3)
+HYBRID_SORT_27(73, 3)
+HYBRID_SORT_27(74, 3)
+HYBRID_SORT_27(75, 3)
+HYBRID_SORT_27(76, 3)
+HYBRID_SORT_27(77, 3)
+HYBRID_SORT_27(78, 3)
+HYBRID_SORT_27(79, 3)
+HYBRID_SORT_27(80, 3)
+
+/* For N=81-107, use 3-4 sort27b blocks */
+HYBRID_SORT_27(81, 3)
+HYBRID_SORT_27(82, 4)
+HYBRID_SORT_27(83, 4)
+HYBRID_SORT_27(84, 4)
+HYBRID_SORT_27(85, 4)
+HYBRID_SORT_27(86, 4)
+HYBRID_SORT_27(87, 4)
+HYBRID_SORT_27(88, 4)
+HYBRID_SORT_27(89, 4)
+HYBRID_SORT_27(90, 4)
+HYBRID_SORT_27(91, 4)
+HYBRID_SORT_27(92, 4)
+HYBRID_SORT_27(93, 4)
+HYBRID_SORT_27(94, 4)
+HYBRID_SORT_27(95, 4)
+HYBRID_SORT_27(96, 4)
+HYBRID_SORT_27(97, 4)
+HYBRID_SORT_27(98, 4)
+HYBRID_SORT_27(99, 4)
+HYBRID_SORT_27(100, 4)
+HYBRID_SORT_27(101, 4)
+HYBRID_SORT_27(102, 4)
+HYBRID_SORT_27(103, 4)
+HYBRID_SORT_27(104, 4)
+HYBRID_SORT_27(105, 4)
+HYBRID_SORT_27(106, 4)
+HYBRID_SORT_27(107, 4)
+
+/* For N=108-119, use sort24 blocks (5 blocks for better coverage) */
+HYBRID_SORT_24(108, 5)
+HYBRID_SORT_24(109, 5)
+HYBRID_SORT_24(110, 5)
+HYBRID_SORT_24(111, 5)
+HYBRID_SORT_24(112, 5)
+HYBRID_SORT_24(113, 5)
+HYBRID_SORT_24(114, 5)
+HYBRID_SORT_24(115, 5)
+HYBRID_SORT_24(116, 5)
+HYBRID_SORT_24(117, 5)
+HYBRID_SORT_24(118, 5)
+HYBRID_SORT_24(119, 5)
+
+/* Hybrid sort120: Uses sort24 blocks + insertion sort for 120 elements */
+static inline void sort120(double *d)
+{
+  /* Hybrid approach: sort 5 blocks of 24 elements, then insertion sort
+   * 120 = 5 * 24
+   * This is an exact fit using sort24 blocks
+   */
+
+  /* Sort 5 blocks of 24 elements each using sort24 */
+  sort24(&d[0]);  /* Elements 0-23 */
+  sort24(&d[24]); /* Elements 24-47 */
+  sort24(&d[48]); /* Elements 48-71 */
+  sort24(&d[72]); /* Elements 72-95 */
+  sort24(&d[96]); /* Elements 96-119 */
+
+  /* Complete the sort using insertion sort on the partially-sorted array */
+  for (int i = 1; i < 120; i++)
+  {
+    double key = d[i];
+    int j = i - 1;
+    while (j >= 0 && d[j] > key)
+    {
+      d[j + 1] = d[j];
+      j--;
+    }
+    d[j + 1] = key;
+  }
+}
+
+/* Hybrid sort121: Uses sort24 blocks + insertion sort for 121 elements */
+static inline void sort121(double *d)
+{
+  /* Hybrid approach: sort 5 blocks of 24 elements + 1 remaining, then insertion sort
+   * 121 = 5 * 24 + 1
+   * Pre-sorting the larger blocks creates a partially sorted structure
+   */
+
+  /* Sort 5 blocks of 24 elements each using sort24 */
+  sort24(&d[0]);  /* Elements 0-23 */
+  sort24(&d[24]); /* Elements 24-47 */
+  sort24(&d[48]); /* Elements 48-71 */
+  sort24(&d[72]); /* Elements 72-95 */
+  sort24(&d[96]); /* Elements 96-119 */
+  /* Element 120 left unsorted initially */
+
+  /* Complete the sort using insertion sort on the partially-sorted array */
+  for (int i = 1; i < 121; i++)
+  {
+    double key = d[i];
+    int j = i - 1;
+    while (j >= 0 && d[j] > key)
+    {
+      d[j + 1] = d[j];
+      j--;
+    }
+    d[j + 1] = key;
+  }
+}
+
+/* Hybrid sort122: Uses sort24 blocks + insertion sort for 122 elements */
+static inline void sort122(double *d)
+{
+  /* Hybrid approach: sort 5 blocks of 24 elements + 2 remaining, then insertion sort
+   * 122 = 5 * 24 + 2
+   * Pre-sorting the larger blocks creates a partially sorted structure
+   */
+
+  /* Sort 5 blocks of 24 elements each using sort24 */
+  sort24(&d[0]);  /* Elements 0-23 */
+  sort24(&d[24]); /* Elements 24-47 */
+  sort24(&d[48]); /* Elements 48-71 */
+  sort24(&d[72]); /* Elements 72-95 */
+  sort24(&d[96]); /* Elements 96-119 */
+  /* Elements 120-121 (2 elements) left unsorted initially */
+
+  /* Complete the sort using insertion sort on the partially-sorted array */
+  for (int i = 1; i < 122; i++)
+  {
+    double key = d[i];
+    int j = i - 1;
+    while (j >= 0 && d[j] > key)
+    {
+      d[j + 1] = d[j];
+      j--;
+    }
+    d[j + 1] = key;
+  }
+}
+
+/* Hybrid sort123: Uses sort24 blocks + insertion sort for 123 elements */
+static inline void sort123(double *d)
+{
+  /* Hybrid approach: sort 5 blocks of 24 elements + 3 remaining, then insertion sort
+   * 123 = 5 * 24 + 3
+   * Pre-sorting the larger blocks creates a partially sorted structure
+   */
+
+  /* Sort 5 blocks of 24 elements each using sort24 */
+  sort24(&d[0]);  /* Elements 0-23 */
+  sort24(&d[24]); /* Elements 24-47 */
+  sort24(&d[48]); /* Elements 48-71 */
+  sort24(&d[72]); /* Elements 72-95 */
+  sort24(&d[96]); /* Elements 96-119 */
+  /* Elements 120-122 (3 elements) left unsorted initially */
+
+  /* Complete the sort using insertion sort on the partially-sorted array */
+  for (int i = 1; i < 123; i++)
+  {
+    double key = d[i];
+    int j = i - 1;
+    while (j >= 0 && d[j] > key)
+    {
+      d[j + 1] = d[j];
+      j--;
+    }
+    d[j + 1] = key;
+  }
 }
 
 /* Hybrid sort124: Uses sort24 blocks + insertion sort for 124 elements */
