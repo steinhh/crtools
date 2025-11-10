@@ -98,7 +98,7 @@ pytest --cov=ftools --cov-report=html
 
 ## Project Structure
 
-```
+```bash
 tree --gitignore
 ```
 
