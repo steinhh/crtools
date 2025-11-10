@@ -145,11 +145,6 @@ static void sort_doubles_fast(double *values, int count)
   }
 }
 
-static void sort_doubles_safe(double *values, int count)
-{
-  qsort(values, count, sizeof(double), compare_double);
-}
-
 static void sort_doubles(double *values, int count)
 {
   if (1)
@@ -158,6 +153,6 @@ static void sort_doubles(double *values, int count)
   }
   else
   {
-    sort_doubles_safe(values, count);
+    qsort(values, count, sizeof(double), compare_double);
   }
 }
