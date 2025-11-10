@@ -77,10 +77,41 @@ static void generate_random_permutation(double *arr, int n)
   }
 }
 
+/* Hybrid sort125: Uses sort25 blocks + insertion sort for 125 elements */
+static inline void sort125(double *d)
+{
+  /* Hybrid approach: sort 5 blocks of 25 elements, then insertion sort
+   * 125 = 5 * 25, so we can use sort25 (or sort25b) for pre-sorting
+   * This creates a partially sorted structure that makes insertion sort efficient
+   */
+
+  /* Sort 5 blocks of 25 elements each using sort25b */
+  sort25b(&d[0]);   /* Elements 0-24 */
+  sort25b(&d[25]);  /* Elements 25-49 */
+  sort25b(&d[50]);  /* Elements 50-74 */
+  sort25b(&d[75]);  /* Elements 75-99 */
+  sort25b(&d[100]); /* Elements 100-124 */
+
+  /* Complete the sort using insertion sort on the partially-sorted array
+   * The pre-sorted blocks reduce the number of comparisons needed
+   */
+  for (int i = 1; i < 125; i++)
+  {
+    double key = d[i];
+    int j = i - 1;
+    while (j >= 0 && d[j] > key)
+    {
+      d[j + 1] = d[j];
+      j--;
+    }
+    d[j + 1] = key;
+  }
+}
+
 /* Test a sorting function against qsort */
 typedef void (*sort_func_t)(double *);
 
-#define MAX_SIZE 30
+#define MAX_SIZE 150
 
 static int test_sort_function(sort_func_t sort_func, int size, const char *name, int num_tests)
 {
@@ -176,6 +207,7 @@ int main(void)
   total_failures += test_sort_function(sort26, 26, "sort26", num_tests);
   total_failures += test_sort_function(sort27, 27, "sort27 (hybrid)", num_tests);
   total_failures += test_sort_function(sort27b, 27, "sort27b (complete network)", num_tests);
+  total_failures += test_sort_function(sort125, 125, "sort125 (hybrid)", num_tests);
 
   printf("========================================\n");
   if (total_failures == 0)
