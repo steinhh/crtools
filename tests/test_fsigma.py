@@ -113,6 +113,67 @@ class TestFsigmaCore:
         assert out.dtype == np.float64
         assert out.shape == a.shape
 
+    def test_fsigma_5x5_single_outlier(self):
+        """Test fsigma with 5x5 dataset containing a single non-zero value.
+        
+        This tests a realistic cosmic ray detection scenario where a single
+        pixel has a significantly different value from its uniform background.
+        """
+        # 5x5 array with a single 1.0 at center, rest zeros
+        data = np.array([
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+        ], dtype=np.float64)
+        
+        # Test with 5x5 filter, center included
+        result_with_center = fsigma(data, (5, 5), exclude_center=0)
+        
+        # For center pixel (2,2): 25 values (24 zeros, 1 one)
+        # Mean = 1/25 = 0.04
+        # Variance = (24*(0-0.04)^2 + 1*(1-0.04)^2) / 25 = 0.0384
+        # Sigma = sqrt(0.0384) ? 0.196
+        expected_sigma_center = np.sqrt(0.0384)
+        assert np.isclose(result_with_center[2, 2], expected_sigma_center)
+        
+        # All other pixels have non-zero sigma due to the outlier in their windows
+        assert np.all(result_with_center > 0.0)
+        
+        # Test with 5x5 filter, center excluded
+        result_without_center = fsigma(data, (5, 5), exclude_center=1)
+        
+        # For center pixel (2,2): 24 neighbors all zero
+        # Mean = 0, Variance = 0, Sigma = 0
+        assert np.isclose(result_without_center[2, 2], 0.0)
+        
+        # Center pixel excluded mode should have lower sigma at center
+        assert result_without_center[2, 2] < result_with_center[2, 2]
+        
+        # Corner pixels should have highest sigma (furthest from outlier)
+        assert result_with_center[0, 0] > result_with_center[2, 2]
+        
+        # Explicit corner value checks with center included:
+        # Corner (0,0): 9 pixels in window, one is 1.0, rest are 0.0
+        # Mean = 1/9, Variance = (8*(0-1/9)^2 + 1*(1-1/9)^2)/9 ? 0.0988
+        # Sigma ? 0.3143
+        expected_corner_with = np.sqrt((8 * (0 - 1/9)**2 + 1 * (1 - 1/9)**2) / 9)
+        assert np.isclose(result_with_center[0, 0], expected_corner_with)
+        assert np.isclose(result_with_center[0, 4], expected_corner_with)  # top-right
+        assert np.isclose(result_with_center[4, 0], expected_corner_with)  # bottom-left
+        assert np.isclose(result_with_center[4, 4], expected_corner_with)  # bottom-right
+        
+        # Explicit corner value checks with center excluded:
+        # Corner (0,0): 8 neighbors, one is 1.0, rest are 0.0
+        # Mean = 1/8, Variance = (7*(0-1/8)^2 + 1*(1-1/8)^2)/8 ? 0.1094
+        # Sigma ? 0.3307
+        expected_corner_without = np.sqrt((7 * (0 - 1/8)**2 + 1 * (1 - 1/8)**2) / 8)
+        assert np.isclose(result_without_center[0, 0], expected_corner_without)
+        assert np.isclose(result_without_center[0, 4], expected_corner_without)
+        assert np.isclose(result_without_center[4, 0], expected_corner_without)
+        assert np.isclose(result_without_center[4, 4], expected_corner_without)
+
 
 class TestFsigmaEdgeCases:
     """Test fsigma with edge cases, boundaries, and special values."""
