@@ -33,6 +33,18 @@ If you want to build the C extensions without installing:
 python setup.py build_ext --inplace
 ```
 
+## Git Hooks (Optional)
+
+The repository includes a pre-commit hook in `hooks/pre-commit` that automatically increments the patch version number and appends the branch name on each commit.
+
+To enable it, create a symlink:
+
+```bash
+ln -sf ../../hooks/pre-commit .git/hooks/pre-commit
+```
+
+This will automatically update the version in `setup.py` (e.g., `3.2.1-main` → `3.2.2-main`).
+
 ## Quick Start
 
 ```python
