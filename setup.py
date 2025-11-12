@@ -48,12 +48,17 @@ ext_modules = [
         sources=[os.path.join("src", "ftools", "fsigma3", "fsigma3_ext.c")],
         include_dirs=include_dirs,
     ),
+    Extension(
+        "ftools.fgaussian.fgaussian_ext",
+        sources=[os.path.join("src", "ftools", "fgaussian", "fgaussian_ext.c")],
+        include_dirs=include_dirs,
+    ),
 ]
 
 
 setup(
     name="ftools",
-    version="3.2.19",
+    version="3.2.20",
     description="Small C extensions for local image filters (fmedian, fsigma)",
     long_description=read_readme(),
     long_description_content_type="text/markdown",

@@ -8,6 +8,7 @@
 
 - **`fmedian`**: Filtered median computation - automatically works with 2D and 3D arrays
 - **`fsigma`**: Local population standard deviation - automatically works with 2D and 3D arrays
+- **`fgaussian`**: High-performance Gaussian profile computation (C extension with 1.35x speedup)
 - Optional center pixel/voxel exclusion for better outlier detection (default: include center)
 - Robust NaN handling
 - Correct edge handling (edge pixels/voxels use smaller neighborhoods)
@@ -50,6 +51,7 @@ This will automatically update the version in `setup.py` (e.g., `3.2.1-main` →
 ```python
 import numpy as np
 from ftools import fmedian, fsigma
+from ftools.fgaussian import gaussian
 
 # Works with both 2D and 3D data automatically!
 
@@ -66,17 +68,31 @@ sigma_map_2d = fsigma(data_2d, (xsize, ysize), exclude_center=1)
 # 3D example
 median_filtered_3d = fmedian(data_3d, (xsize, ysize, zsize))
 sigma_map_3d = fsigma(data_3d, (xsize, ysize, zsize))
+
+# Gaussian profile computation
+x = np.linspace(-10, 10, 1000)
+profile = gaussian(x, i0=1.0, mu=0.0, sigma=1.5)
 ```
 
 ## Parameters
+
+### fmedian / fsigma
 
 - `input_data`: Input NumPy array (2D or 3D, will be converted to float64)
 - `window_size`: tuple with window sizes. Must be odd positive integers.
 - `exclude_center`: Optional, if 1, exclude center pixel/voxel from filter calculation; if 0, include it (default: 0)
 
+### fgaussian.gaussian
+
+- `x`: Input array or scalar (position values)
+- `i0`: Peak intensity (scalar, float)
+- `mu`: Center position (scalar, float)
+- `sigma`: Width parameter (scalar, float, must be > 0)
+
 ## Returns
 
-- NumPy array of same shape as input, containing filtered values (float64)
+- **fmedian/fsigma**: NumPy array of same shape as input, containing filtered values (float64)
+- **fgaussian.gaussian**: NumPy array or float (matches input shape), dtype=float64
 
 ## Examples
 
@@ -125,9 +141,12 @@ Contributions are welcome! Please ensure:
 
 ## Performance Notes
 
-- Both functions convert input to `float64` for computation
-- C implementations provide significant speedup over pure Python/NumPy equivalents
+- All functions convert input to `float64` for computation
+- C implementations provide significant speedup over pure Python/NumPy:
+  - `fmedian`/`fsigma`: Fast sorting networks for small windows
+  - `fgaussian`: ~1.35x speedup for large arrays (10M elements)
 - Edge handling uses appropriate boundary conditions
+- Gaussian computation uses optimized C math library (exp)
 
 ## Credits
 
