@@ -12,6 +12,9 @@
 #include <time.h>
 #include <math.h>
 
+/* Include radix sort for uint64 */
+#include "radix_sort_uint64.c"
+
 /* Convert double to sortable uint64 */
 static inline uint64_t double_to_sortable_uint64(double d)
 {
@@ -34,65 +37,6 @@ static inline double sortable_uint64_to_double(uint64_t u)
   memcpy(&d, &u, sizeof(double));
 
   return d;
-}
-
-/*
- * Radix sort for uint64 arrays (adapted from uint32 version)
- * Processes 8 bits at a time, requiring 8 passes for 64-bit values
- */
-static void radix_sort_uint64(uint64_t *begin, uint64_t *end)
-{
-  size_t n = end - begin;
-  if (n <= 1)
-    return;
-
-  uint64_t *temp = (uint64_t *)malloc(n * sizeof(uint64_t));
-  if (!temp)
-    return; /* Allocation failed */
-
-  uint64_t *src = begin;
-  uint64_t *dst = temp;
-
-  /* Process 8 bits at a time (8 passes for 64 bits) */
-  for (unsigned shift = 0; shift < 64; shift += 8)
-  {
-    /* Count occurrences of each byte value */
-    size_t count[256] = {0};
-    for (size_t i = 0; i < n; i++)
-    {
-      uint8_t byte = (src[i] >> shift) & 0xFF;
-      count[byte]++;
-    }
-
-    /* Build bucket pointers (cumulative count) */
-    uint64_t *bucket[256];
-    uint64_t *q = dst;
-    for (int i = 0; i < 256; i++)
-    {
-      bucket[i] = q;
-      q += count[i];
-    }
-
-    /* Distribute elements into buckets */
-    for (size_t i = 0; i < n; i++)
-    {
-      uint8_t byte = (src[i] >> shift) & 0xFF;
-      *bucket[byte]++ = src[i];
-    }
-
-    /* Swap source and destination for next pass */
-    uint64_t *tmp = src;
-    src = dst;
-    dst = tmp;
-  }
-
-  /* After 8 passes (even number), result is in temp, copy back to begin */
-  if (src == temp)
-  {
-    memcpy(begin, temp, n * sizeof(uint64_t));
-  }
-
-  free(temp);
 }
 
 /*
