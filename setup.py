@@ -53,12 +53,25 @@ ext_modules = [
         sources=[os.path.join("src", "ftools", "fgaussian", "fgaussian_ext.c")],
         include_dirs=include_dirs,
     ),
+    Extension(
+        "ftools.fgaussian.fgaussian_simd_ext",
+        sources=[os.path.join("src", "ftools", "fgaussian", "fgaussian_simd_ext.c")],
+        include_dirs=include_dirs,
+        extra_compile_args=["-O3", "-ffast-math"],
+    ),
+    Extension(
+        "ftools.fgaussian.fgaussian_accelerate_ext",
+        sources=[os.path.join("src", "ftools", "fgaussian", "fgaussian_accelerate_ext.c")],
+        include_dirs=include_dirs,
+        extra_compile_args=["-O3", "-ffast-math"],
+        extra_link_args=["-framework", "Accelerate"],
+    ),
 ]
 
 
 setup(
     name="ftools",
-    version="3.2.20",
+    version="3.2.21",
     description="Small C extensions for local image filters (fmedian, fsigma)",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
