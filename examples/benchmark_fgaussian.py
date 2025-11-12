@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import numpy as np
 import time
-from ftools.fgaussian import gaussian
+from ftools import fgaussian
 
 
 def numpy_gaussian(x, i0, mu, sigma):
@@ -26,13 +26,13 @@ def benchmark_size(n, num_iterations=1000):
     
     # Warm up
     for _ in range(10):
-        _ = gaussian(x, i0=i0, mu=mu, sigma=sigma)
+        _ = fgaussian(x, i0=i0, mu=mu, sigma=sigma)
         _ = numpy_gaussian(x, i0, mu, sigma)
     
     # Benchmark C extension (float32)
     start = time.perf_counter()
     for _ in range(num_iterations):
-        result_c = gaussian(x, i0=i0, mu=mu, sigma=sigma)
+        result_c = fgaussian(x, i0=i0, mu=mu, sigma=sigma)
     time_c = (time.perf_counter() - start) / num_iterations
     
     # Benchmark NumPy (float64)

@@ -78,9 +78,9 @@ static void compute_gaussian_float(const float *x, float i0, float mu, float sig
 }
 
 /*
- * Python interface: gaussian(x, i0, mu, sigma)
+ * Python interface: fgaussian(x, i0, mu, sigma)
  */
-static PyObject *fgaussian_gaussian(PyObject *self, PyObject *args)
+static PyObject *fgaussian_fgaussian(PyObject *self, PyObject *args)
 {
   PyArrayObject *x_array = NULL;
   double i0_d, mu_d, sigma_d;
@@ -149,7 +149,7 @@ static PyObject *fgaussian_gaussian(PyObject *self, PyObject *args)
 
 /* Method definition */
 static PyMethodDef FGaussianMethods[] = {
-    {"gaussian", fgaussian_gaussian, METH_VARARGS,
+    {"fgaussian", fgaussian_fgaussian, METH_VARARGS,
      "Accelerate-optimized Gaussian profile computation\n\n"
      "Uses float32 for optimal performance (~5x faster than NumPy float64)."},
     {NULL, NULL, 0, NULL}};

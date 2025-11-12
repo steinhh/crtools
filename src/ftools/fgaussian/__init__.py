@@ -9,7 +9,7 @@ import numpy as np
 from . import fgaussian_ext
 
 
-def gaussian(x, i0, mu, sigma):
+def fgaussian(x, i0, mu, sigma):
     """
     Compute Gaussian profile: i0 * exp(-((x - mu)^2) / (2 * sigma^2))
     
@@ -43,11 +43,11 @@ def gaussian(x, i0, mu, sigma):
     Examples
     --------
     >>> import numpy as np
-    >>> from ftools.fgaussian import gaussian
+    >>> from ftools import fgaussian
     >>> x = np.linspace(-5, 5, 100)
-    >>> profile = gaussian(x, i0=1.0, mu=0.0, sigma=1.0)
+    >>> profile = fgaussian(x, i0=1.0, mu=0.0, sigma=1.0)
     >>> # Scalar input
-    >>> value = gaussian(0.0, i0=1.0, mu=0.0, sigma=1.0)
+    >>> value = fgaussian(0.0, i0=1.0, mu=0.0, sigma=1.0)
     """
     # Check if input x is scalar
     x_is_scalar = np.isscalar(x)
@@ -70,7 +70,7 @@ def gaussian(x, i0, mu, sigma):
     sigma_float = float(sigma)
     
     # Call C extension
-    result = fgaussian_ext.gaussian(x_array, i0_float, mu_float, sigma_float)
+    result = fgaussian_ext.fgaussian(x_array, i0_float, mu_float, sigma_float)
     
     # If input was scalar, return scalar
     if x_is_scalar:
@@ -79,4 +79,4 @@ def gaussian(x, i0, mu, sigma):
     return result
 
 
-__all__ = ['gaussian']
+__all__ = ['fgaussian']
