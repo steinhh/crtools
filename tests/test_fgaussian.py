@@ -127,7 +127,8 @@ class TestGaussianNumerical:
         result = gaussian(x, i0=i0, mu=mu, sigma=sigma)
         expected = i0 * np.exp(-((x - mu) ** 2) / (2 * sigma ** 2))
         
-        np.testing.assert_allclose(result, expected, rtol=1e-14)
+        # Float32 has lower precision than float64
+        np.testing.assert_allclose(result, expected, rtol=1e-6)
     
     def test_extreme_values(self):
         """Test with extreme x values"""
@@ -174,7 +175,7 @@ class TestGaussianTypes:
         x = np.array([0, 1, 2], dtype=np.int32)
         result = gaussian(x, i0=1.0, mu=0.0, sigma=1.0)
         
-        assert result.dtype == np.float64
+        assert result.dtype == np.float32
         assert result[0] == pytest.approx(1.0)
     
     def test_float32_input(self):
@@ -182,8 +183,8 @@ class TestGaussianTypes:
         x = np.array([0.0, 1.0, 2.0], dtype=np.float32)
         result = gaussian(x, i0=1.0, mu=0.0, sigma=1.0)
         
-        # Should be converted to float64
-        assert result.dtype == np.float64
+        # Returns float32
+        assert result.dtype == np.float32
     
     def test_list_input(self):
         """Test with list input"""
@@ -191,7 +192,7 @@ class TestGaussianTypes:
         result = gaussian(x, i0=1.0, mu=0.0, sigma=1.0)
         
         assert isinstance(result, np.ndarray)
-        assert result.dtype == np.float64
+        assert result.dtype == np.float32
 
 
 class TestGaussianEdgeCases:
@@ -219,7 +220,7 @@ class TestGaussianEdgeCases:
         result = gaussian(x, i0=1.0, mu=0.0, sigma=10.0)
         
         assert result.shape == (n,)
-        assert result.dtype == np.float64
+        assert result.dtype == np.float32
         
         # Check peak
         peak_idx = np.argmax(result)

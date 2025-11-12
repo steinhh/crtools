@@ -86,26 +86,27 @@ def example_benchmark():
     # Warm up
     _ = gaussian(x, i0=1.0, mu=0.0, sigma=10.0)
     
-    # Benchmark C extension
+    # Benchmark C extension (float32)
     start = time.time()
     for _ in range(10):
         result_c = gaussian(x, i0=1.0, mu=0.0, sigma=10.0)
     time_c = (time.time() - start) / 10
     
-    # Benchmark NumPy
+    # Benchmark NumPy (float64)
+    x_f64 = x.astype(np.float64)
     start = time.time()
     for _ in range(10):
-        result_np = 1.0 * np.exp(-((x - 0.0) ** 2) / (2 * 10.0 ** 2))
+        result_np = 1.0 * np.exp(-((x_f64 - 0.0) ** 2) / (2 * 10.0 ** 2))
     time_np = (time.time() - start) / 10
     
-    # Verify results match
-    max_diff = np.max(np.abs(result_c - result_np))
+    # Verify results match (within float32 precision)
+    max_diff = np.max(np.abs(result_c.astype(np.float64) - result_np))
     
     print(f"Array size: {n:,} elements")
-    print(f"C extension: {time_c*1000:.2f} ms")
-    print(f"NumPy:       {time_np*1000:.2f} ms")
-    print(f"Speedup:     {time_np/time_c:.2f}x")
-    print(f"Max difference: {max_diff:.2e}")
+    print(f"C extension (f32): {time_c*1000:.2f} ms")
+    print(f"NumPy (f64):       {time_np*1000:.2f} ms")
+    print(f"Speedup:           {time_np/time_c:.2f}x")
+    print(f"Max difference:    {max_diff:.2e}")
     print()
 
 

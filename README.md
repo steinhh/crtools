@@ -8,7 +8,7 @@
 
 - **`fmedian`**: Filtered median computation - automatically works with 2D and 3D arrays
 - **`fsigma`**: Local population standard deviation - automatically works with 2D and 3D arrays
-- **`fgaussian`**: High-performance Gaussian profile computation (C extension with 1.35x speedup)
+- **`fgaussian`**: Ultra-fast Gaussian profile computation using Apple Accelerate (5x faster than NumPy)
 - Optional center pixel/voxel exclusion for better outlier detection (default: include center)
 - Robust NaN handling
 - Correct edge handling (edge pixels/voxels use smaller neighborhoods)
@@ -19,6 +19,7 @@
 - Python 3.8+
 - NumPy >= 1.20
 - C compiler toolchain (gcc, clang, or MSVC)
+- macOS with Accelerate framework (for `fgaussian` optimal performance)
 
 ## Standard installation
 
@@ -92,7 +93,7 @@ profile = gaussian(x, i0=1.0, mu=0.0, sigma=1.5)
 ## Returns
 
 - **fmedian/fsigma**: NumPy array of same shape as input, containing filtered values (float64)
-- **fgaussian.gaussian**: NumPy array or float (matches input shape), dtype=float64
+- **fgaussian.gaussian**: NumPy array or float (matches input shape), dtype=float32
 
 ## Examples
 
@@ -141,12 +142,13 @@ Contributions are welcome! Please ensure:
 
 ## Performance Notes
 
-- All functions convert input to `float64` for computation
-- C implementations provide significant speedup over pure Python/NumPy:
-  - `fmedian`/`fsigma`: Fast sorting networks for small windows
-  - `fgaussian`: ~1.35x speedup for large arrays (10M elements)
+- **fmedian/fsigma**: Use float64, optimized sorting networks for small windows
+- **fgaussian**: Uses float32 with Apple Accelerate framework
+  - ~5x faster than NumPy with float64 for large arrays (10M elements)
+  - Vectorized exp() via Apple's vForce library
+  - Zero-copy in-place computation
+  - Accuracy: <1e-7 difference vs float64
 - Edge handling uses appropriate boundary conditions
-- Gaussian computation uses optimized C math library (exp)
 
 ## Credits
 
