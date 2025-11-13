@@ -14,8 +14,6 @@ mu : `xarray.Dataset` or `numpy.ndarray` or `float` : Doppler shift in same unit
 
 sigma : `xarray.Dataset` or `numpy.ndarray` or `float` : Width in same units as ``x``.
 
-Width in same units as ``x``.
-
 Returns
 
 -------

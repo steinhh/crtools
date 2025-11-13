@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import numpy as np
 import time
-from ftools import fgaussian
+from ftools.fgaussian import fgaussian_ext
 
 
 def numpy_gaussian(x, i0, mu, sigma):
@@ -21,24 +21,25 @@ def numpy_gaussian(x, i0, mu, sigma):
 def benchmark_size(n, num_iterations=1000):
     """Benchmark for a specific array size"""
     # Setup
-    x = np.linspace(-10, 10, n)
+    x_f32 = np.linspace(-10, 10, n, dtype=np.float32)  # float32 for C extension
+    x_f64 = np.linspace(-10, 10, n)  # float64 for NumPy
     i0, mu, sigma = 2.5, 1.5, 3.0
     
     # Warm up
     for _ in range(10):
-        _ = fgaussian(x, i0=i0, mu=mu, sigma=sigma)
-        _ = numpy_gaussian(x, i0, mu, sigma)
+        _ = fgaussian_ext.fgaussian(x_f32, i0, mu, sigma)
+        _ = numpy_gaussian(x_f64, i0, mu, sigma)
     
     # Benchmark C extension (float32)
     start = time.perf_counter()
     for _ in range(num_iterations):
-        result_c = fgaussian(x, i0=i0, mu=mu, sigma=sigma)
+        result_c = fgaussian_ext.fgaussian(x_f32, i0, mu, sigma)
     time_c = (time.perf_counter() - start) / num_iterations
     
     # Benchmark NumPy (float64)
     start = time.perf_counter()
     for _ in range(num_iterations):
-        result_np = numpy_gaussian(x, i0, mu, sigma)
+        result_np = numpy_gaussian(x_f64, i0, mu, sigma)
     time_np = (time.perf_counter() - start) / num_iterations
     
     # Calculate speedup and accuracy
