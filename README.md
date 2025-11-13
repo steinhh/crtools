@@ -2,17 +2,18 @@
 
 ## C-based local image filters for cosmic ray detection and removal
 
-`ftools` provides fast local neighborhood filters `fmedian` and `fsigma` that automatically handle both 2D and 3D arrays, implemented as C extensions with optimized sorting networks for small window sizes up to 27 elements.
+`ftools` provides fast implementations of miscellaneous routines using C extensions.
 
 ## Features
 
-- **`fmedian`**: Filtered median computation - automatically works with 2D and 3D arrays
+- **`fmedian`**: Local median computation - automatically works with 2D and 3D arrays
 - **`fsigma`**: Local population standard deviation - automatically works with 2D and 3D arrays
-- **`fgaussian`**: Ultra-fast Gaussian profile computation using Apple Accelerate (5x faster than NumPy)
-- Optional center pixel/voxel exclusion for better outlier detection (default: include center)
-- Robust NaN handling
-- Correct edge handling (edge pixels/voxels use smaller neighborhoods)
-- Full test coverage with unit, edge case, and integration tests
+- **`fgaussian`**: Fast gaussian profile computation. Using Apple Accelerate it is ~7-10x faster than NumPy for small arrays, ~5x for large, when imported as `from ftools.fgaussian.fgaussian_ext import fgaussian` (no type checking).
+- **`fmedian` and `fsigma`**:
+  - Optional center pixel/voxel exclusion for better outlier detection (default: include center)
+  - Robust NaN handling
+  - Correct edge handling (edge pixels/voxels use smaller neighborhoods)
+  - Full test coverage with unit, edge case, and integration tests
 
 ## Requirements
 
@@ -52,16 +53,14 @@ This will automatically update the version in `setup.py` (e.g., `3.2.1-main` →
 ```python
 import numpy as np
 from ftools import fmedian, fsigma
-from ftools.fgaussian import gaussian
-
-# Works with both 2D and 3D data automatically!
-
-xsize, ysize, zsize = 3, 3, 3  # Example window sizes
+# Direct extension import for minimal overhead:
+from ftools.fgaussian.fgaussian_ext import fgaussian
 
 # Generate random input data
 data_2d = np.random.normal(0.0, 1.0, (100, 200)).astype(np.float64)
 data_3d = np.random.normal(0.0, 1.0, (100, 200, 100)).astype(np.float64)
 
+xsize = ysize = zsize = 3
 # 2D example
 median_filtered_2d = fmedian(data_2d, (xsize, ysize), exclude_center=1)
 sigma_map_2d = fsigma(data_2d, (xsize, ysize), exclude_center=1)
@@ -83,17 +82,17 @@ profile = gaussian(x, i0=1.0, mu=0.0, sigma=1.5)
 - `window_size`: tuple with window sizes. Must be odd positive integers.
 - `exclude_center`: Optional, if 1, exclude center pixel/voxel from filter calculation; if 0, include it (default: 0)
 
-### fgaussian.gaussian
+### fgaussian
 
-- `x`: Input array or scalar (position values)
+- `x`: Input array, dtype=float32 (no validation or conversion performed)
 - `i0`: Peak intensity (scalar, float)
 - `mu`: Center position (scalar, float)
 - `sigma`: Width parameter (scalar, float, must be > 0)
 
 ## Returns
 
-- **fmedian/fsigma**: NumPy array of same shape as input, containing filtered values (float64)
-- **fgaussian.gaussian**: NumPy array or float (matches input shape), dtype=float32
+- **fmedian/fsigma**: NumPy array of same shape as input, dtype=float64
+- **fgaussian**: NumPy array of same shape as input, dtype=float32
 
 ## Examples
 
@@ -144,11 +143,12 @@ Contributions are welcome! Please ensure:
 
 - **fmedian/fsigma**: Use float64, optimized sorting networks for small windows
 - **fgaussian**: Uses float32 with Apple Accelerate framework
-  - ~5x faster than NumPy with float64 for large arrays (10M elements)
+  - ~7-9x faster than NumPy for small arrays (N < 100)
+  - ~5-7x faster than NumPy for large arrays (N ? 1000)
   - Vectorized exp() via Apple's vForce library
   - Zero-copy in-place computation
+  - Minimal overhead (~0.23 ?s) - direct C extension call
   - Accuracy: <1e-7 difference vs float64
-- Edge handling uses appropriate boundary conditions
 
 ## Credits
 
