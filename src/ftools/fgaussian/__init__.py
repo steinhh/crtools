@@ -6,6 +6,7 @@ Uses float32 for optimal performance (~5x faster than NumPy float64).
 """
 
 from . import fgaussian_ext
+from . import fgaussian_f64_ext
 
 
 def fgaussian(x, i0, mu, sigma):
@@ -47,4 +48,41 @@ def fgaussian(x, i0, mu, sigma):
     return fgaussian_ext.fgaussian(x, i0, mu, sigma)
 
 
-__all__ = ['fgaussian']
+def fgaussian_f64(x, i0, mu, sigma):
+    """
+    Compute Gaussian profile: i0 * exp(-((x - mu)^2) / (2 * sigma^2))
+    
+    Float64 version for compatibility with existing code.
+    
+    Parameters
+    ----------
+    x : numpy.ndarray
+        Input array (Doppler or wavelength values), dtype=float64.
+    i0 : float
+        Peak intensity. Must be scalar.
+    mu : float
+        Center position (Doppler shift). Must be scalar.
+    sigma : float
+        Width parameter. Must be scalar and positive.
+    
+    Returns
+    -------
+    numpy.ndarray
+        Gaussian profile with same shape as x, dtype=float64.
+    
+    Notes
+    -----
+    Uses Apple Accelerate framework for vectorized computation.
+    Less performant than float32 version due to memory bandwidth.
+    
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from ftools import fgaussian_f64
+    >>> x = np.linspace(-5, 5, 100, dtype=np.float64)
+    >>> profile = fgaussian_f64(x, i0=1.0, mu=0.0, sigma=1.0)
+    """
+    return fgaussian_f64_ext.fgaussian_f64(x, i0, mu, sigma)
+
+
+__all__ = ['fgaussian', 'fgaussian_f64']
