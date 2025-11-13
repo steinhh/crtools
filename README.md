@@ -70,8 +70,8 @@ median_filtered_3d = fmedian(data_3d, (xsize, ysize, zsize))
 sigma_map_3d = fsigma(data_3d, (xsize, ysize, zsize))
 
 # Gaussian profile computation
-x = np.linspace(-10, 10, 1000)
-profile = gaussian(x, i0=1.0, mu=0.0, sigma=1.5)
+x = np.linspace(-10, 10, 1000, dtype=np.float32)
+profile = fgaussian(x, 1.0, 0.0, 1.5)
 ```
 
 ## Parameters
