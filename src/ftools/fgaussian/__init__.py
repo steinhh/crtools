@@ -5,7 +5,6 @@ Provides high-performance computation of Gaussian profiles using C extensions.
 Uses float32 for optimal performance (~5x faster than NumPy float64).
 """
 
-import numpy as np
 from . import fgaussian_ext
 
 
