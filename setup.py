@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import os
+import sys
 from setuptools import setup, find_packages, Extension
 
 
@@ -26,6 +27,12 @@ except Exception:
     # request it at build time.
     include_dirs = []
 
+# Platform-specific settings for fgaussian
+fgaussian_extra_link_args = []
+if sys.platform == "darwin":
+    # macOS: use Accelerate framework
+    fgaussian_extra_link_args = ["-framework", "Accelerate"]
+# On Linux/other platforms, no special linking needed (uses standard math library)
 
 ext_modules = [
     Extension(
@@ -53,14 +60,14 @@ ext_modules = [
         sources=[os.path.join("src", "ftools", "fgaussian", "fgaussian_ext.c")],
         include_dirs=include_dirs,
         extra_compile_args=["-O3", "-ffast-math"],
-        extra_link_args=["-framework", "Accelerate"],
+        extra_link_args=fgaussian_extra_link_args,
     ),
 ]
 
 
 setup(
     name="ftools",
-    version="4.0.5",
+    version="4.0.6",
     description="Small C extensions for local image filters (fmedian, fsigma)",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
