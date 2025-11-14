@@ -1,5 +1,5 @@
 """
-Example usage of fgaussian module
+Example usage of fgaussian_f32 module
 """
 
 import sys
@@ -7,7 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
 import numpy as np
-from ftools import fgaussian
+from ftools import fgaussian_f32
 
 
 def example_basic():
@@ -19,7 +19,7 @@ def example_basic():
     x = np.linspace(-10, 10, 1000)
     
     # Compute Gaussian profile
-    y = fgaussian(x, i0=1.0, mu=0.0, sigma=1.0)
+    y = fgaussian_f32(x, i0=1.0, mu=0.0, sigma=1.0)
     
     print(f"Input shape: {x.shape}")
     print(f"Output shape: {y.shape}")
@@ -36,9 +36,9 @@ def example_multiple_gaussians():
     x = np.linspace(-10, 10, 1000)
     
     # Different parameters
-    y1 = fgaussian(x, i0=1.0, mu=0.0, sigma=1.0)
-    y2 = fgaussian(x, i0=0.5, mu=2.0, sigma=0.5)
-    y3 = fgaussian(x, i0=0.8, mu=-3.0, sigma=1.5)
+    y1 = fgaussian_f32(x, i0=1.0, mu=0.0, sigma=1.0)
+    y2 = fgaussian_f32(x, i0=0.5, mu=2.0, sigma=0.5)
+    y3 = fgaussian_f32(x, i0=0.8, mu=-3.0, sigma=1.5)
     
     # Sum of Gaussians
     y_total = y1 + y2 + y3
@@ -64,7 +64,7 @@ def example_2d():
     R = np.sqrt(X**2 + Y**2)
     
     # 2D Gaussian (radially symmetric)
-    Z = fgaussian(R, i0=1.0, mu=0.0, sigma=1.5)
+    Z = fgaussian_f32(R, i0=1.0, mu=0.0, sigma=1.5)
     
     print(f"2D grid shape: {Z.shape}")
     print(f"Peak value: {Z.max():.6f}")
@@ -84,12 +84,12 @@ def example_benchmark():
     x = np.linspace(-100, 100, n)
     
     # Warm up
-    _ = fgaussian(x, i0=1.0, mu=0.0, sigma=10.0)
+    _ = fgaussian_f32(x, i0=1.0, mu=0.0, sigma=10.0)
     
     # Benchmark C extension (float32)
     start = time.time()
     for _ in range(10):
-        result_c = fgaussian(x, i0=1.0, mu=0.0, sigma=10.0)
+        result_c = fgaussian_f32(x, i0=1.0, mu=0.0, sigma=10.0)
     time_c = (time.time() - start) / 10
     
     # Benchmark NumPy (float64)

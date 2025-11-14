@@ -5,11 +5,11 @@ Provides high-performance computation of Gaussian profiles using C extensions.
 Uses float32 for optimal performance (~5x faster than NumPy float64).
 """
 
-from . import fgaussian_ext
+from . import fgaussian_f32_ext
 from . import fgaussian_f64_ext
 
 
-def fgaussian(x, i0, mu, sigma):
+def fgaussian_f32(x, i0, mu, sigma):
     """
     Compute Gaussian profile: i0 * exp(-((x - mu)^2) / (2 * sigma^2))
     
@@ -41,11 +41,11 @@ def fgaussian(x, i0, mu, sigma):
     Examples
     --------
     >>> import numpy as np
-    >>> from ftools import fgaussian
+    >>> from ftools import fgaussian_f32
     >>> x = np.linspace(-5, 5, 100, dtype=np.float32)
-    >>> profile = fgaussian(x, i0=1.0, mu=0.0, sigma=1.0)
+    >>> profile = fgaussian_f32(x, i0=1.0, mu=0.0, sigma=1.0)
     """
-    return fgaussian_ext.fgaussian(x, i0, mu, sigma)
+    return fgaussian_f32_ext.fgaussian_f32(x, i0, mu, sigma)
 
 
 def fgaussian_f64(x, i0, mu, sigma):
@@ -85,4 +85,4 @@ def fgaussian_f64(x, i0, mu, sigma):
     return fgaussian_f64_ext.fgaussian_f64(x, i0, mu, sigma)
 
 
-__all__ = ['fgaussian', 'fgaussian_f64']
+__all__ = ['fgaussian_f32', 'fgaussian_f64']

@@ -78,9 +78,9 @@ static void compute_gaussian_float(const float *x, float i0, float mu, float sig
 }
 
 /*
- * Python interface: fgaussian(x, i0, mu, sigma)
+ * Python interface: fgaussian_f32(x, i0, mu, sigma)
  */
-static PyObject *fgaussian_fgaussian(PyObject *self, PyObject *args)
+static PyObject *fgaussian_f32_fgaussian_f32(PyObject *self, PyObject *args)
 {
   PyArrayObject *x_array = NULL;
   double i0_d, mu_d, sigma_d;
@@ -148,22 +148,22 @@ static PyObject *fgaussian_fgaussian(PyObject *self, PyObject *args)
 }
 
 /* Method definition */
-static PyMethodDef FGaussianMethods[] = {
-    {"fgaussian", fgaussian_fgaussian, METH_VARARGS,
+static PyMethodDef FGaussianF32Methods[] = {
+    {"fgaussian_f32", fgaussian_f32_fgaussian_f32, METH_VARARGS,
      "Accelerate-optimized Gaussian profile computation\n\n"
      "Uses float32 for optimal performance (~5x faster than NumPy float64)."},
     {NULL, NULL, 0, NULL}};
 
 /* Module definition */
-static struct PyModuleDef fgaussian_module = {
+static struct PyModuleDef fgaussian_f32_module = {
     PyModuleDef_HEAD_INIT,
-    "fgaussian_ext",
+    "fgaussian_f32_ext",
     "Float32 Accelerate-optimized C extension for computing Gaussian profiles",
     -1,
-    FGaussianMethods};
+    FGaussianF32Methods};
 
 /* Module initialization */
-PyMODINIT_FUNC PyInit_fgaussian_ext(void)
+PyMODINIT_FUNC PyInit_fgaussian_f32_ext(void)
 {
   import_array();
 
@@ -172,5 +172,5 @@ PyMODINIT_FUNC PyInit_fgaussian_ext(void)
     return NULL;
   }
 
-  return PyModule_Create(&fgaussian_module);
+  return PyModule_Create(&fgaussian_f32_module);
 }

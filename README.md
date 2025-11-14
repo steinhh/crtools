@@ -8,8 +8,8 @@
 
 - **`fmedian`**: Local median computation - automatically works with 2D and 3D arrays
 - **`fsigma`**: Local population standard deviation - automatically works with 2D and 3D arrays
-- **`fgaussian`** / **`fgaussian_f64`**: Fast Gaussian profile computation
-  - `fgaussian`: Float32 version, ~7-10x faster than NumPy for small arrays, ~5x for large
+- **`fgaussian_f32`** / **`fgaussian_f64`**: Fast Gaussian profile computation
+  - `fgaussian_f32`: Float32 version, ~7-10x faster than NumPy for small arrays, ~5x for large
   - `fgaussian_f64`: Float64 version for compatibility, ~2-3x faster than NumPy
   - Uses Apple Accelerate framework for vectorized computation
 - **`fmedian` and `fsigma`**:
@@ -23,7 +23,7 @@
 - Python 3.8+
 - NumPy >= 1.20
 - C compiler toolchain (gcc, clang, or MSVC)
-- macOS with Accelerate framework (for `fgaussian` optimal performance)
+- macOS with Accelerate framework (for `fgaussian_f32` optimal performance)
 
 ## Standard installation
 
@@ -57,7 +57,7 @@ This will automatically update the version in `setup.py` (e.g., `3.2.1-main` →
 import numpy as np
 from ftools import fmedian, fsigma
 # Direct extension import for minimal overhead:
-from ftools.fgaussian.fgaussian_ext import fgaussian
+from ftools.fgaussian.fgaussian_f32_ext import fgaussian_f32
 
 # Generate random input data
 data_2d = np.random.normal(0.0, 1.0, (100, 200)).astype(np.float64)
@@ -74,7 +74,7 @@ sigma_map_3d = fsigma(data_3d, (xsize, ysize, zsize))
 
 # Gaussian profile computation (float32 - fastest)
 x_f32 = np.linspace(-10, 10, 1000, dtype=np.float32)
-profile_f32 = fgaussian(x_f32, 1.0, 0.0, 1.5)
+profile_f32 = fgaussian_f32(x_f32, 1.0, 0.0, 1.5)
 
 # Or use float64 version for compatibility
 from ftools import fgaussian_f64
@@ -90,11 +90,11 @@ profile_f64 = fgaussian_f64(x_f64, 1.0, 0.0, 1.5)
 - `window_size`: tuple with window sizes. Must be odd positive integers.
 - `exclude_center`: Optional, if 1, exclude center pixel/voxel from filter calculation; if 0, include it (default: 0)
 
-### fgaussian / fgaussian_f64
+### fgaussian_f32 / fgaussian_f64
 
 Both functions compute: `i0 * exp(-((x - mu)^2) / (2 * sigma^2))`
 
-**fgaussian** (float32 - recommended for performance):
+**fgaussian_f32** (float32 - recommended for performance):
 
 - `x`: Input array, dtype=float32 (no validation or conversion performed)
 - `i0`: Peak intensity (scalar, float)
@@ -113,7 +113,7 @@ Both functions compute: `i0 * exp(-((x - mu)^2) / (2 * sigma^2))`
 ## Returns
 
 - **fmedian/fsigma**: NumPy array of same shape as input, dtype=float64
-- **fgaussian**: NumPy array of same shape as input, dtype=float32
+- **fgaussian_f32**: NumPy array of same shape as input, dtype=float32
 - **fgaussian_f64**: NumPy array of same shape as input, dtype=float64
 
 ## Examples
@@ -164,7 +164,7 @@ Contributions are welcome! Please ensure:
 ## Performance Notes
 
 - **fmedian/fsigma**: Use float64, optimized sorting networks for small windows
-- **fgaussian (float32)**: Uses Apple Accelerate framework
+- **fgaussian_f32 (float32)**: Uses Apple Accelerate framework
   - ~7-9x faster than NumPy for small arrays (N < 100)
   - ~5-7x faster than NumPy for large arrays (N ? 1000)
   - Vectorized exp() via Apple's vForce library (vvexpf)

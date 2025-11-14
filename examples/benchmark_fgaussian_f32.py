@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Benchmark fgaussian performance across different array sizes.
+Benchmark fgaussian_f32 performance across different array sizes.
 Compares C extension (float32 + Accelerate) vs NumPy (float64).
 """
 
@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import numpy as np
 import time
-from ftools.fgaussian import fgaussian_ext
+from ftools.fgaussian import fgaussian_f32_ext
 
 
 def numpy_gaussian(x, i0, mu, sigma):
@@ -27,13 +27,13 @@ def benchmark_size(n, num_iterations=1000):
     
     # Warm up
     for _ in range(10):
-        _ = fgaussian_ext.fgaussian(x_f32, i0, mu, sigma)
+        _ = fgaussian_f32_ext.fgaussian_f32(x_f32, i0, mu, sigma)
         _ = numpy_gaussian(x_f64, i0, mu, sigma)
     
     # Benchmark C extension (float32)
     start = time.perf_counter()
     for _ in range(num_iterations):
-        result_c = fgaussian_ext.fgaussian(x_f32, i0, mu, sigma)
+        result_c = fgaussian_f32_ext.fgaussian_f32(x_f32, i0, mu, sigma)
     time_c = (time.perf_counter() - start) / num_iterations
     
     # Benchmark NumPy (float64)
