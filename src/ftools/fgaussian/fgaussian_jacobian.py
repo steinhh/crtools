@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def gaussian_jacobian(x, i0, mu, sigma):
     """
     Jacobian of the Gaussian function.
