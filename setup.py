@@ -76,12 +76,19 @@ ext_modules = [
         extra_compile_args=["-O3", "-ffast-math"],
         extra_link_args=fgaussian_extra_link_args,
     ),
+    Extension(
+        "ftools.fgaussian.fgaussian_jacobian_f64_ext",
+        sources=[os.path.join("src", "ftools", "fgaussian", "fgaussian_jacobian_f64_ext.c")],
+        include_dirs=include_dirs,
+        extra_compile_args=["-O3", "-ffast-math"],
+        extra_link_args=fgaussian_extra_link_args,
+    ),
 ]
 
 
 setup(
     name="ftools",
-    version="4.0.16",
+    version="4.0.17",
     description="Small C extensions for local image filters (fmedian, fsigma)",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
