@@ -4,13 +4,9 @@ Benchmark fgaussian_f32 performance across different array sizes.
 Compares C extension (float32 + Accelerate) vs NumPy (float64).
 """
 
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
 import numpy as np
 import time
-from ftools.fgaussian import fgaussian_f32_ext
+from . import fgaussian_f32_ext
 
 
 def numpy_gaussian(x, i0, mu, sigma):

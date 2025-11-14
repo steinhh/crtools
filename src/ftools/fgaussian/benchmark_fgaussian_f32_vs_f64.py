@@ -5,12 +5,9 @@ Benchmark comparison: fgaussian (float32) vs fgaussian_f64 (float64)
 Shows the performance difference between float32 and float64 versions.
 """
 
-import sys
-sys.path.insert(0, 'src')
-
 import numpy as np
 import time
-from ftools.fgaussian import fgaussian_f32, fgaussian_f64
+from . import fgaussian_f32_ext, fgaussian_f64_ext
 
 # Test parameters
 i0, mu, sigma = 1.0, 0.0, 1.5
@@ -29,20 +26,20 @@ for n in test_sizes:
     x_f64 = np.linspace(-10, 10, n, dtype=np.float64)
     
     # Warm up
-    _ = fgaussian_f32(x_f32, i0, mu, sigma)
-    _ = fgaussian_f64(x_f64, i0, mu, sigma)
+    _ = fgaussian_f32_ext.fgaussian_f32(x_f32, i0, mu, sigma)
+    _ = fgaussian_f64_ext.fgaussian_f64(x_f64, i0, mu, sigma)
     
     # Benchmark float32
     n_iter = max(1000, 100000 // n)
     start = time.perf_counter()
     for _ in range(n_iter):
-        _ = fgaussian_f32(x_f32, i0, mu, sigma)
+        _ = fgaussian_f32_ext.fgaussian_f32(x_f32, i0, mu, sigma)
     t_f32 = (time.perf_counter() - start) / n_iter * 1e6
     
     # Benchmark float64
     start = time.perf_counter()
     for _ in range(n_iter):
-        _ = fgaussian_f64(x_f64, i0, mu, sigma)
+        _ = fgaussian_f64_ext.fgaussian_f64(x_f64, i0, mu, sigma)
     t_f64 = (time.perf_counter() - start) / n_iter * 1e6
     
     ratio = t_f64 / t_f32
