@@ -83,20 +83,15 @@ static void compute_gaussian_float(const float *x, float i0, float mu, float sig
 static PyObject *fgaussian_f32_fgaussian_f32(PyObject *self, PyObject *args)
 {
   PyArrayObject *x_array = NULL;
-  double i0_d, mu_d, sigma_d;
+  float i0, mu, sigma;
 
-  /* Parse arguments - Python side passes doubles */
-  if (!PyArg_ParseTuple(args, "O!ddd",
+  /* Parse arguments */
+  if (!PyArg_ParseTuple(args, "O!fff",
                         &PyArray_Type, &x_array,
-                        &i0_d, &mu_d, &sigma_d))
+                        &i0, &mu, &sigma))
   {
     return NULL;
   }
-
-  /* Convert to float */
-  float i0 = (float)i0_d;
-  float mu = (float)mu_d;
-  float sigma = (float)sigma_d;
 
   /* Validate x is a numpy array */
   if (!PyArray_Check(x_array))
